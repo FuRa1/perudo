@@ -65,4 +65,34 @@ describe('selectPlayerView (4.5, 6.6)', () => {
     expect(viewOfP2.startRoll).toEqual(state.startRoll);
     expect(viewOfP2.completedStartRoll).toEqual(state.completedStartRoll);
   });
+
+  it('hides round-1 auto-dealt hands from opponents even while the opening-roll debug view is still shown', () => {
+    // Round 1 now enters BIDDING with hands already dealt (no manual roll step) — the debug
+    // opening-roll result is public, but each player's hand must still be private to them alone.
+    const state: MatchState = {
+      phase: GamePhase.BIDDING,
+      roomId: 'room-1',
+      players: [player('p1', [1, 1, 1, 1, 1]), player('p2', [2, 2, 2, 2, 2])],
+      startRoll: null,
+      completedStartRoll: { rolls: { p1: 4, p2: 6 }, firstPlayerId: 'p2' },
+      round: {
+        roundNumber: 1,
+        turnOrder: ['p2', 'p1'],
+        currentTurnIndex: 0,
+        bidHistory: [],
+        isSpecialRoundDeclared: false,
+        pendingRolls: [],
+      },
+      winnerId: null,
+    };
+
+    const viewOfP1 = selectPlayerView(state, 'p1');
+    expect(viewOfP1.players.find((p) => p.id === 'p1')?.dice).toEqual([1, 1, 1, 1, 1]);
+    expect(viewOfP1.players.find((p) => p.id === 'p2')?.dice).toEqual([]);
+    expect(viewOfP1.completedStartRoll).toEqual(state.completedStartRoll);
+
+    const viewOfP2 = selectPlayerView(state, 'p2');
+    expect(viewOfP2.players.find((p) => p.id === 'p2')?.dice).toEqual([2, 2, 2, 2, 2]);
+    expect(viewOfP2.players.find((p) => p.id === 'p1')?.dice).toEqual([]);
+  });
 });
