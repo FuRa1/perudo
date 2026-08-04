@@ -13,6 +13,11 @@ export class GameStore {
   readonly lastError = signal<GameError | null>(null);
   /** Most recent reveal, kept until the next round starts so the UI can show it (5.3). */
   readonly lastReveal = signal<Extract<ServerEvent, { type: 'ROUND_REVEALED' }> | null>(null);
+  /** Player IDs currently showing the cosmetic "rolling" animation (8.2) — set on the public
+   * roll event, cleared a fixed short delay later regardless of when the state update lands, so
+   * the animation always plays even on a fast local connection. Never implies a value. */
+  readonly rollingPlayerIds = signal<ReadonlySet<string>>(new Set());
+  private static readonly ROLL_ANIMATION_MS = 500;
 
   readonly me = computed(() => {
     const state = this.matchState();
@@ -53,6 +58,22 @@ export class GameStore {
     if (roundStarted) {
       this.lastReveal.set(null);
     }
+    for (const event of events) {
+      if (event.type === 'START_ROLL_ROLLED' || event.type === 'PLAYER_ROLLED_HAND') {
+        this.markRolling(event.playerId);
+      }
+    }
+  }
+
+  private markRolling(playerId: string): void {
+    this.rollingPlayerIds.update((current) => new Set(current).add(playerId));
+    setTimeout(() => {
+      this.rollingPlayerIds.update((current) => {
+        const next = new Set(current);
+        next.delete(playerId);
+        return next;
+      });
+    }, GameStore.ROLL_ANIMATION_MS);
   }
 
   setError(error: GameError): void {

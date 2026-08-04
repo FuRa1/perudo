@@ -1,7 +1,13 @@
 import { normalBid } from '@shared/types/bid.types';
 import type { DiceValue } from '@shared/types/dice.types';
 import { ErrorCode } from '@shared/types/error.types';
-import type { BidRecord, MatchState, Player, RoundState } from '@shared/types/state.types';
+import type {
+  BidRecord,
+  CompletedStartRoll,
+  MatchState,
+  Player,
+  RoundState,
+} from '@shared/types/state.types';
 import { GamePhase } from '@shared/types/state.types';
 import {
   applyIntent,
@@ -51,6 +57,7 @@ function makeBiddingState(
     roomId: 'room-1',
     players,
     startRoll: null,
+    completedStartRoll: null,
     winnerId: null,
     round: {
       roundNumber: 1,
@@ -131,7 +138,14 @@ describe('START_ROLL (5.2) — highest die goes first, ties re-roll among the ti
     expect(state.phase).toBe(GamePhase.START_ROLL);
 
     state = expectOk(applyIntent(state, { type: 'ROLL_DICE', playerId: 'p1' }, d)).state; // rolls 4
+    // Partial: only p1 has rolled — the public in-progress map holds just that, and the
+    // completed/debug field isn't set until the whole thing resolves.
+    expect(state.startRoll?.rolls).toEqual({ p1: 4 });
+    expect(state.completedStartRoll).toBeNull();
+
     state = expectOk(applyIntent(state, { type: 'ROLL_DICE', playerId: 'p2' }, d)).state; // rolls 6
+    expect(state.completedStartRoll).toBeNull();
+
     const { state: afterLast, events } = expectOk(
       applyIntent(state, { type: 'ROLL_DICE', playerId: 'p3' }, d),
     ); // rolls 2
@@ -139,6 +153,13 @@ describe('START_ROLL (5.2) — highest die goes first, ties re-roll among the ti
     expect(afterLast.phase).toBe(GamePhase.ROUND_ROLLING);
     expect(afterLast.round?.turnOrder[0]).toBe('p2');
     expect(events.some((e) => e.type === 'ROUND_STARTED' && e.firstPlayerId === 'p2')).toBe(true);
+    // Final resolution: startRoll is cleared, but the complete decisive result is preserved
+    // publicly for temporary debug visibility (retained through round 1's ROUND_ROLLING).
+    expect(afterLast.startRoll).toBeNull();
+    expect(afterLast.completedStartRoll).toEqual({
+      rolls: { p1: 4, p2: 6, p3: 2 },
+      firstPlayerId: 'p2',
+    });
   });
 
   it('makes the tied players re-roll among themselves, leaving the others out of it', () => {
@@ -164,18 +185,27 @@ describe('START_ROLL (5.2) — highest die goes first, ties re-roll among the ti
     expect(afterTieDetected.phase).toBe(GamePhase.START_ROLL);
     expect([...(afterTieDetected.startRoll?.pendingPlayerIds ?? [])].sort()).toEqual(['p1', 'p2']);
     expect(tieEvents.some((e) => e.type === 'START_ROLL_TIED')).toBe(true);
+    // The tied re-roll's own progress lives in the ordinary (live) startRoll.rolls, reset to
+    // just the tied players — the discarded tied 5s are gone from it, and nothing is "completed"
+    // yet since the match hasn't resolved.
+    expect(afterTieDetected.startRoll?.rolls).toEqual({});
+    expect(afterTieDetected.completedStartRoll).toBeNull();
 
     // p3 cannot roll again — they weren't part of the tie-break.
     expect(
       expectError(applyIntent(afterTieDetected, { type: 'ROLL_DICE', playerId: 'p3' }, d)),
     ).toBe(ErrorCode.ALREADY_ROLLED);
 
-    state = expectOk(applyIntent(afterTieDetected, { type: 'ROLL_DICE', playerId: 'p1' }, d)).state;
+    state = expectOk(applyIntent(afterTieDetected, { type: 'ROLL_DICE', playerId: 'p1' }, d)).state; // rerolls 2
+    expect(state.completedStartRoll).toBeNull();
     const { state: resolved } = expectOk(
-      applyIntent(state, { type: 'ROLL_DICE', playerId: 'p2' }, d),
+      applyIntent(state, { type: 'ROLL_DICE', playerId: 'p2' }, d), // rerolls 6
     );
     expect(resolved.phase).toBe(GamePhase.ROUND_ROLLING);
     expect(resolved.round?.turnOrder[0]).toBe('p2');
+    // Only the decisive reroll (p1: 2, p2: 6) is retained — neither the discarded tied 5s nor
+    // p3's un-tied 3 leak into the completed public result.
+    expect(resolved.completedStartRoll).toEqual({ rolls: { p1: 2, p2: 6 }, firstPlayerId: 'p2' });
   });
 });
 
@@ -188,6 +218,7 @@ describe('ROUND_ROLLING (5.3, 4.5) — private hands, phase advances once everyo
       roomId: 'room-1',
       players,
       startRoll: null,
+      completedStartRoll: null,
       winnerId: null,
       round: {
         roundNumber: 1,
@@ -207,6 +238,36 @@ describe('ROUND_ROLLING (5.3, 4.5) — private hands, phase advances once everyo
     const afterP2 = expectOk(applyIntent(afterP1.state, { type: 'ROLL_DICE', playerId: 'p2' }, d));
     expect(afterP2.state.phase).toBe(GamePhase.BIDDING);
     expect(afterP2.state.players.find((p) => p.id === 'p2')?.dice).toEqual([3, 4, 4, 6, 1]);
+  });
+
+  it('retains the completed opening-roll debug result through round 1, clearing it once BIDDING is reached', () => {
+    const d = deps([2, 6]);
+    const players = [makePlayer('p1'), makePlayer('p2')];
+    const completedStartRoll: CompletedStartRoll = { rolls: { p1: 6, p2: 4 }, firstPlayerId: 'p1' };
+    const state: MatchState = {
+      phase: GamePhase.ROUND_ROLLING,
+      roomId: 'room-1',
+      players,
+      startRoll: null,
+      completedStartRoll,
+      winnerId: null,
+      round: {
+        roundNumber: 1,
+        turnOrder: ['p1', 'p2'],
+        currentTurnIndex: 0,
+        bidHistory: [],
+        isSpecialRoundDeclared: false,
+        pendingRolls: ['p1', 'p2'],
+      },
+    };
+
+    const afterP1 = expectOk(applyIntent(state, { type: 'ROLL_DICE', playerId: 'p1' }, d));
+    expect(afterP1.state.phase).toBe(GamePhase.ROUND_ROLLING);
+    expect(afterP1.state.completedStartRoll).toEqual(completedStartRoll);
+
+    const afterP2 = expectOk(applyIntent(afterP1.state, { type: 'ROLL_DICE', playerId: 'p2' }, d));
+    expect(afterP2.state.phase).toBe(GamePhase.BIDDING);
+    expect(afterP2.state.completedStartRoll).toBeNull();
   });
 });
 

@@ -31,6 +31,19 @@ export interface StartRollState {
   readonly rolls: Readonly<Record<string, DiceValue>>;
 }
 
+/**
+ * The resolved, decisive result of the 5.2 opening roll — public by rule, so it needs no
+ * filtering in selectPlayerView. `rolls` holds only the winning sub-round's entries (a tie
+ * resets `StartRollState.rolls` before rerolling among just the tied players, so this never
+ * contains discarded pre-tie values — see game-engine.ts). Kept around through round 1's
+ * ROUND_ROLLING purely as a temporary debugging aid (it is not itself game state anything reads
+ * for rules), then cleared once round 1 reaches BIDDING.
+ */
+export interface CompletedStartRoll {
+  readonly rolls: Readonly<Record<string, DiceValue>>;
+  readonly firstPlayerId: string;
+}
+
 export interface BidRecord {
   readonly playerId: string;
   readonly bid: Bid;
@@ -54,6 +67,8 @@ export interface MatchState {
   /** Stable seating order for the whole match, including eliminated (diceCount === 0) players. */
   readonly players: readonly Player[];
   readonly startRoll: StartRollState | null;
+  /** Temporary debug visibility for the resolved opening roll — see CompletedStartRoll. */
+  readonly completedStartRoll: CompletedStartRoll | null;
   readonly round: RoundState | null;
   readonly winnerId: string | null;
 }

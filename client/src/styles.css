@@ -42,3 +42,27 @@ body {
   background-color: var(--color-parchment);
   color: var(--color-ink);
 }
+
+/* Cosmetic-only roll cue (8.2) — a short tilt/scale loop, cleared once the real result is
+ * shown. Never implies a value; see the Die component. */
+@keyframes die-roll {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-12deg) scale(1.05);
+  }
+  50% {
+    transform: rotate(0deg) scale(0.95);
+  }
+  75% {
+    transform: rotate(12deg) scale(1.05);
+  }
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+.die-rolling {
+  animation: die-roll 0.3s ease-in-out infinite;
+}

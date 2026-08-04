@@ -1,0 +1,31 @@
+<div class="mb-3 rounded-lg border-2 border-wood bg-parchment-dark p-2">
+  <h3 class="mb-2 text-sm font-semibold text-ink">Opening roll — highest goes first</h3>
+  <div class="flex flex-wrap gap-2">
+    @for (row of rows(); track row.playerId) {
+      <div
+        class="flex flex-col items-center gap-1 rounded border bg-bone/40 px-2 py-1"
+        [class.border-gold]="row.isWinner"
+        [class.border-wood]="!row.isWinner"
+        [class.border-2]="row.isWinner"
+      >
+        <span class="text-xs font-semibold whitespace-nowrap text-ink">{{ row.nickname }}</span>
+
+        @if (row.status === 'waiting') {
+          <span class="text-xs whitespace-nowrap text-wood">Waiting to roll</span>
+        } @else if (row.status === 'rolling') {
+          <div class="w-10">
+            <app-die [value]="1" [rolling]="true" />
+          </div>
+        } @else if (row.value; as v) {
+          <div class="w-10">
+            <app-die [value]="v" />
+          </div>
+        }
+
+        @if (row.isWinner) {
+          <ion-badge color="warning">Starts round 1</ion-badge>
+        }
+      </div>
+    }
+  </div>
+</div>

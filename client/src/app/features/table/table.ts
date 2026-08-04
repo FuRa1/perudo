@@ -3,8 +3,9 @@ import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
 import { GamePhase, type Bid, type Player } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
-import type { SeatSize } from '../../ui/seat-card/seat-card';
-import { SeatCard } from '../../ui/seat-card/seat-card';
+import { OpeningRollPanel } from '../../ui/opening-roll-panel/opening-roll-panel';
+import type { HandRollStatus, SeatSize } from '../../ui/seat-card/seat-card';
+import { CARD_WIDTH_PX, SeatCard } from '../../ui/seat-card/seat-card';
 import { BidControls } from '../bid-controls/bid-controls';
 
 interface ArcPosition {
@@ -42,7 +43,6 @@ function seatSizeFor(opponentCount: number): SeatSize {
   return 'small';
 }
 
-const CARD_WIDTH_PX: Record<SeatSize, number> = { large: 140, medium: 104, small: 76 };
 const CARD_GAP_PX = 12;
 
 function describeBid(bid: Bid): string {
@@ -52,7 +52,7 @@ function describeBid(bid: Bid): string {
 @Component({
   selector: 'app-table',
   standalone: true,
-  imports: [IonContent, IonButton, IonIcon, SeatCard, BidControls],
+  imports: [IonContent, IonButton, IonIcon, SeatCard, OpeningRollPanel, BidControls],
   templateUrl: './table.html',
 })
 export class Table {
@@ -62,11 +62,13 @@ export class Table {
   protected readonly GamePhase = GamePhase;
   protected readonly describeBid = describeBid;
 
+  protected readonly allPlayers = computed<readonly Player[]>(
+    () => this.store.matchState()?.players ?? [],
+  );
   protected readonly me = this.store.me;
   protected readonly opponents = computed<readonly Player[]>(() => {
-    const state = this.store.matchState();
     const myId = this.store.playerId();
-    return state ? state.players.filter((p) => p.id !== myId) : [];
+    return this.allPlayers().filter((p) => p.id !== myId);
   });
 
   protected readonly seatSize = computed(() => seatSizeFor(this.opponents().length));
@@ -83,6 +85,31 @@ export class Table {
     return round ? round.turnOrder[round.currentTurnIndex] : null;
   });
 
+  /** Public opening-roll data is shown whenever either the live roll or its resolved, still
+   * temporarily-retained result exists (2., "keep results visible through round 1 hand-rolling"). */
+  protected readonly showOpeningRoll = computed(() => {
+    const state = this.store.matchState();
+    return !!state?.startRoll || !!state?.completedStartRoll;
+  });
+
+  /** Per-player "rolled their hand / still waiting" status, only meaningful during ROUND_ROLLING. */
+  protected readonly handRollStatusByPlayerId = computed<Readonly<
+    Record<string, HandRollStatus>
+  > | null>(() => {
+    const state = this.store.matchState();
+    if (!state || state.phase !== GamePhase.ROUND_ROLLING || !state.round) {
+      return null;
+    }
+    const pending = new Set(state.round.pendingRolls);
+    const map: Record<string, HandRollStatus> = {};
+    for (const player of state.players) {
+      map[player.id] = pending.has(player.id) ? 'waiting' : 'rolled';
+    }
+    return map;
+  });
+
+  protected readonly rollingPlayerIds = this.store.rollingPlayerIds;
+
   protected readonly canRoll = computed(() => {
     const state = this.store.matchState();
     const id = this.store.playerId();
@@ -98,7 +125,15 @@ export class Table {
     return false;
   });
 
+  protected readonly rollButtonLabel = computed(() =>
+    this.store.matchState()?.phase === GamePhase.START_ROLL ? 'Roll opening die' : 'Roll your hand',
+  );
+
   protected readonly reveal = this.store.lastReveal;
+
+  protected handRollStatusFor(playerId: string): HandRollStatus | null {
+    return this.handRollStatusByPlayerId()?.[playerId] ?? null;
+  }
 
   protected roll(): void {
     this.socket.rollDice();

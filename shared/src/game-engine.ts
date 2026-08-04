@@ -49,6 +49,7 @@ export function createInitialMatchState(roomId: string): MatchState {
     roomId,
     players: [],
     startRoll: null,
+    completedStartRoll: null,
     round: null,
     winnerId: null,
   };
@@ -180,7 +181,15 @@ function applyStartRollRoll(
   const firstPlayerId = winners[0] as string;
   const round = createRoundState(state.players, firstPlayerId, 1);
   events.push({ type: 'ROUND_STARTED', roundNumber: 1, firstPlayerId });
-  const newState: MatchState = { ...state, phase: GamePhase.ROUND_ROLLING, startRoll: null, round };
+  // `rolls` here is exactly the decisive sub-round's map — a tie already reset it above, so
+  // discarded pre-tie values never make it into the completed (public, debug-visible) result.
+  const newState: MatchState = {
+    ...state,
+    phase: GamePhase.ROUND_ROLLING,
+    startRoll: null,
+    completedStartRoll: { rolls, firstPlayerId },
+    round,
+  };
   return ok(newState, events);
 }
 
@@ -211,6 +220,10 @@ function applyHandRoll(
     ...state,
     players,
     phase: GamePhase.BIDDING,
+    // The temporary opening-roll debug view (CompletedStartRoll) is retained through round 1's
+    // hand-rolling and cleared exactly here, on reaching BIDDING. For round 2+ this is already
+    // null (cleared during round 1), so the assignment is a harmless no-op there.
+    completedStartRoll: null,
     round: { ...round, pendingRolls },
   };
   return ok(newState, events);
