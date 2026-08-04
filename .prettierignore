@@ -1,0 +1,11 @@
+**/dist
+**/coverage
+**/node_modules
+.claude
+**/.angular
+**/out-tsc
+client/public
+package-lock.json
+CLAUDE.md
+CLAUDE-RU-Reference.md
+scenario-prompt-brief.md

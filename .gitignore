@@ -1,0 +1,31 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Build output
+dist/
+out-tsc/
+/client/.angular/
+/client/public/generated/
+
+# Coverage
+coverage/
+
+# Env
+.env
+.env.local
+
+# IDE / OS
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.idea/
+.DS_Store
+Thumbs.db
+*.launch
+
+# Test artifacts
+*.tsbuildinfo

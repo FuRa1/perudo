@@ -1,0 +1,36 @@
+# client
+
+Angular 21 (standalone components + Signals) + Ionic 8 + Tailwind CSS. Presentation only — components read state from a single Signals-based store and send intents through a service layer; components never talk to Socket.io directly (added in Phase 3). See [CLAUDE.md](../CLAUDE.md) sections 3.2, 5.8, 6.6 for the full spec.
+
+Ships web + Android + iOS from this one codebase via Capacitor (added when native builds are wired up).
+
+## Prerequisites
+
+Node.js 22.12+, npm 11+. Installed as part of the root workspace install (`npm install` at the repo root) — there is no separate install step here.
+
+## Run locally
+
+From the repo root: `npm run dev` (runs client + server together), or from here:
+
+```
+npm start -w client
+```
+
+Opens the dev server at `http://localhost:4200/`, reloading on source changes.
+
+## Scripts
+
+| Script      | What it does                                                                                |
+| ----------- | ------------------------------------------------------------------------------------------- |
+| `start`     | `ng serve` — dev server with live reload.                                                   |
+| `build`     | `ng build` — production build to `dist/`.                                                   |
+| `watch`     | `ng build --watch --configuration development` — dev-mode build, watching.                  |
+| `typecheck` | `tsc --noEmit` against both the app and spec tsconfigs.                                     |
+| `lint`      | Lints this package (including `.html` templates) with the repo's single root ESLint config. |
+| `test`      | `ng test` — runs unit tests with Vitest.                                                    |
+
+## Notes
+
+- Change detection is zone-based (`zone.js` + `provideZoneChangeDetection`), not zoneless, because `@ionic/angular`'s component bindings currently assume `zone.js`.
+- Styling: Tailwind CSS (`@import 'tailwindcss'` in `src/styles.css`) layered with Ionic components; Angular Material is not used (CLAUDE.md 8.1).
+- The dice UI is 2D, config-driven and swappable — no 3D/Three.js/Babylon (CLAUDE.md 8.2, added in Phase 4).

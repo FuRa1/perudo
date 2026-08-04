@@ -1,0 +1,39 @@
+# server
+
+NestJS backend — orchestration only. Holds room state, applies intents via `GameEngine` (added in Phase 2), manages timers, broadcasts filtered state. See [CLAUDE.md](../CLAUDE.md) sections 3.2, 6, 7 for the full spec.
+
+Match state lives in server memory (a `Map` keyed by `roomId`) — no database in the MVP; restarting the server drops active matches by design (CLAUDE.md 3.3).
+
+## Prerequisites
+
+Node.js 22.12+, npm 11+. Installed as part of the root workspace install (`npm install` at the repo root) — there is no separate install step here.
+
+## Run locally
+
+From the repo root: `npm run dev` (runs client + server together), or from here:
+
+```
+npm run start:dev -w server
+```
+
+Starts the Nest app in watch mode on `http://localhost:3000`.
+
+## Scripts
+
+| Script        | What it does                                                                 |
+| ------------- | ---------------------------------------------------------------------------- |
+| `start`       | Runs the built app once (no watch).                                          |
+| `start:dev`   | Runs with `nest start --watch` — restarts on file changes.                   |
+| `start:debug` | Same, with the Node inspector attached.                                      |
+| `start:prod`  | Runs the compiled `dist/main.js` directly.                                   |
+| `build`       | `nest build` — compiles to `dist/`.                                          |
+| `typecheck`   | `tsc --noEmit`.                                                              |
+| `lint`        | Lints this package with the repo's single root ESLint config.                |
+| `test`        | Runs unit tests (Jest, `*.spec.ts` under `src/`).                            |
+| `test:watch`  | Same, in watch mode.                                                         |
+| `test:cov`    | Same, with coverage.                                                         |
+| `test:e2e`    | Runs end-to-end tests (`test/*.e2e-spec.ts`), spinning up the full Nest app. |
+
+## Testing
+
+Domain-logic tests (once `GameEngine` lands in Phase 2) are deterministic — RNG is injected and never called directly in logic (CLAUDE.md 6.4); time is controllable. The dice generator itself is never tested for distribution, only the logic that consumes given dice values (CLAUDE.md 4.3).

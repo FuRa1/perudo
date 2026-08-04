@@ -1,0 +1,33 @@
+{
+  "name": "perudo-game",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Networked Perudo (Liar's Dice / Dudo) for 2-12 players, \"Pirates of the Caribbean\" theme.",
+  "workspaces": [
+    "shared",
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,green \"npm run start:dev -w server\" \"npm run start -w client\"",
+    "build": "npm run build -w shared && npm run build -w server && npm run build -w client",
+    "test": "npm run test -w shared && npm run test -w server && npm run test -w client",
+    "typecheck": "npm run typecheck -w shared && npm run typecheck -w server && npm run typecheck -w client",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "angular-eslint": "21.4.0",
+    "concurrently": "^10.0.4",
+    "eslint": "^10.8.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "globals": "^17.9.0",
+    "prettier": "^3.9.6",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.66.0"
+  }
+}
