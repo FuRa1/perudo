@@ -306,6 +306,24 @@ describe('BIDDING — turn order and bid legality', () => {
     expect(expectError(result)).toBe(ErrorCode.NOT_YOUR_TURN);
   });
 
+  it('accepts 4x5 as the first bid of the round for the current player, and rejects it out of turn', () => {
+    const players = [makePlayer('p1'), makePlayer('p2')];
+    const state = makeBiddingState(players, { turnOrder: ['p1', 'p2'] });
+
+    const outOfTurn = applyIntent(
+      state,
+      { type: 'PLACE_BID', playerId: 'p2', bid: normalBid(4, 5) },
+      deps([]),
+    );
+    expect(expectError(outOfTurn)).toBe(ErrorCode.NOT_YOUR_TURN);
+
+    const { state: after } = expectOk(
+      applyIntent(state, { type: 'PLACE_BID', playerId: 'p1', bid: normalBid(4, 5) }, deps([])),
+    );
+    expect(after.round?.bidHistory).toEqual([{ playerId: 'p1', bid: normalBid(4, 5) }]);
+    expect(after.round?.currentTurnIndex).toBe(1);
+  });
+
   it('rejects an illegal bid and accepts a legal one, advancing the turn', () => {
     const players = [makePlayer('p1'), makePlayer('p2')];
     const bidHistory: BidRecord[] = [{ playerId: 'p1', bid: normalBid(4, 4) }];

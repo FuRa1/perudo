@@ -65,6 +65,10 @@ describe('first bid of a round (5.3)', () => {
     expect(isLegalBid(aceBid(10), context)).toBe(true);
   });
 
+  it('allows 4x5 specifically as a first bid — quantity is not required to be the minimum of 1', () => {
+    expect(isLegalBid(normalBid(4, 5), context)).toBe(true);
+  });
+
   it('rejects a quantity below the minimum of 1', () => {
     expect(isLegalBid(normalBid(0, 3), context)).toBe(false);
   });
@@ -114,12 +118,39 @@ describe('switching normal -> aces', () => {
 });
 
 describe('5.8 hints', () => {
-  it('cheapestLegalBid raises the same face/kind by the smallest step', () => {
+  it('cheapestLegalBid is null-bid 1x2 when nothing has been bid yet', () => {
     expect(cheapestLegalBid({ lastBid: null, lastNormalBid: null, isSpecialRound: false })).toEqual(
       normalBid(1, 2),
     );
-    expect(cheapestLegalBid(contextAfter(normalBid(4, 3)))).toEqual(normalBid(5, 3));
+  });
+
+  it('cheapestLegalBid follows the face-first bid order for normal-to-normal raises', () => {
+    // after 4x5 -> 4x6 (same quantity, next-higher face)
+    expect(cheapestLegalBid(contextAfter(normalBid(4, 5)))).toEqual(normalBid(4, 6));
+    // after 4x6 -> 5x2 (six has no higher face, so quantity bumps and face resets to the lowest)
+    expect(cheapestLegalBid(contextAfter(normalBid(4, 6)))).toEqual(normalBid(5, 2));
+    // after 4x2 -> 4x3 (same quantity, next-higher face)
+    expect(cheapestLegalBid(contextAfter(normalBid(4, 2)))).toEqual(normalBid(4, 3));
+  });
+
+  it('cheapestLegalBid only raises quantity for aces-to-aces (no face to climb)', () => {
     expect(cheapestLegalBid(contextAfter(aceBid(2)))).toEqual(aceBid(3));
+  });
+
+  it('cheapestLegalBid keeps the face fixed during a special round, raising only quantity', () => {
+    const normalContext: BidScaleContext = {
+      lastBid: normalBid(4, 3),
+      lastNormalBid: normalBid(4, 3),
+      isSpecialRound: true,
+    };
+    expect(cheapestLegalBid(normalContext)).toEqual(normalBid(5, 3));
+
+    const aceContext: BidScaleContext = {
+      lastBid: aceBid(2),
+      lastNormalBid: null,
+      isSpecialRound: true,
+    };
+    expect(cheapestLegalBid(aceContext)).toEqual(aceBid(3));
   });
 
   it('minimumAceSwitchBid is null when there is no normal bid to convert from', () => {

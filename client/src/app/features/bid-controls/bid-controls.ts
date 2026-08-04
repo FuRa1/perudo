@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import {
   cheapestLegalBid,
@@ -33,6 +33,15 @@ export class BidControls {
   protected readonly face = signal<DiceValue>(DEFAULT_FACE);
 
   protected readonly isMyTurn = this.store.isMyTurn;
+  protected readonly currentPlayerName = computed(() => {
+    const round = this.store.matchState()?.round;
+    if (!round) {
+      return null;
+    }
+    const currentPlayerId = round.turnOrder[round.currentTurnIndex];
+    const players = this.store.matchState()?.players ?? [];
+    return players.find((p) => p.id === currentPlayerId)?.nickname ?? null;
+  });
   protected readonly canCallLiar = computed(
     () => (this.store.matchState()?.round?.bidHistory.length ?? 0) > 0,
   );
@@ -85,6 +94,21 @@ export class BidControls {
   protected readonly normalSwitchSuggestion = computed(() =>
     minimumNormalSwitchBid(this.context(), this.normalSwitchTargetFace()),
   );
+
+  constructor() {
+    // Whenever the authoritative bidding context changes (someone placed a bid, a special round
+    // was declared, a new round started, ...), snap the picker's local quantity/face back to the
+    // cheapest legal raise for that new context. Without this, a stale quantity/face left over
+    // from a previous turn can silently become illegal the moment it's this player's turn again,
+    // showing a "Not a legal raise" message the player never actually caused — this keeps the
+    // picker starting from a legal bid, while still letting the player freely edit it (and
+    // genuinely see "Not a legal raise" if *they* dial in something illegal).
+    effect(() => {
+      const suggestion = cheapestLegalBid(this.context());
+      this.quantity.set(suggestion.quantity);
+      this.face.set(bidToFaceValue(suggestion));
+    });
+  }
 
   protected onQuantityChange(quantity: number): void {
     this.quantity.set(quantity);

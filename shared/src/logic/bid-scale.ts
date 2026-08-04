@@ -83,16 +83,30 @@ export function isLegalBid(candidate: Bid, context: BidScaleContext): boolean {
   return candidate.quantity >= floor && (!lastNormalBid || isNormalRaise(candidate, lastNormalBid));
 }
 
-/** 5.8 hint: the cheapest possible legal raise in the current mode (same face/kind, +1 quantity). */
+/**
+ * 5.8 hint: the cheapest possible legal raise given the current bid order. For a normal-vs-normal
+ * raise the same quantity at the next-higher face is strictly cheaper than bumping the quantity
+ * (5.4/5.8's bid order climbs face-first) — six has no higher face to climb to, so from six the
+ * only legal step is quantity+1 back at the lowest face. Aces-to-aces has only quantity to raise.
+ * A special round fixes the face for the whole round (5.5), so there the only legal step is ever
+ * quantity+1 on the same face/kind, regardless of what the face-first order would otherwise say.
+ */
 export function cheapestLegalBid(context: BidScaleContext): Bid {
-  const { lastBid } = context;
+  const { lastBid, isSpecialRound } = context;
   if (!lastBid) {
     return { kind: 'NORMAL', quantity: 1, face: 2 };
+  }
+  if (isSpecialRound) {
+    return lastBid.kind === 'ACE'
+      ? { kind: 'ACE', quantity: lastBid.quantity + 1 }
+      : { kind: 'NORMAL', quantity: lastBid.quantity + 1, face: lastBid.face };
   }
   if (lastBid.kind === 'ACE') {
     return { kind: 'ACE', quantity: lastBid.quantity + 1 };
   }
-  return { kind: 'NORMAL', quantity: lastBid.quantity + 1, face: lastBid.face };
+  return lastBid.face < 6
+    ? { kind: 'NORMAL', quantity: lastBid.quantity, face: (lastBid.face + 1) as NormalFace }
+    : { kind: 'NORMAL', quantity: lastBid.quantity + 1, face: 2 };
 }
 
 /** 5.8 hint: minimum legal bid if switching from the current normal-face bid to aces, or `null`

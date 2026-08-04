@@ -1,46 +1,49 @@
 <div class="ion-padding-horizontal flex flex-col items-center gap-3">
-  <app-bid-picker
-    [quantity]="quantity()"
-    [face]="displayedFace()"
-    [disabled]="!isMyTurn()"
-    [faceDisabled]="isFaceLocked()"
-    (quantityChange)="onQuantityChange($event)"
-    (faceChange)="onFaceChange($event)"
-  />
+  @if (isMyTurn()) {
+    <app-bid-picker
+      [quantity]="quantity()"
+      [face]="displayedFace()"
+      [faceDisabled]="isFaceLocked()"
+      (quantityChange)="onQuantityChange($event)"
+      (faceChange)="onFaceChange($event)"
+    />
 
-  @if (!isValid()) {
-    <p class="text-sm text-red-700">Not a legal raise.</p>
+    @if (!isValid()) {
+      <p class="text-sm text-red-700">Not a legal raise.</p>
+    }
+
+    <div class="flex flex-wrap justify-center gap-2">
+      <app-bid-suggestion
+        label="Minimum"
+        [bid]="minimumSuggestion()"
+        (bidSelected)="applySuggestion($event)"
+      />
+      <app-bid-suggestion
+        label="Switch to aces"
+        [bid]="aceSwitchSuggestion()"
+        (bidSelected)="applySuggestion($event)"
+      />
+      <app-bid-suggestion
+        label="Switch to a face"
+        [bid]="normalSwitchSuggestion()"
+        (bidSelected)="applySuggestion($event)"
+      />
+    </div>
+
+    <div class="flex flex-wrap justify-center gap-2">
+      <ion-button [disabled]="!isValid()" (click)="placeBid()">Place bid</ion-button>
+      <ion-button color="danger" [disabled]="!canCallLiar()" (click)="callLiar()">
+        <ion-icon name="skull" slot="start" />
+        Call liar!
+      </ion-button>
+    </div>
+  } @else {
+    <p class="rounded-lg border-2 border-wood bg-parchment-dark px-3 py-2 text-sm text-ink">
+      Waiting for {{ currentPlayerName() ?? 'the next player' }} to bid
+    </p>
   }
 
-  <div class="flex flex-wrap justify-center gap-2">
-    <app-bid-suggestion
-      label="Minimum"
-      [bid]="minimumSuggestion()"
-      [disabled]="!isMyTurn()"
-      (bidSelected)="applySuggestion($event)"
-    />
-    <app-bid-suggestion
-      label="Switch to aces"
-      [bid]="aceSwitchSuggestion()"
-      [disabled]="!isMyTurn()"
-      (bidSelected)="applySuggestion($event)"
-    />
-    <app-bid-suggestion
-      label="Switch to a face"
-      [bid]="normalSwitchSuggestion()"
-      [disabled]="!isMyTurn()"
-      (bidSelected)="applySuggestion($event)"
-    />
-  </div>
-
-  <div class="flex flex-wrap justify-center gap-2">
-    <ion-button [disabled]="!isMyTurn() || !isValid()" (click)="placeBid()">Place bid</ion-button>
-    <ion-button color="danger" [disabled]="!isMyTurn() || !canCallLiar()" (click)="callLiar()">
-      <ion-icon name="skull" slot="start" />
-      Call liar!
-    </ion-button>
-    @if (canDeclareSpecialRound()) {
-      <ion-button color="warning" (click)="declareSpecialRound()">Declare special round</ion-button>
-    }
-  </div>
+  @if (canDeclareSpecialRound()) {
+    <ion-button color="warning" (click)="declareSpecialRound()">Declare special round</ion-button>
+  }
 </div>
