@@ -33,6 +33,17 @@ describe('BidSuggestion', () => {
     expect(emitted).toEqual([bid]);
   });
 
+  it('renders an available suggestion with solid, non-faded text (no opacity-based fade)', () => {
+    const fixture = TestBed.createComponent(BidSuggestion);
+    fixture.componentRef.setInput('label', 'Minimum');
+    fixture.componentRef.setInput('bid', normalBid(4, 3));
+    fixture.detectChanges();
+
+    const button = getButton(fixture);
+    expect(button.className).toContain('text-ink');
+    expect(button.className).not.toContain('opacity-40');
+  });
+
   it("does not submit when disabled (e.g. not the player's turn)", () => {
     const bid = normalBid(4, 3);
     const fixture = TestBed.createComponent(BidSuggestion);
@@ -49,6 +60,10 @@ describe('BidSuggestion', () => {
     button.click();
 
     expect(emitted).toEqual([]);
+    // Disabled must stay legible — a solid muted palette, not a near-transparent fade of the
+    // enabled text color against the same parchment-toned background.
+    expect(button.className).toContain('disabled:text-wood');
+    expect(button.className).not.toContain('opacity-40');
   });
 
   it('does not submit when no suggestion is available (bid is null)', () => {
@@ -65,5 +80,6 @@ describe('BidSuggestion', () => {
     button.click();
 
     expect(emitted).toEqual([]);
+    expect(button.textContent).toContain('unavailable');
   });
 });
