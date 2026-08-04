@@ -3,8 +3,14 @@ import { io, type Socket } from 'socket.io-client';
 import type { Bid, GameError, MatchState, ServerEvent } from '@shared';
 import { GameStore } from './game-store';
 
-// No deploy target chosen yet (CLAUDE.md section 12) — hardcoded for local dev.
-const SERVER_URL = 'http://localhost:3000';
+// No deploy target chosen yet (CLAUDE.md section 12) — defaults to local dev, overridable via
+// ?serverUrl=... (e.g. an ngrok tunnel URL) so the app can be shared for testing without a
+// rebuild: <client-tunnel-url>/?serverUrl=<server-tunnel-url>.
+const DEFAULT_SERVER_URL = 'http://localhost:3000';
+
+function resolveServerUrl(): string {
+  return new URLSearchParams(window.location.search).get('serverUrl') ?? DEFAULT_SERVER_URL;
+}
 
 interface JoinedPayload {
   playerId: string;
@@ -24,7 +30,7 @@ export class SocketService {
     if (this.socket) {
       return;
     }
-    const socket = io(SERVER_URL, { transports: ['websocket'] });
+    const socket = io(resolveServerUrl(), { transports: ['websocket'] });
     this.socket = socket;
 
     socket.on('connect', () => this.store.setConnected(true));

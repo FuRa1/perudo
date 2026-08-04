@@ -14,6 +14,7 @@ export class Lobby {
   private readonly socket = inject(SocketService);
 
   protected readonly players = computed(() => this.store.matchState()?.players ?? []);
+  protected readonly roomId = computed(() => this.store.matchState()?.roomId ?? '');
   protected readonly me = this.store.me;
 
   protected toggleReady(): void {

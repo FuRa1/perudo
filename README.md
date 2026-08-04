@@ -62,6 +62,23 @@ Runs the NestJS server (`http://localhost:3000`) and the Angular dev server (`ht
 
 There is deliberately **one** ESLint config and **one** Prettier config for the whole repo (CLAUDE.md 4.1) — no per-package configs.
 
+## Testing over the internet with ngrok
+
+No hosting needed for this — `npm run dev` already runs a real server + client, ngrok just makes your machine reachable. Two tunnels, since the client (web page) and server (Socket.io) are separate processes:
+
+```
+ngrok http 3000   # server — note the https URL, e.g. https://abcd-1-2-3-4.ngrok-free.app
+ngrok http 4200   # client — note this https URL too
+```
+
+Share the **client** tunnel URL with the `serverUrl` query param pointing at the **server** tunnel:
+
+```
+https://<client-tunnel>/?serverUrl=https://<server-tunnel>
+```
+
+Nothing else to configure — CORS is already permissive (`origin: '*'`, no auth by design), the server binds all interfaces by default, and `client/angular.json`'s dev-server `allowedHosts` already allows `*.ngrok-free.app` / `*.ngrok.io` / `*.ngrok.app` (Vite's dev server otherwise rejects unrecognized `Host` headers). A free ngrok tunnel gets a new random URL each run unless you have a reserved domain — regenerate the shared link each session.
+
 ## Deploy
 
-Not chosen yet — see CLAUDE.md section 12 (open questions). This section will be filled in with step-by-step instructions once a host is picked.
+Not chosen yet — see CLAUDE.md section 12 (open questions). This is a separate question from the ngrok testing above (which needs no hosting at all); this section will be filled in with step-by-step instructions once a real host is picked.
