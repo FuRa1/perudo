@@ -1,0 +1,59 @@
+<ion-content class="ion-padding">
+  <h2 class="text-xl font-bold mb-2">
+    Round {{ store.matchState()?.round?.roundNumber ?? '-' }} — {{ store.matchState()?.phase }}
+  </h2>
+
+  <ion-list>
+    @for (player of players(); track player.id) {
+      <ion-item>
+        {{ player.nickname }} ({{ player.diceCount }} dice)
+        @if (player.id === currentBidderId()) {
+          <ion-badge slot="end" color="primary">Bidding</ion-badge>
+        }
+        @if (player.diceCount === 0) {
+          <ion-badge slot="end" color="medium">Out</ion-badge>
+        }
+      </ion-item>
+    }
+  </ion-list>
+
+  @if (store.me(); as me) {
+    <p class="mt-3">Your dice: {{ me.dice.length ? me.dice.join(', ') : '(not rolled yet)' }}</p>
+  }
+
+  @if (canRoll()) {
+    <ion-button expand="block" class="ion-margin-vertical" (click)="roll()">Roll dice</ion-button>
+  }
+
+  @if (reveal(); as r) {
+    <div class="ion-padding-vertical">
+      <p>
+        <strong>Reveal:</strong> claimed {{ describeBid(r.claimedBid) }}, actual
+        {{ r.actualQuantity }}.
+      </p>
+      <p>
+        {{
+          r.outcome === 'CALLER_LOSES'
+            ? 'The caller was wrong and loses a die.'
+            : 'The bidder was lying and loses a die.'
+        }}
+      </p>
+    </div>
+  }
+
+  @if (store.matchState()?.round?.bidHistory; as history) {
+    <h3 class="font-semibold mt-3">Bid history</h3>
+    <ul>
+      @for (record of history; track $index) {
+        <li>
+          {{ record.playerId === store.playerId() ? 'You' : record.playerId }}:
+          {{ describeBid(record.bid) }}
+        </li>
+      }
+    </ul>
+  }
+
+  @if (store.matchState()?.phase === GamePhase.BIDDING) {
+    <app-bid-controls class="block mt-4" />
+  }
+</ion-content>

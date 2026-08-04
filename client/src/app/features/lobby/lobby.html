@@ -1,0 +1,16 @@
+<ion-content class="ion-padding">
+  <h2 class="text-xl font-bold mb-2">Lobby</h2>
+  <ion-list>
+    @for (player of players(); track player.id) {
+      <ion-item>
+        {{ player.nickname }}
+        <ion-badge slot="end" [color]="player.isReady ? 'success' : 'medium'">
+          {{ player.isReady ? 'Ready' : 'Not ready' }}
+        </ion-badge>
+      </ion-item>
+    }
+  </ion-list>
+  <ion-button expand="block" class="ion-margin-top" (click)="toggleReady()">
+    {{ me()?.isReady ? 'Cancel ready' : "I'm ready" }}
+  </ion-button>
+</ion-content>

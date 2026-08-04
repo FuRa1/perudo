@@ -1,0 +1,57 @@
+<ion-list>
+  <ion-item>
+    <ion-input
+      label="Quantity"
+      labelPlacement="stacked"
+      type="number"
+      min="1"
+      [value]="quantity()"
+      (ionInput)="setQuantity($event.detail.value)"
+    />
+  </ion-item>
+  <ion-item>
+    <ion-select
+      label="Face"
+      labelPlacement="stacked"
+      [value]="face()"
+      (ionChange)="setFace($event.detail.value)"
+    >
+      @for (f of normalFaces; track f) {
+        <ion-select-option [value]="f">{{ f }}</ion-select-option>
+      }
+      <ion-select-option value="ACE">Aces (wild)</ion-select-option>
+    </ion-select>
+  </ion-item>
+</ion-list>
+
+<div class="ion-padding-horizontal flex flex-wrap gap-2">
+  <ion-button size="small" fill="outline" (click)="useMinimumBid()">Minimum bid</ion-button>
+  @if (face() !== 'ACE') {
+    <ion-button size="small" fill="outline" [disabled]="!aceSwitchBid()" (click)="useAceSwitch()">
+      Switch to aces
+    </ion-button>
+  } @else {
+    <ion-button
+      size="small"
+      fill="outline"
+      [disabled]="!normalSwitchBid()"
+      (click)="useNormalSwitch()"
+    >
+      Switch to a face
+    </ion-button>
+  }
+</div>
+
+@if (!isValid()) {
+  <p class="ion-padding-horizontal text-red-600 text-sm">Not a legal raise.</p>
+}
+
+<div class="ion-padding-horizontal flex flex-wrap gap-2 mt-2">
+  <ion-button [disabled]="!isMyTurn() || !isValid()" (click)="placeBid()">Place bid</ion-button>
+  <ion-button color="danger" [disabled]="!isMyTurn() || !canCallLiar()" (click)="callLiar()">
+    Call liar!
+  </ion-button>
+  @if (canDeclareSpecialRound()) {
+    <ion-button color="warning" (click)="declareSpecialRound()">Declare special round</ion-button>
+  }
+</div>

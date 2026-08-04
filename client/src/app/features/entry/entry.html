@@ -1,0 +1,24 @@
+<ion-content class="ion-padding">
+  <h1 class="text-2xl font-bold mb-4">Perudo</h1>
+  <ion-list>
+    <ion-item>
+      <ion-input
+        label="Room code"
+        labelPlacement="stacked"
+        placeholder="e.g. tortuga"
+        [value]="roomId()"
+        (ionInput)="roomId.set($any($event.detail.value ?? ''))"
+      />
+    </ion-item>
+    <ion-item>
+      <ion-input
+        label="Nickname"
+        labelPlacement="stacked"
+        placeholder="e.g. Jack"
+        [value]="nickname()"
+        (ionInput)="nickname.set($any($event.detail.value ?? ''))"
+      />
+    </ion-item>
+  </ion-list>
+  <ion-button expand="block" class="ion-margin-top" (click)="join()">Join room</ion-button>
+</ion-content>
