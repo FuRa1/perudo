@@ -1,0 +1,25 @@
+<div
+  class="aspect-square w-full rounded-lg border-2 border-wood bg-bone shadow-inner"
+  [attr.aria-label]="face().label"
+  role="img"
+>
+  @if (face().imageUrl; as imageUrl) {
+    <img [src]="imageUrl" [alt]="face().label" class="h-full w-full object-contain" />
+  } @else {
+    <div class="grid h-full w-full grid-cols-3 grid-rows-3 gap-0.5 p-1.5">
+      @for (pip of pips(); track $index) {
+        <span
+          class="flex items-center justify-center"
+          [style.grid-row]="pip.row"
+          [style.grid-column]="pip.col"
+        >
+          @if (pip.skull) {
+            <span class="text-[85%] leading-none">💀</span>
+          } @else {
+            <span class="aspect-square w-full rounded-full bg-ink"></span>
+          }
+        </span>
+      }
+    </div>
+  }
+</div>

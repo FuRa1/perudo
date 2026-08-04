@@ -1,12 +1,19 @@
 import { Component, computed, inject } from '@angular/core';
-import { IonBadge, IonButton, IonContent, IonItem, IonList } from '@ionic/angular/standalone';
+import {
+  IonBadge,
+  IonButton,
+  IonContent,
+  IonIcon,
+  IonItem,
+  IonList,
+} from '@ionic/angular/standalone';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
 
 @Component({
   selector: 'app-lobby',
   standalone: true,
-  imports: [IonContent, IonList, IonItem, IonBadge, IonButton],
+  imports: [IonContent, IonList, IonItem, IonBadge, IonButton, IonIcon],
   templateUrl: './lobby.html',
 })
 export class Lobby {

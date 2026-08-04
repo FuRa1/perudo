@@ -1,0 +1,44 @@
+<div
+  class="flex flex-col items-center gap-1 rounded-lg border-2 bg-parchment-dark p-2 shadow transition-all"
+  [class.border-gold]="isCurrentBidder()"
+  [class.border-wood]="!isCurrentBidder()"
+  [class.w-fit]="isMe()"
+  [style.width.px]="isMe() ? null : size() === 'large' ? 140 : size() === 'medium' ? 104 : 76"
+>
+  <div class="flex items-center gap-1 text-center text-sm font-semibold whitespace-nowrap">
+    @if (isMe()) {
+      <ion-icon name="person-circle" class="text-sea" />
+    }
+    <span class="truncate">{{ player().nickname }}</span>
+  </div>
+
+  <div class="flex gap-1.5">
+    @if (isMe()) {
+      @for (die of player().dice; track $index) {
+        <div class="w-11">
+          <app-die [value]="die" />
+        </div>
+      }
+      @if (player().dice.length === 0) {
+        <span class="text-xs whitespace-nowrap text-wood">(not rolled)</span>
+      }
+    } @else {
+      @for (n of hiddenDicePlaceholders(); track $index) {
+        <div
+          class="rounded-sm border border-wood bg-wood-light"
+          [style.width.px]="size() === 'large' ? 16 : 12"
+          [style.height.px]="size() === 'large' ? 16 : 12"
+        ></div>
+      }
+    }
+  </div>
+
+  <div class="flex gap-1">
+    @if (isCurrentBidder()) {
+      <ion-badge color="primary">Bidding</ion-badge>
+    }
+    @if (player().diceCount === 0) {
+      <ion-badge color="medium">Out</ion-badge>
+    }
+  </div>
+</div>

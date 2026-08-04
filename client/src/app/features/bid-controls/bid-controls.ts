@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import {
   IonButton,
+  IonIcon,
   IonInput,
   IonItem,
   IonList,
@@ -27,7 +28,7 @@ const NORMAL_FACES: readonly NormalFace[] = [2, 3, 4, 5, 6];
 @Component({
   selector: 'app-bid-controls',
   standalone: true,
-  imports: [IonList, IonItem, IonInput, IonSelect, IonSelectOption, IonButton],
+  imports: [IonList, IonItem, IonInput, IonSelect, IonSelectOption, IonButton, IonIcon],
   templateUrl: './bid-controls.html',
 })
 export class BidControls {

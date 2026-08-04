@@ -6,3 +6,39 @@
 @import '@ionic/angular/css/typography.css';
 @import '@ionic/angular/css/display.css';
 @import 'tailwindcss';
+
+/*
+ * Placeholder "pirate" palette (CLAUDE.md 8.1) — real values come from Figma tokens once they
+ * exist; nothing that consumes these (Tailwind utilities below, Ionic's --ion-color-* vars)
+ * needs to change when that happens, only the values here.
+ */
+@theme {
+  --color-parchment: #f2e4c5;
+  --color-parchment-dark: #ddc794;
+  --color-wood: #6b4226;
+  --color-wood-light: #8b5e34;
+  --color-bone: #efe4c8;
+  --color-gold: #c9a227;
+  --color-sea: #0f3d5c;
+  --color-sea-light: #1c6091;
+  --color-ink: #2b1d0f;
+}
+
+:root {
+  --ion-background-color: var(--color-parchment);
+  --ion-text-color: var(--color-ink);
+  --ion-color-primary: var(--color-sea);
+  --ion-color-primary-contrast: var(--color-parchment);
+  --ion-color-primary-shade: var(--color-sea);
+  --ion-color-primary-tint: var(--color-sea-light);
+  --ion-color-danger: #8c2f24;
+  --ion-color-danger-contrast: var(--color-parchment);
+  --ion-color-warning: var(--color-gold);
+  --ion-color-warning-contrast: var(--color-ink);
+}
+
+body {
+  font-family: ui-serif, Georgia, 'Times New Roman', serif;
+  background-color: var(--color-parchment);
+  color: var(--color-ink);
+}

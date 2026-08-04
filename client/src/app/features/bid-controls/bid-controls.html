@@ -49,6 +49,7 @@
 <div class="ion-padding-horizontal flex flex-wrap gap-2 mt-2">
   <ion-button [disabled]="!isMyTurn() || !isValid()" (click)="placeBid()">Place bid</ion-button>
   <ion-button color="danger" [disabled]="!isMyTurn() || !canCallLiar()" (click)="callLiar()">
+    <ion-icon name="skull" slot="start" />
     Call liar!
   </ion-button>
   @if (canDeclareSpecialRound()) {
