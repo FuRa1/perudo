@@ -1,0 +1,19 @@
+<button
+  type="button"
+  class="flex items-center gap-2 rounded-lg border-2 border-wood bg-parchment-dark px-2 py-1 text-sm font-semibold text-ink transition hover:bg-gold/40 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+  [disabled]="isUnavailable()"
+  [attr.aria-label]="
+    bid()
+      ? label() + ', ' + bid()!.quantity + ' of face ' + diceValueOf(bid()!)
+      : label() + ', unavailable'
+  "
+  (click)="onClick()"
+>
+  <span>{{ label() }}:</span>
+  @if (bid(); as b) {
+    <span class="tabular-nums">{{ b.quantity }} ×</span>
+    <span class="w-6"><app-die [value]="diceValueOf(b)" /></span>
+  } @else {
+    <span class="text-wood/60 italic">unavailable</span>
+  }
+</button>

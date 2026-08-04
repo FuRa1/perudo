@@ -1,43 +1,36 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { IonButton, IonIcon } from '@ionic/angular/standalone';
 import {
-  IonButton,
-  IonIcon,
-  IonInput,
-  IonItem,
-  IonList,
-  IonSelect,
-  IonSelectOption,
-} from '@ionic/angular/standalone';
-import {
-  aceBid,
   cheapestLegalBid,
   isLegalBid,
   minimumAceSwitchBid,
   minimumNormalSwitchBid,
-  normalBid,
   type Bid,
   type BidScaleContext,
+  type DiceValue,
   type NormalBid,
   type NormalFace,
 } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
+import { BidPicker } from '../../ui/bid-picker/bid-picker';
+import { bidToFaceValue, faceValueToBid } from '../../ui/bid-picker/bid-face.util';
+import { BidSuggestion } from '../../ui/bid-suggestion/bid-suggestion';
 
-const NORMAL_FACES: readonly NormalFace[] = [2, 3, 4, 5, 6];
+const DEFAULT_FACE: DiceValue = 2;
 
 @Component({
   selector: 'app-bid-controls',
   standalone: true,
-  imports: [IonList, IonItem, IonInput, IonSelect, IonSelectOption, IonButton, IonIcon],
+  imports: [IonButton, IonIcon, BidPicker, BidSuggestion],
   templateUrl: './bid-controls.html',
 })
 export class BidControls {
   private readonly store = inject(GameStore);
   private readonly socket = inject(SocketService);
 
-  protected readonly normalFaces = NORMAL_FACES;
   protected readonly quantity = signal(1);
-  protected readonly face = signal<NormalFace | 'ACE'>(2);
+  protected readonly face = signal<DiceValue>(DEFAULT_FACE);
 
   protected readonly isMyTurn = this.store.isMyTurn;
   protected readonly canCallLiar = computed(
@@ -66,57 +59,52 @@ export class BidControls {
     };
   });
 
-  protected readonly candidateBid = computed<Bid>(() => {
-    const face = this.face();
-    return face === 'ACE' ? aceBid(this.quantity()) : normalBid(this.quantity(), face);
+  /** 5.5: once a special round's first bid fixes the face, later bids can't change it — lock the
+   * picker to that face regardless of whatever `face` was last set to before the lock kicked in. */
+  protected readonly isFaceLocked = computed(
+    () => this.context().isSpecialRound && this.context().lastBid !== null,
+  );
+  protected readonly displayedFace = computed<DiceValue>(() => {
+    const lastBid = this.context().lastBid;
+    return this.isFaceLocked() && lastBid ? bidToFaceValue(lastBid) : this.face();
   });
 
+  protected readonly candidateBid = computed<Bid>(() =>
+    faceValueToBid(this.displayedFace(), this.quantity()),
+  );
   protected readonly isValid = computed(() => isLegalBid(this.candidateBid(), this.context()));
-  protected readonly aceSwitchBid = computed(() => minimumAceSwitchBid(this.context()));
-  protected readonly normalSwitchBid = computed(() => {
-    const face = this.face();
-    return face === 'ACE' ? null : minimumNormalSwitchBid(this.context(), face);
+
+  protected readonly minimumSuggestion = computed(() => cheapestLegalBid(this.context()));
+  protected readonly aceSwitchSuggestion = computed(() => minimumAceSwitchBid(this.context()));
+  /** Which normal face "switch to a face" targets — whatever the picker currently shows, or a
+   * sensible default (2) while the picker itself is showing aces. */
+  protected readonly normalSwitchTargetFace = computed<NormalFace>(() => {
+    const face = this.displayedFace();
+    return face === 1 ? 2 : face;
   });
+  protected readonly normalSwitchSuggestion = computed(() =>
+    minimumNormalSwitchBid(this.context(), this.normalSwitchTargetFace()),
+  );
 
-  protected setQuantity(value: string | number | null | undefined): void {
-    const parsed = Number(value);
-    if (Number.isInteger(parsed) && parsed > 0) {
-      this.quantity.set(parsed);
+  protected onQuantityChange(quantity: number): void {
+    this.quantity.set(quantity);
+  }
+
+  protected onFaceChange(face: DiceValue): void {
+    if (!this.isFaceLocked()) {
+      this.face.set(face);
     }
   }
 
-  protected setFace(value: string | number | null | undefined): void {
-    if (value === 'ACE') {
-      this.face.set('ACE');
-      return;
-    }
-    const parsed = Number(value);
-    if (NORMAL_FACES.includes(parsed as NormalFace)) {
-      this.face.set(parsed as NormalFace);
-    }
-  }
-
-  protected useMinimumBid(): void {
-    this.applyHint(cheapestLegalBid(this.context()));
-  }
-
-  protected useAceSwitch(): void {
-    const bid = this.aceSwitchBid();
-    if (bid) {
-      this.applyHint(bid);
-    }
-  }
-
-  protected useNormalSwitch(): void {
-    const bid = this.normalSwitchBid();
-    if (bid) {
-      this.applyHint(bid);
-    }
-  }
-
-  private applyHint(bid: Bid): void {
+  /** A suggestion updates the picker to match it, then submits that exact bid immediately — but
+   * only when it's actually legal and my turn; the server remains the real authority either way
+   * (6.6) and the UI stays pessimistic — nothing here mutates match state locally. */
+  protected applySuggestion(bid: Bid): void {
     this.quantity.set(bid.quantity);
-    this.face.set(bid.kind === 'ACE' ? 'ACE' : bid.face);
+    this.face.set(bidToFaceValue(bid));
+    if (this.isMyTurn() && isLegalBid(bid, this.context())) {
+      this.socket.placeBid(bid);
+    }
   }
 
   protected placeBid(): void {
