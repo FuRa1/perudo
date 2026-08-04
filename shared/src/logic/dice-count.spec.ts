@@ -1,5 +1,5 @@
-import { aceBid, normalBid } from '../types/bid.types';
-import type { DiceValue } from '../types/dice.types';
+import { aceBid, normalBid } from '@shared/types/bid.types';
+import type { DiceValue } from '@shared/types/dice.types';
 import { countClaimedFace } from './dice-count';
 
 const dice: DiceValue[] = [1, 3, 3, 5, 1, 6];

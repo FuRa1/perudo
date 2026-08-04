@@ -1,4 +1,4 @@
-import type { RoundOutcome } from '../types/round.types';
+import type { RoundOutcome } from '@shared/types/round.types';
 
 /**
  * actual >= claimed → the caller ("liar") loses; actual < claimed → the bidder loses. An exact

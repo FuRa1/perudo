@@ -1,15 +1,15 @@
-import { isLegalBid } from './logic/bid-scale';
-import { countClaimedFace } from './logic/dice-count';
-import { isIntentAllowedInPhase } from './logic/phase-intents';
-import { determineLiarOutcome } from './logic/round-outcome';
+import { isLegalBid } from '@shared/logic/bid-scale';
+import { countClaimedFace } from '@shared/logic/dice-count';
+import { isIntentAllowedInPhase } from '@shared/logic/phase-intents';
+import { determineLiarOutcome } from '@shared/logic/round-outcome';
 import { RULES_CONFIG } from './rules.config';
-import type { NormalBid } from './types/bid.types';
-import type { DiceRoller, DiceValue } from './types/dice.types';
-import { ErrorCode, gameError, type GameError } from './types/error.types';
-import type { ServerEvent } from './types/event.types';
-import type { Intent } from './types/intent.types';
-import type { BidRecord, MatchState, Player, RoundState } from './types/state.types';
-import { GamePhase } from './types/state.types';
+import type { NormalBid } from '@shared/types/bid.types';
+import type { DiceRoller, DiceValue } from '@shared/types/dice.types';
+import { ErrorCode, gameError, type GameError } from '@shared/types/error.types';
+import type { ServerEvent } from '@shared/types/event.types';
+import type { Intent } from '@shared/types/intent.types';
+import type { BidRecord, MatchState, Player, RoundState } from '@shared/types/state.types';
+import { GamePhase } from '@shared/types/state.types';
 
 export interface EngineDeps {
   readonly diceRoller: DiceRoller;

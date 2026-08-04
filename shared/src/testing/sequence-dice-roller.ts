@@ -1,4 +1,4 @@
-import type { DiceRoller, DiceValue } from '../types/dice.types';
+import type { DiceRoller, DiceValue } from '@shared/types/dice.types';
 
 /**
  * Deterministic {@link DiceRoller} for tests — returns a fixed sequence, then repeats the last

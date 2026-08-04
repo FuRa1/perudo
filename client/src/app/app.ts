@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { RULES_CONFIG } from 'shared';
+import { RULES_CONFIG } from '@shared';
 
 @Component({
   selector: 'app-root',

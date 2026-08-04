@@ -1,5 +1,5 @@
-import type { Bid, NormalBid, NormalFace } from '../types/bid.types';
-import { isSameBidShape } from '../types/bid.types';
+import type { Bid, NormalBid, NormalFace } from '@shared/types/bid.types';
+import { isSameBidShape } from '@shared/types/bid.types';
 
 /**
  * Everything needed to judge a candidate bid against the round so far (CLAUDE.md 5.4).

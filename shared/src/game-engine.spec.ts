@@ -1,8 +1,8 @@
-import { normalBid } from './types/bid.types';
-import type { DiceValue } from './types/dice.types';
-import { ErrorCode } from './types/error.types';
-import type { BidRecord, MatchState, Player, RoundState } from './types/state.types';
-import { GamePhase } from './types/state.types';
+import { normalBid } from '@shared/types/bid.types';
+import type { DiceValue } from '@shared/types/dice.types';
+import { ErrorCode } from '@shared/types/error.types';
+import type { BidRecord, MatchState, Player, RoundState } from '@shared/types/state.types';
+import { GamePhase } from '@shared/types/state.types';
 import {
   applyIntent,
   applyTimeout,
@@ -10,7 +10,7 @@ import {
   type EngineDeps,
   type EngineResult,
 } from './game-engine';
-import { SequenceDiceRoller } from './testing/sequence-dice-roller';
+import { SequenceDiceRoller } from '@shared/testing/sequence-dice-roller';
 
 function deps(sequence: readonly DiceValue[]): EngineDeps {
   return { diceRoller: new SequenceDiceRoller(sequence) };

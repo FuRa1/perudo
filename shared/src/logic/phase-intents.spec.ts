@@ -1,4 +1,4 @@
-import { GamePhase } from '../types/state.types';
+import { GamePhase } from '@shared/types/state.types';
 import { isIntentAllowedInPhase } from './phase-intents';
 
 describe('isIntentAllowedInPhase (6.1 phase x intent table)', () => {

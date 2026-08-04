@@ -10,7 +10,19 @@ A networked (not hotseat) game of Perudo (Liar's Dice / Dudo) for 2–12 players
 /shared    → shared TS types, phase enums, rules constants, pure functions
 ```
 
-`/client` and `/server` both depend on `/shared` as an npm workspace package (`import { RULES_CONFIG } from 'shared'`).
+`/client` and `/server` both depend on `/shared` as an npm workspace package.
+
+## Import aliases
+
+No relative (`../..`) imports across or within packages — each package's tsconfig defines `paths` instead:
+
+| Alias                   | Resolves to                    | Used from                                  |
+| ----------------------- | ------------------------------ | ------------------------------------------ |
+| `@shared` / `@shared/*` | `/shared`'s barrel / internals | `/client`, `/server`, and `/shared` itself |
+| `@client/*`             | `/client/src/*`                | `/client` only                             |
+| `@server/*`             | `/server/src/*`                | `/server` only                             |
+
+`@shared` resolves to `/shared`'s TS source in `/client` (Angular's esbuild bundler compiles it directly — no CommonJS interop needed) and to `/shared`'s built `dist` in `/server` (so the compiled output has a real relative `require()` path — `tsc` doesn't rewrite `paths` aliases on its own, hence the `tsc-alias` postbuild step in both `/shared` and `/server`).
 
 ## Prerequisites
 

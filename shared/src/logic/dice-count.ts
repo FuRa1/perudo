@@ -1,5 +1,5 @@
-import type { Bid } from '../types/bid.types';
-import type { DiceValue } from '../types/dice.types';
+import type { Bid } from '@shared/types/bid.types';
+import type { DiceValue } from '@shared/types/dice.types';
 
 /**
  * Counts how many dice actually match a bid's claimed face, including wild aces unless a

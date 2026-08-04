@@ -1,5 +1,5 @@
-import { aceBid, normalBid } from '../types/bid.types';
-import type { NormalBid } from '../types/bid.types';
+import { aceBid, normalBid } from '@shared/types/bid.types';
+import type { NormalBid } from '@shared/types/bid.types';
 import {
   cheapestLegalBid,
   isLegalBid,

@@ -1,5 +1,5 @@
-import type { Intent } from '../types/intent.types';
-import { GamePhase } from '../types/state.types';
+import type { Intent } from '@shared/types/intent.types';
+import { GamePhase } from '@shared/types/state.types';
 
 /** Which intents are legal in which phase (CLAUDE.md 6.1). Anything else is WRONG_PHASE (4.2).
  * REVEAL and ROUND_END have no player-submittable intents — the engine passes through them

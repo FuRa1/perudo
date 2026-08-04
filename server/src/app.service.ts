@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RULES_CONFIG } from 'shared';
+import { RULES_CONFIG } from '@shared';
 
 export interface ServerStatus {
   name: string;
