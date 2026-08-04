@@ -45,7 +45,9 @@ This installs dependencies for all three workspaces (`shared`, `server`, `client
 npm run dev
 ```
 
-Runs the NestJS server (`http://localhost:3000`) and the Angular dev server (`http://localhost:4200`) together, with labeled/colored output. To run just one side, see the package-level READMEs: [client/README.md](./client/README.md), [server/README.md](./server/README.md).
+Runs the NestJS server (`http://localhost:3000` — Socket.io/API backend, not a page) and the Angular dev server (`http://localhost:4200`) together, with labeled/colored output.
+
+**Open `http://localhost:4200` in your browser to play** — that's the client. The server has no UI of its own; the client is what talks to it over Socket.io. To run just one side, see the package-level READMEs: [client/README.md](./client/README.md), [server/README.md](./server/README.md).
 
 ## Scripts (root)
 

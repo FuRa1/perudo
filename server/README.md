@@ -16,7 +16,7 @@ From the repo root: `npm run dev` (runs client + server together), or from here:
 npm run start:dev -w server
 ```
 
-Starts the Nest app in watch mode on `http://localhost:3000`.
+Starts the Nest app in watch mode on `http://localhost:3000` (override with the `PORT` env var). This is the Socket.io/API backend — **open the client at `http://localhost:4200` in your browser to actually play** (see [client/README.md](../client/README.md)); this server has no page of its own beyond a JSON status check at `/`.
 
 ## Scripts
 
