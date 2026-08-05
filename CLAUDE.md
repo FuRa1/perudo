@@ -258,7 +258,7 @@ A single mechanism for both a disconnected player and an online player who "stal
 ### 8.2 Dice
 - **2D illustration** (a flat face), no 3D and no Three.js/Babylon on the client.
 - The shake gesture is a cosmetic CSS animation; the final result comes from the server (no pseudo-hints in the animation).
-- Faces: aged classic pips on a wood/bone texture; on the "six" — a small skull instead of the sixth pip.
+- Faces: aged classic pips on a wood/bone texture; six is a standard six-pip face (no skull or other substitute glyph on any face).
 - **The dice structure is configurable** (faces, visual values, counting rules — as data), the rendering is swappable (3.5).
 
 ### 8.3 Table layout (2–12 players)

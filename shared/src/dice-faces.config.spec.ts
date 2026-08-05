@@ -5,10 +5,9 @@ describe('DICE_FACES_CONFIG (3.4, 8.2)', () => {
     expect(DICE_FACES_CONFIG.map((f) => f.value)).toEqual([1, 2, 3, 4, 5, 6]);
   });
 
-  it('marks only the ace (1) as wild and only six as using a skull', () => {
+  it('marks only the ace (1) as wild', () => {
     for (const face of DICE_FACES_CONFIG) {
       expect(face.isAce).toBe(face.value === 1);
-      expect(face.usesSkull).toBe(face.value === 6);
     }
   });
 

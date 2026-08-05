@@ -36,6 +36,31 @@ function mockRaf() {
   };
 }
 
+/**
+ * Real browsers deliver the first ResizeObserver callback asynchronously, after the initial
+ * synchronous render/effects have already run — never inline during `observe()`. This fake
+ * preserves that: `report()` must be called explicitly by the test to simulate the callback
+ * landing later, exactly like the real timing gap DiceCup has to cope with.
+ */
+function mockResizeObserver(): { report(px: number): void } {
+  let callback: ResizeObserverCallback | null = null;
+  class FakeResizeObserver {
+    constructor(cb: ResizeObserverCallback) {
+      callback = cb;
+    }
+    observe(): void {}
+    unobserve(): void {}
+    disconnect(): void {}
+  }
+  vi.stubGlobal('ResizeObserver', FakeResizeObserver);
+  return {
+    report(px: number): void {
+      const entry = { contentRect: { width: px, height: px } } as ResizeObserverEntry;
+      callback?.([entry], {} as ResizeObserver);
+    },
+  };
+}
+
 function mockMatchMedia(reducedMotion: boolean): void {
   vi.stubGlobal('matchMedia', (query: string) => ({
     matches: query.includes('prefers-reduced-motion') ? reducedMotion : false,
@@ -284,4 +309,63 @@ describe('DiceCup', () => {
     raf.step(600);
     expect(instance.dieViews().map((v) => v.face)).toEqual([4, 4, 4]);
   });
+
+  it(
+    'produces both negative and non-negative z-index values for a settled 5-dice hand ' +
+      '(regression guard: negative values only stay visible because .dice-cup-open-interior ' +
+      'in styles.css sets `isolation: isolate` — without it, a die with negative z-index renders ' +
+      "behind the cup's own background and disappears, which was the actual cause of dice going " +
+      'missing from the cup)',
+    () => {
+      const { instance } = render({
+        isOwner: true,
+        diceCount: 5,
+        isRolling: false,
+        dice: [1, 2, 3, 4, 5],
+      });
+      const zIndexes = instance.dieViews().map((v) => v.zIndex);
+      expect(zIndexes).toHaveLength(5);
+      expect(zIndexes.some((z) => z < 0)).toBe(true);
+      expect(zIndexes.some((z) => z >= 0)).toBe(true);
+    },
+  );
+
+  it(
+    'keeps all 5 auto-dealt round-1 dice inside the cup once the real measured size arrives, ' +
+      'even though it was smaller than the fallback used at the moment of settling',
+    () => {
+      // Round 1's own hand arrives via a calm settle (no isRolling edge — see game-engine.ts'
+      // auto-deal comment): dice are already known at first render, exactly like this call.
+      const ro = mockResizeObserver();
+      const { fixture, instance, nativeElement } = render({
+        isOwner: true,
+        diceCount: 5,
+        isRolling: false,
+        dice: [1, 2, 3, 4, 5],
+      });
+      // At this point ResizeObserver hasn't reported yet (its callback is always asynchronous in a
+      // real browser), so the settle above laid dice out against the guessed 230px fallback.
+      expect(nativeElement.querySelectorAll('app-die')).toHaveLength(5);
+
+      // The real measured size now lands — much smaller than the fallback, as it would be on a
+      // squeezed/narrow layout. Every die must still end up inside the ACTUAL bowl, not clipped
+      // outside the visible (overflow-hidden) circle by stale, too-large offsets.
+      const realSizePx = 120;
+      ro.report(realSizePx);
+      fixture.detectChanges();
+
+      expect(nativeElement.querySelectorAll('app-die')).toHaveLength(5);
+      expect(instance.dieViews()).toHaveLength(5);
+
+      const dieHalfSize = DIE_SIZE_PX.table / 2;
+      const usableRx = (realSizePx / 2) * 0.82 - dieHalfSize;
+      const usableRy = (realSizePx / 2) * 0.76 - dieHalfSize;
+      for (const view of instance.dieViews()) {
+        const { x, y } = extractXY(view.transform);
+        expect(
+          (x * x) / (usableRx * usableRx) + (y * y) / (usableRy * usableRy),
+        ).toBeLessThanOrEqual(1 + 1e-6);
+      }
+    },
+  );
 });

@@ -102,6 +102,13 @@ body {
 .dice-cup-open-interior {
   background: radial-gradient(circle at 40% 35%, var(--cup-interior), var(--cup-exterior-start));
   box-shadow: inset 0 6px 16px var(--cup-interior-shadow);
+  /* The dice inside are z-indexed by vertical position (dice-cup.ts publishFrame — negative for
+   * the "north" half of the cup, so closer dice stack correctly over farther ones). Without its
+   * own stacking context, this element doesn't scope that z-index range: a die with a negative
+   * value has nothing here to be "above" and falls behind this div's own background instead —
+   * invisible, not just behind other dice. `isolation: isolate` contains the whole range (negative
+   * included) to this cup, so it only ever competes against its own sibling dice. */
+  isolation: isolate;
 }
 
 .dice-cup-closed {

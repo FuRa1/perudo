@@ -151,6 +151,10 @@ export class DiceCup {
     effect(() => this.handleRollingChange(this.isRolling()));
     effect(() => this.handleDiceChange(this.dice()));
     effect(() => this.observeOwnerCupSize(this.ownerCupEl()));
+    effect(() => {
+      this.cupSizePx();
+      this.handleCupSizeChange();
+    });
     this.destroyRef.onDestroy(() => {
       this.stopLoop();
       this.resizeObserver?.disconnect();
@@ -197,6 +201,36 @@ export class DiceCup {
       this.resetToEmpty();
     }
     this.hadDice = hasValues;
+  }
+
+  /**
+   * The owner's cup size (`cupSizePx`) starts at a guessed fallback and is only corrected once
+   * the ResizeObserver's first callback lands — which, per spec, happens asynchronously, after
+   * the initial `beginCalmSettle`/`beginShake` has already baked a resting layout in from the
+   * guessed size (round 1's auto-dealt hand is the case that always hits this: dice settle via
+   * `beginCalmSettle` the instant they're dealt, with no further per-frame bounds correction
+   * once 'calmSettle'/'done'). Any later resize (e.g. viewport/orientation change) is the same
+   * problem. Re-deriving the resting layout here — for whatever dice are already settled or
+   * settling — keeps every die inside the cup's ACTUAL current bowl instead of one it was
+   * positioned against a moment before the real size was known.
+   */
+  private handleCupSizeChange(): void {
+    if (this.simDice.length === 0 || this.phase === 'chaotic' || this.phase === 'energyLoss') {
+      // Nothing settled yet to reposition, or the physics step already reads bounds() live.
+      return;
+    }
+    const bounds = this.bounds();
+    this.restSlots = computeFinalLayout(
+      this.simDice.length,
+      bounds,
+      this.layoutDieHalfSize(),
+      DIE_GAP_PX,
+    );
+    this.simDice = this.simDice.map((die, i) => ({
+      ...die,
+      position: this.restSlots[i] ?? die.position,
+    }));
+    this.publishFrame();
   }
 
   private resetToEmpty(): void {
@@ -524,7 +558,10 @@ export class DiceCup {
           // Depth ordering so crossing dice layer rather than glitch: a base layer from vertical
           // position (further "south" reads as closer/in front) plus a temporary boost while a
           // die is mid-hop from a recent collision, so the die that was just struck momentarily
-          // renders on top of the others it's crossing.
+          // renders on top of the others it's crossing. This is routinely negative for dice in
+          // the cup's upper half — `.dice-cup-open-interior` MUST keep its `isolation: isolate`
+          // (styles.css) so that range stays scoped to this cup's own dice; without it, a
+          // negative z-index here falls behind the cup's own background instead, invisibly.
           zIndex: Math.round(die.position.y) + Math.round(die.hop * 1000),
         };
       }),

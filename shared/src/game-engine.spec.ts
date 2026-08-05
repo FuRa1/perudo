@@ -11,6 +11,7 @@ import {
   type EngineResult,
 } from './game-engine';
 import { SequenceDiceRoller } from '@shared/testing/sequence-dice-roller';
+import { RULES_CONFIG } from './rules.config';
 
 function deps(sequence: readonly DiceValue[]): EngineDeps {
   return { diceRoller: new SequenceDiceRoller(sequence) };
@@ -167,6 +168,40 @@ describe('START_ROLL (5.2) — highest die goes first, ties re-roll among the ti
     expect(afterLast.players.find((p) => p.id === 'p1')?.dice).toEqual([1, 1, 1, 1, 1]);
     expect(afterLast.players.find((p) => p.id === 'p2')?.dice).toEqual([2, 2, 2, 2, 2]);
     expect(afterLast.players.find((p) => p.id === 'p3')?.dice).toEqual([3, 3, 3, 3, 3]);
+  });
+
+  it('deals every active player exactly RULES_CONFIG.startingDicePerPlayer private dice the moment a fresh two-player match reaches round-1 BIDDING (regression: dice must not go missing across the START_ROLL -> BIDDING transition)', () => {
+    const d = deps([3, 5, 1, 2, 3, 4, 5, 6, 6, 5, 4, 3, 2, 1]);
+    let state = createInitialMatchState('room-1');
+    for (const id of ['p1', 'p2']) {
+      state = expectOk(
+        applyIntent(state, { type: 'JOIN_ROOM', playerId: id, nickname: id }, d),
+      ).state;
+    }
+    for (const player of state.players) {
+      expect(player.diceCount).toBe(RULES_CONFIG.startingDicePerPlayer);
+      expect(player.dice).toHaveLength(0);
+    }
+    for (const id of ['p1', 'p2']) {
+      state = expectOk(
+        applyIntent(state, { type: 'SET_READY', playerId: id, isReady: true }, d),
+      ).state;
+    }
+    expect(state.phase).toBe(GamePhase.START_ROLL);
+
+    state = expectOk(applyIntent(state, { type: 'ROLL_DICE', playerId: 'p1' }, d)).state; // rolls 3
+    const { state: afterLast } = expectOk(
+      applyIntent(state, { type: 'ROLL_DICE', playerId: 'p2' }, d), // rolls 5, wins outright
+    );
+
+    expect(afterLast.phase).toBe(GamePhase.BIDDING);
+    expect(afterLast.round).not.toBeNull();
+    for (const player of afterLast.players) {
+      expect(player.diceCount).toBe(RULES_CONFIG.startingDicePerPlayer);
+      expect(player.dice).toHaveLength(RULES_CONFIG.startingDicePerPlayer);
+    }
+    expect(afterLast.players.find((p) => p.id === 'p1')?.dice).toEqual([1, 2, 3, 4, 5]);
+    expect(afterLast.players.find((p) => p.id === 'p2')?.dice).toEqual([6, 6, 5, 4, 3]);
   });
 
   it('makes the tied players re-roll among themselves, leaving the others out of it', () => {

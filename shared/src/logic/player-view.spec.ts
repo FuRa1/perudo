@@ -1,4 +1,5 @@
 import { GamePhase, type MatchState } from '@shared/types/state.types';
+import { RULES_CONFIG } from '@shared/rules.config';
 import { selectPlayerView } from './player-view';
 
 function player(id: string, dice: number[]): MatchState['players'][number] {
@@ -88,11 +89,17 @@ describe('selectPlayerView (4.5, 6.6)', () => {
 
     const viewOfP1 = selectPlayerView(state, 'p1');
     expect(viewOfP1.players.find((p) => p.id === 'p1')?.dice).toEqual([1, 1, 1, 1, 1]);
+    expect(viewOfP1.players.find((p) => p.id === 'p1')?.dice).toHaveLength(
+      RULES_CONFIG.startingDicePerPlayer,
+    );
     expect(viewOfP1.players.find((p) => p.id === 'p2')?.dice).toEqual([]);
     expect(viewOfP1.completedStartRoll).toEqual(state.completedStartRoll);
 
     const viewOfP2 = selectPlayerView(state, 'p2');
     expect(viewOfP2.players.find((p) => p.id === 'p2')?.dice).toEqual([2, 2, 2, 2, 2]);
+    expect(viewOfP2.players.find((p) => p.id === 'p2')?.dice).toHaveLength(
+      RULES_CONFIG.startingDicePerPlayer,
+    );
     expect(viewOfP2.players.find((p) => p.id === 'p1')?.dice).toEqual([]);
   });
 });

@@ -4,10 +4,9 @@ import { DICE_FACES_CONFIG, type DiceFaceVisual, type DiceValue } from '@shared'
 interface PipCell {
   readonly row: 1 | 2 | 3;
   readonly col: 1 | 2 | 3;
-  readonly skull?: boolean;
 }
 
-// Classic 6-sided pip layout on a 3x3 grid; six's last pip is a skull instead (8.2).
+// Classic 6-sided pip layout on a 3x3 grid (8.2).
 const PIP_LAYOUTS: Record<DiceValue, readonly PipCell[]> = {
   1: [{ row: 2, col: 2 }],
   2: [
@@ -38,7 +37,7 @@ const PIP_LAYOUTS: Record<DiceValue, readonly PipCell[]> = {
     { row: 3, col: 1 },
     { row: 1, col: 3 },
     { row: 2, col: 3 },
-    { row: 3, col: 3, skull: true },
+    { row: 3, col: 3 },
   ],
 };
 
