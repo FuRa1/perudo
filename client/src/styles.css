@@ -5,6 +5,7 @@
 @import '@ionic/angular/css/structure.css';
 @import '@ionic/angular/css/typography.css';
 @import '@ionic/angular/css/display.css';
+@import '@ionic/angular/css/padding.css';
 @import 'tailwindcss';
 
 /*
@@ -41,6 +42,27 @@ body {
   font-family: ui-serif, Georgia, 'Times New Roman', serif;
   background-color: var(--color-parchment);
   color: var(--color-ink);
+}
+
+/*
+ * Single page-edge gutter system for the whole app — every screen's <ion-content> gets this,
+ * instead of ad hoc per-component margins. A mobile floor around 16px, growing toward a roomier
+ * desktop gutter as the viewport allows, capped so it never eats too much width on a big screen.
+ * `env(safe-area-inset-*)` keeps the gutter clear of notches/home indicators on devices that
+ * report them; `max()` means the safe-area inset only ever adds space, never shrinks the floor.
+ */
+:root {
+  --app-gutter-x: clamp(1rem, 1rem + 2vw, 2.5rem);
+  --app-gutter-y: clamp(0.75rem, 0.75rem + 1.5vh, 1.5rem);
+}
+
+/* Applied once, globally, via Ionic's own content padding vars (ion-content applies these inside
+ * its scrollable region) — no per-screen "ion-padding" class and no per-component workaround. */
+ion-content {
+  --padding-start: max(var(--app-gutter-x), env(safe-area-inset-left));
+  --padding-end: max(var(--app-gutter-x), env(safe-area-inset-right));
+  --padding-top: var(--app-gutter-y);
+  --padding-bottom: max(var(--app-gutter-y), env(safe-area-inset-bottom));
 }
 
 /* Cosmetic-only roll cue (8.2) — a short tilt/scale loop, cleared once the real result is
