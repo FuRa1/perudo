@@ -11,7 +11,12 @@ export class GameStore {
   readonly playerId = signal<string | null>(null);
   readonly matchState = signal<MatchState | null>(null);
   readonly lastError = signal<GameError | null>(null);
-  /** Most recent reveal, kept until the next round starts so the UI can show it (5.3). */
+  /** Most recent reveal (5.3) — kept until superseded by the next one. Deliberately NOT cleared
+   * on ROUND_STARTED: when a round continues, the engine emits ROUND_REVEALED and ROUND_STARTED
+   * together in the very same events batch (finishRoundAfterLoss), so clearing it on
+   * ROUND_STARTED would erase it in the same synchronous call that set it — no consumer would
+   * ever observe it. Consumers that care about "is this reveal still fresh" (e.g. the round-loss
+   * modal) track that themselves by object identity, not by relying on this being nulled. */
   readonly lastReveal = signal<Extract<ServerEvent, { type: 'ROUND_REVEALED' }> | null>(null);
   /** Player IDs currently showing the cosmetic "rolling" animation (8.2) — set on the public
    * roll event, cleared a fixed short delay later regardless of when the state update lands, so
@@ -53,10 +58,6 @@ export class GameStore {
     const revealed = events.find((e) => e.type === 'ROUND_REVEALED');
     if (revealed) {
       this.lastReveal.set(revealed);
-    }
-    const roundStarted = events.some((e) => e.type === 'ROUND_STARTED');
-    if (roundStarted) {
-      this.lastReveal.set(null);
     }
     for (const event of events) {
       if (event.type === 'START_ROLL_ROLLED' || event.type === 'PLAYER_ROLLED_HAND') {

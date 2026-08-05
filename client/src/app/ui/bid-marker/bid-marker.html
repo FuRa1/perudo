@@ -1,0 +1,11 @@
+<div
+  class="flex items-center gap-1 rounded-lg border-2 border-gold bg-parchment-dark px-1.5 py-1 shadow-md"
+  role="status"
+  [attr.aria-label]="'Current bid: ' + bid().quantity + ' of face ' + faceValue()"
+>
+  <span class="text-sm font-bold tabular-nums text-ink">{{ bid().quantity }}</span>
+  <span class="text-sm font-bold text-ink" aria-hidden="true">×</span>
+  <div [style.width.px]="dieSizePx" [style.height.px]="dieSizePx">
+    <app-die [value]="faceValue()" />
+  </div>
+</div>

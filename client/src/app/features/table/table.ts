@@ -1,12 +1,16 @@
 import { Component, computed, inject } from '@angular/core';
 import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
-import { GamePhase, type Bid, type Player } from '@shared';
+import { GamePhase, type Bid, type BidRecord, type Player } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
+import { BidMarker } from '../../ui/bid-marker/bid-marker';
 import { OpeningRollPanel } from '../../ui/opening-roll-panel/opening-roll-panel';
 import type { HandRollStatus, SeatSize } from '../../ui/seat-card/seat-card';
 import { CARD_WIDTH_PX, SeatCard } from '../../ui/seat-card/seat-card';
 import { BidControls } from '../bid-controls/bid-controls';
+import { RoundLossModal } from '../round-loss-modal/round-loss-modal';
+
+const UNKNOWN_PLAYER_LABEL = 'Unknown player';
 
 interface ArcPosition {
   readonly left: string;
@@ -52,7 +56,16 @@ function describeBid(bid: Bid): string {
 @Component({
   selector: 'app-table',
   standalone: true,
-  imports: [IonContent, IonButton, IonIcon, SeatCard, OpeningRollPanel, BidControls],
+  imports: [
+    IonContent,
+    IonButton,
+    IonIcon,
+    SeatCard,
+    OpeningRollPanel,
+    BidControls,
+    BidMarker,
+    RoundLossModal,
+  ],
   templateUrl: './table.html',
 })
 export class Table {
@@ -84,6 +97,23 @@ export class Table {
     const round = this.store.matchState()?.round;
     return round ? round.turnOrder[round.currentTurnIndex] : null;
   });
+
+  /** The most recently placed bid this round, or null once history is empty (round just ended
+   * or just started) — drives the on-table bid marker (2.). Presentation-only; no game logic. */
+  protected readonly latestBidRecord = computed<BidRecord | null>(() => {
+    const history = this.store.matchState()?.round?.bidHistory;
+    return history && history.length > 0 ? history[history.length - 1] : null;
+  });
+  protected readonly latestBidderId = computed(() => this.latestBidRecord()?.playerId ?? null);
+
+  /** Bid history is public-by-rule and only ever holds player ids (1.) — nicknames are a
+   * client-only presentation concern, resolved here rather than in /shared. */
+  protected nicknameFor(playerId: string): string {
+    if (playerId === this.store.playerId()) {
+      return 'You';
+    }
+    return this.allPlayers().find((p) => p.id === playerId)?.nickname ?? UNKNOWN_PLAYER_LABEL;
+  }
 
   /** Public opening-roll data is shown whenever either the live roll or its resolved, still
    * temporarily-retained result exists (2., "keep results visible through round 1 hand-rolling"). */

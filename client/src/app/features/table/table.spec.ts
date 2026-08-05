@@ -1,0 +1,207 @@
+import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
+import { GamePhase, type MatchState, type Player } from '@shared';
+import { GameStore } from '../../core/game-store';
+import { SocketService } from '../../core/socket.service';
+import { Table } from './table';
+
+function player(id: string, nickname: string, overrides: Partial<Player> = {}): Player {
+  return {
+    id,
+    nickname,
+    isReady: true,
+    diceCount: 5,
+    dice: [1, 2, 3, 4, 5],
+    consecutivePureStalls: 0,
+    ...overrides,
+  };
+}
+
+function biddingState(overrides: Partial<MatchState> = {}): MatchState {
+  return {
+    phase: GamePhase.BIDDING,
+    roomId: 'room-1',
+    players: [player('p1', 'Alice'), player('p2', 'Bob')],
+    startRoll: null,
+    completedStartRoll: null,
+    winnerId: null,
+    round: {
+      roundNumber: 1,
+      turnOrder: ['p1', 'p2'],
+      currentTurnIndex: 0,
+      bidHistory: [],
+      isSpecialRoundDeclared: false,
+      pendingRolls: [],
+    },
+    ...overrides,
+  };
+}
+
+function render(playerId: string, state: MatchState) {
+  const store = TestBed.inject(GameStore);
+  store.playerId.set(playerId);
+  store.matchState.set(state);
+  const fixture = TestBed.createComponent(Table);
+  fixture.detectChanges();
+  return { fixture, nativeElement: fixture.nativeElement as HTMLElement };
+}
+
+/** True if the given seat card's own wrapper also contains a bid marker as a sibling. */
+function seatCardHasMarker(seatCardEl: Element): boolean {
+  return !!seatCardEl.parentElement?.querySelector('app-bid-marker');
+}
+
+describe('Table', () => {
+  beforeEach(() => {
+    const socket = {
+      rollDice: vi.fn(),
+      placeBid: vi.fn(),
+      callLiar: vi.fn(),
+      declareSpecialRound: vi.fn(),
+    };
+    TestBed.configureTestingModule({
+      imports: [Table],
+      providers: [{ provide: SocketService, useValue: socket }],
+    });
+  });
+
+  describe('bid history nicknames (1.)', () => {
+    it("shows 'You' for the local player and the opponent's nickname, never a raw player id", () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 1,
+          bidHistory: [{ playerId: 'p1', bid: { kind: 'NORMAL', quantity: 4, face: 5 } }],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p1', state);
+      const text = nativeElement.textContent ?? '';
+      expect(text).toContain('You:');
+      expect(text).not.toContain('p1:');
+    });
+
+    it("shows the opponent's nickname (not their id) from the other player's perspective", () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 1,
+          bidHistory: [{ playerId: 'p1', bid: { kind: 'NORMAL', quantity: 4, face: 5 } }],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p2', state);
+      const text = nativeElement.textContent ?? '';
+      expect(text).toContain('Alice:');
+      expect(text).not.toContain('p1:');
+    });
+
+    it('falls back to a safe label for a bid from a player no longer in the roster', () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 1,
+          bidHistory: [{ playerId: 'ghost', bid: { kind: 'NORMAL', quantity: 1, face: 2 } }],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p1', state);
+      expect(nativeElement.textContent ?? '').toContain('Unknown player:');
+    });
+  });
+
+  describe('current-bid marker (2.)', () => {
+    it('renders no marker when bid history is empty', () => {
+      const { nativeElement } = render('p1', biddingState());
+      expect(nativeElement.querySelector('app-bid-marker')).toBeNull();
+    });
+
+    it("renders exactly one marker, attached to the latest bidder's own seat card", () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 1,
+          bidHistory: [{ playerId: 'p1', bid: { kind: 'NORMAL', quantity: 4, face: 5 } }],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p1', state);
+      const markers = nativeElement.querySelectorAll('app-bid-marker');
+      expect(markers).toHaveLength(1);
+
+      const seatCards = Array.from(nativeElement.querySelectorAll('app-seat-card'));
+      const aliceCard = seatCards.find((c) => (c.textContent ?? '').includes('Alice'));
+      const bobCard = seatCards.find((c) => (c.textContent ?? '').includes('Bob'));
+      expect(aliceCard && seatCardHasMarker(aliceCard)).toBe(true);
+      expect(bobCard && seatCardHasMarker(bobCard)).toBe(false);
+    });
+
+    it('moves the marker to the new bidder and updates its value when a newer bid is placed', () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 0,
+          bidHistory: [
+            { playerId: 'p1', bid: { kind: 'NORMAL', quantity: 4, face: 5 } },
+            { playerId: 'p2', bid: { kind: 'NORMAL', quantity: 4, face: 6 } },
+          ],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p1', state);
+      const markers = nativeElement.querySelectorAll('app-bid-marker');
+      expect(markers).toHaveLength(1);
+
+      const seatCards = Array.from(nativeElement.querySelectorAll('app-seat-card'));
+      const aliceCard = seatCards.find((c) => (c.textContent ?? '').includes('Alice'));
+      const bobCard = seatCards.find((c) => (c.textContent ?? '').includes('Bob'));
+      expect(bobCard && seatCardHasMarker(bobCard)).toBe(true);
+      expect(aliceCard && seatCardHasMarker(aliceCard)).toBe(false);
+      // The marker itself reflects the new (4x6) bid, not the superseded 4x5.
+      expect(markers[0]?.textContent ?? '').toContain('4');
+    });
+
+    it('disappears once the round ends and bid history is empty again', () => {
+      const { fixture, nativeElement } = render(
+        'p1',
+        biddingState({
+          round: {
+            roundNumber: 1,
+            turnOrder: ['p1', 'p2'],
+            currentTurnIndex: 1,
+            bidHistory: [{ playerId: 'p1', bid: { kind: 'NORMAL', quantity: 4, face: 5 } }],
+            isSpecialRoundDeclared: false,
+            pendingRolls: [],
+          },
+        }),
+      );
+      expect(nativeElement.querySelectorAll('app-bid-marker')).toHaveLength(1);
+
+      const store = TestBed.inject(GameStore);
+      store.matchState.set(
+        biddingState({
+          round: {
+            roundNumber: 2,
+            turnOrder: ['p2', 'p1'],
+            currentTurnIndex: 0,
+            bidHistory: [],
+            isSpecialRoundDeclared: false,
+            pendingRolls: [],
+          },
+        }),
+      );
+      fixture.detectChanges();
+      expect(nativeElement.querySelectorAll('app-bid-marker')).toHaveLength(0);
+    });
+  });
+});

@@ -30,6 +30,13 @@
             [handRollStatus]="handRollStatusFor(opponent.id)"
             [isRolling]="rollingPlayerIds().has(opponent.id)"
           />
+          @if (latestBidRecord(); as record) {
+            @if (record.playerId === opponent.id) {
+              <div class="absolute -top-2 -right-2 z-10">
+                <app-bid-marker [bid]="record.bid" />
+              </div>
+            }
+          }
         </div>
       }
     </div>
@@ -37,14 +44,23 @@
 
   @if (me(); as myPlayer) {
     <div class="mb-3 flex justify-center">
-      <app-seat-card
-        [player]="myPlayer"
-        [isMe]="true"
-        [isCurrentBidder]="myPlayer.id === currentBidderId()"
-        size="large"
-        [handRollStatus]="handRollStatusFor(myPlayer.id)"
-        [isRolling]="rollingPlayerIds().has(myPlayer.id)"
-      />
+      <div class="relative inline-block">
+        <app-seat-card
+          [player]="myPlayer"
+          [isMe]="true"
+          [isCurrentBidder]="myPlayer.id === currentBidderId()"
+          size="large"
+          [handRollStatus]="handRollStatusFor(myPlayer.id)"
+          [isRolling]="rollingPlayerIds().has(myPlayer.id)"
+        />
+        @if (latestBidRecord(); as record) {
+          @if (record.playerId === myPlayer.id) {
+            <div class="absolute -top-2 -right-2 z-10">
+              <app-bid-marker [bid]="record.bid" />
+            </div>
+          }
+        }
+      </div>
     </div>
   }
 
@@ -75,10 +91,7 @@
     <h3 class="mt-3 font-semibold">Bid history</h3>
     <ul>
       @for (record of history; track $index) {
-        <li>
-          {{ record.playerId === store.playerId() ? 'You' : record.playerId }}:
-          {{ describeBid(record.bid) }}
-        </li>
+        <li>{{ nicknameFor(record.playerId) }}: {{ describeBid(record.bid) }}</li>
       }
     </ul>
   }
@@ -86,4 +99,6 @@
   @if (store.matchState()?.phase === GamePhase.BIDDING) {
     <app-bid-controls class="mt-4 block" />
   }
+
+  <app-round-loss-modal />
 </ion-content>
