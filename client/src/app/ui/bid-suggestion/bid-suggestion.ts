@@ -1,6 +1,7 @@
 import { Component, computed, input, output } from '@angular/core';
 import type { Bid } from '@shared';
 import { Die } from '../die/die';
+import { DIE_SIZE_PX } from '../die/die-size.config';
 import { bidToFaceValue } from '../bid-picker/bid-face.util';
 
 /**
@@ -16,6 +17,8 @@ import { bidToFaceValue } from '../bid-picker/bid-face.util';
   templateUrl: './bid-suggestion.html',
 })
 export class BidSuggestion {
+  protected readonly dieSizePx = DIE_SIZE_PX.picker;
+
   readonly label = input.required<string>();
   readonly bid = input<Bid | null>(null);
   readonly disabled = input(false);

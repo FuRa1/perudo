@@ -10,21 +10,31 @@
       >
         <span class="text-xs font-semibold whitespace-nowrap text-ink">{{ row.nickname }}</span>
 
-        @if (row.status === 'waiting') {
-          <span class="text-xs whitespace-nowrap text-wood">Waiting to roll</span>
-        } @else if (row.status === 'rolling') {
-          <div class="w-10">
+        <!-- Reserved die-sized slot — same footprint in every state (waiting/rolling/rolled), so
+             the panel never reflows when a result replaces the placeholder (CLAUDE.md 8.2). -->
+        <div
+          class="relative flex items-center justify-center"
+          [style.width.px]="dieSizePx"
+          [style.height.px]="dieSizePx"
+        >
+          @if (row.status === 'waiting') {
+            <div class="h-full w-full rounded-lg border-2 border-dashed border-wood/40"></div>
+          } @else if (row.status === 'rolling') {
             <app-die [value]="1" [rolling]="true" />
-          </div>
-        } @else if (row.value; as v) {
-          <div class="w-10">
+          } @else if (row.value; as v) {
             <app-die [value]="v" />
-          </div>
-        }
+          }
+        </div>
 
-        @if (row.isWinner) {
-          <ion-badge color="warning">Starts round 1</ion-badge>
-        }
+        <!-- Reserved fixed-height status/badge row — always present, so its own appearance
+             never shifts the die slot or nickname above it. -->
+        <div class="flex h-5 items-center justify-center">
+          @if (row.status === 'waiting') {
+            <span class="text-[10px] whitespace-nowrap text-wood">Waiting</span>
+          } @else if (row.isWinner) {
+            <ion-badge color="warning">Starts round 1</ion-badge>
+          }
+        </div>
       </div>
     }
   </div>

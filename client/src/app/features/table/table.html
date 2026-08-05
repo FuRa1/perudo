@@ -8,7 +8,7 @@
       [players]="allPlayers()"
       [startRoll]="store.matchState()?.startRoll ?? null"
       [completedStartRoll]="store.matchState()?.completedStartRoll ?? null"
-      [rollingPlayerIds]="rollingPlayerIds()"
+      [rollingPlayerIds]="openingRollingPlayerIds()"
     />
   }
 
@@ -28,7 +28,7 @@
             [isCurrentBidder]="opponent.id === currentBidderId()"
             [size]="seatSize()"
             [handRollStatus]="handRollStatusFor(opponent.id)"
-            [isRolling]="rollingPlayerIds().has(opponent.id)"
+            [isRolling]="handRollingPlayerIds().has(opponent.id)"
           />
           @if (latestBidRecord(); as record) {
             @if (record.playerId === opponent.id) {
@@ -51,7 +51,7 @@
           [isCurrentBidder]="myPlayer.id === currentBidderId()"
           size="large"
           [handRollStatus]="handRollStatusFor(myPlayer.id)"
-          [isRolling]="rollingPlayerIds().has(myPlayer.id)"
+          [isRolling]="handRollingPlayerIds().has(myPlayer.id)"
         />
         @if (latestBidRecord(); as record) {
           @if (record.playerId === myPlayer.id) {

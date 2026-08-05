@@ -26,13 +26,13 @@ describe('OpeningRollPanel', () => {
     TestBed.configureTestingModule({ imports: [OpeningRollPanel] });
   });
 
-  it('shows "Waiting to roll" for a player who has not rolled and is not currently rolling', () => {
+  it('shows "Waiting" for a player who has not rolled and is not currently rolling', () => {
     const text = render([player('p1', 'Alice'), player('p2', 'Bob')], {
       pendingPlayerIds: ['p1', 'p2'],
       rolls: {},
     });
     expect(text).toContain('Alice');
-    expect(text).toContain('Waiting to roll');
+    expect(text).toContain('Waiting');
   });
 
   it('shows the cosmetic rolling cue instead of any value for a player mid-roll', () => {
@@ -44,7 +44,7 @@ describe('OpeningRollPanel', () => {
       null,
       new Set(['p1']),
     );
-    expect(text).not.toContain('Waiting to roll');
+    expect(text).not.toContain('Waiting');
     // The rolling placeholder renders the generic die glyph, never a specific pip count.
     expect(text).toContain('🎲');
   });
@@ -58,7 +58,7 @@ describe('OpeningRollPanel', () => {
     expect(text).toContain('Bob');
     // Bob is legitimately still waiting — only assert Alice's own row isn't stuck on that text
     // by checking the die/pip container rendered instead of Bob's status string being doubled.
-    const waitingCount = (text.match(/Waiting to roll/g) ?? []).length;
+    const waitingCount = (text.match(/Waiting/g) ?? []).length;
     expect(waitingCount).toBe(1);
   });
 

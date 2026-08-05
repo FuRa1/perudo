@@ -1,7 +1,7 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { IonBadge, IonIcon } from '@ionic/angular/standalone';
 import type { Player } from '@shared';
-import { Die } from '../die/die';
+import { DiceCup } from '../dice-cup/dice-cup';
 
 export type SeatSize = 'large' | 'medium' | 'small';
 export type HandRollStatus = 'waiting' | 'rolled';
@@ -18,7 +18,7 @@ const MIN_MY_CARD_WIDTH_PX = CARD_WIDTH_PX.large + 10;
 @Component({
   selector: 'app-seat-card',
   standalone: true,
-  imports: [IonBadge, IonIcon, Die],
+  imports: [IonBadge, IonIcon, DiceCup],
   templateUrl: './seat-card.html',
 })
 export class SeatCard {
@@ -28,14 +28,10 @@ export class SeatCard {
   readonly size = input<SeatSize>('medium');
   /** null outside ROUND_ROLLING — Table only sets this while hand-rolling is in progress. */
   readonly handRollStatus = input<HandRollStatus | null>(null);
-  /** Cosmetic-only "currently rolling" cue (8.2) — never implies a value. */
+  /** Cosmetic-only "currently rolling" cue (8.2) — never implies a value; forwarded straight to
+   * the dice cup, which is the only place that decides what a roll animation actually looks
+   * like (SeatCard has no rendering logic of its own for dice anymore). */
   readonly isRolling = input(false);
 
   protected readonly minMyCardWidthPx = MIN_MY_CARD_WIDTH_PX;
-
-  /** One placeholder per hidden die, for the face-down count (or rolling animation) shown for
-   * other players, and for my own row while I'm rolling but haven't received values yet. */
-  protected readonly dicePlaceholders = computed(() =>
-    Array.from({ length: this.player().diceCount }),
-  );
 }

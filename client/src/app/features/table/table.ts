@@ -138,7 +138,12 @@ export class Table {
     return map;
   });
 
-  protected readonly rollingPlayerIds = this.store.rollingPlayerIds;
+  /** The public opening-die animation trigger (5.2) — passed only to OpeningRollPanel. */
+  protected readonly openingRollingPlayerIds = this.store.openingRollingPlayerIds;
+  /** The private hand-roll animation trigger (8.2) — passed only to the dice cup (SeatCard).
+   * Deliberately a different signal from openingRollingPlayerIds so a public opening-die roll
+   * can never make a player's private hand cup shake, and vice versa. */
+  protected readonly handRollingPlayerIds = this.store.handRollingPlayerIds;
 
   protected readonly canRoll = computed(() => {
     const state = this.store.matchState();

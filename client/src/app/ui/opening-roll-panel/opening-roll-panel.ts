@@ -2,6 +2,7 @@ import { Component, computed, input } from '@angular/core';
 import { IonBadge } from '@ionic/angular/standalone';
 import type { CompletedStartRoll, DiceValue, Player, StartRollState } from '@shared';
 import { Die } from '../die/die';
+import { DIE_SIZE_PX } from '../die/die-size.config';
 
 type OpeningRollStatus = 'waiting' | 'rolling' | 'rolled';
 
@@ -31,6 +32,8 @@ interface OpeningRollRow {
   templateUrl: './opening-roll-panel.html',
 })
 export class OpeningRollPanel {
+  protected readonly dieSizePx = DIE_SIZE_PX.openingRoll;
+
   readonly players = input.required<readonly Player[]>();
   readonly startRoll = input<StartRollState | null>(null);
   readonly completedStartRoll = input<CompletedStartRoll | null>(null);

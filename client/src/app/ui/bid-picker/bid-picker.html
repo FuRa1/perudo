@@ -50,7 +50,8 @@
     </button>
 
     <div
-      class="w-12 focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
+      class="focus-visible:ring-2 focus-visible:ring-gold focus-visible:outline-none"
+      [style.width.px]="dieSizePx"
       role="spinbutton"
       [attr.tabindex]="canChangeFace() ? 0 : -1"
       [attr.aria-valuenow]="face()"

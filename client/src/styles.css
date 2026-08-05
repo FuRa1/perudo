@@ -66,3 +66,74 @@ body {
 .die-rolling {
   animation: die-roll 0.3s ease-in-out infinite;
 }
+
+/*
+ * Dice-cup visual tokens (client presentation only) — centralized here per dice-cup.config.ts's
+ * documented contract: swapping in a real texture (or a future 3D cup) only ever means changing
+ * these values, never touching a component template or match-state/socket code.
+ */
+:root {
+  --cup-exterior-start: #4a2c17;
+  --cup-exterior-end: #2a180c;
+  --cup-rim: #6b4226;
+  --cup-interior: #d8b98a;
+  --cup-interior-shadow: rgba(43, 29, 15, 0.55);
+  --cup-closed-start: #5a3a20;
+  --cup-closed-end: #2e1c0e;
+}
+
+/* The owner's open cup is sized responsively by the browser (not JS) — DiceCup measures the
+ * actual rendered box via ResizeObserver rather than duplicating this formula in TS. Bounded so
+ * it's always big enough to lay out five non-overlapping, readable dice (dice-cup.config.ts),
+ * while still being able to shrink on a narrow phone screen. */
+.dice-cup-owner-shell {
+  width: clamp(190px, 46vw, 260px);
+  aspect-ratio: 1;
+}
+
+.dice-cup-open-exterior {
+  background: radial-gradient(circle at 35% 30%, var(--cup-exterior-start), var(--cup-exterior-end));
+  border: 6px solid var(--cup-rim);
+  box-shadow:
+    0 6px 10px rgba(0, 0, 0, 0.35),
+    inset 0 0 14px rgba(0, 0, 0, 0.45);
+}
+
+.dice-cup-open-interior {
+  background: radial-gradient(circle at 40% 35%, var(--cup-interior), var(--cup-exterior-start));
+  box-shadow: inset 0 6px 16px var(--cup-interior-shadow);
+}
+
+.dice-cup-closed {
+  background: linear-gradient(180deg, var(--cup-closed-start), var(--cup-closed-end));
+  border: 4px solid var(--cup-rim);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.35),
+    inset 0 -6px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* A short, restrained shake for an opponent's closed cup (8.2) — cosmetic only, never reveals
+ * anything, so a plain looping CSS keyframe (unlike the owner's cup, which is driven frame-by-
+ * frame by the JS physics sim) is all it needs. */
+@keyframes dice-cup-closed-shake {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate(-3px, 1px) rotate(-3deg);
+  }
+  40% {
+    transform: translate(2px, -2px) rotate(2deg);
+  }
+  60% {
+    transform: translate(-2px, 2px) rotate(-2deg);
+  }
+  80% {
+    transform: translate(3px, -1px) rotate(3deg);
+  }
+}
+
+.dice-cup-closed-shaking {
+  animation: dice-cup-closed-shake 0.4s ease-in-out infinite;
+}

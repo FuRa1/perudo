@@ -13,33 +13,14 @@
     <span class="truncate">{{ player().nickname }}</span>
   </div>
 
-  <div class="flex gap-1.5">
-    @if (isMe()) {
-      @if (player().dice.length > 0) {
-        @for (die of player().dice; track $index) {
-          <div class="w-11">
-            <app-die [value]="die" />
-          </div>
-        }
-      } @else if (isRolling()) {
-        @for (n of dicePlaceholders(); track $index) {
-          <div class="w-11">
-            <app-die [value]="1" [rolling]="true" />
-          </div>
-        }
-      } @else {
-        <span class="text-xs whitespace-nowrap text-wood">(not rolled)</span>
-      }
-    } @else {
-      @for (n of dicePlaceholders(); track $index) {
-        <div
-          class="rounded-sm border border-wood bg-wood-light"
-          [class.die-rolling]="isRolling()"
-          [style.width.px]="size() === 'large' ? 16 : 12"
-          [style.height.px]="size() === 'large' ? 16 : 12"
-        ></div>
-      }
-    }
+  <div class="flex justify-center">
+    <app-dice-cup
+      [dice]="isMe() ? player().dice : null"
+      [diceCount]="player().diceCount"
+      [isOwner]="isMe()"
+      [isRolling]="isRolling()"
+      [size]="size()"
+    />
   </div>
 
   <div class="flex flex-wrap justify-center gap-1">

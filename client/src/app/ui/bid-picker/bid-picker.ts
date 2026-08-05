@@ -1,6 +1,7 @@
 import { Component, input, output } from '@angular/core';
 import type { DiceValue } from '@shared';
 import { Die } from '../die/die';
+import { DIE_SIZE_PX } from '../die/die-size.config';
 import { cycleFace } from './bid-face.util';
 
 const MIN_QUANTITY = 1;
@@ -18,6 +19,8 @@ const MIN_QUANTITY = 1;
   templateUrl: './bid-picker.html',
 })
 export class BidPicker {
+  protected readonly dieSizePx = DIE_SIZE_PX.picker;
+
   readonly quantity = input.required<number>();
   readonly face = input.required<DiceValue>();
   /** Disables both steppers entirely (e.g. it isn't this player's turn). */
