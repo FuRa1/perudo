@@ -1,25 +1,36 @@
-<ion-modal [isOpen]="isOpen()" (didDismiss)="close()">
+<ion-modal
+  [isOpen]="isOpen()"
+  (didDismiss)="close()"
+  [style.--backdrop-opacity]="0.72"
+  [style.--background]="'transparent'"
+  [style.--box-shadow]="'none'"
+>
   <ng-template>
-    <div class="ion-padding flex flex-col items-center gap-3 bg-parchment text-center">
-      <h2 class="text-lg font-bold text-ink">You lost this round</h2>
+    <div class="flex h-full flex-col items-center justify-center">
+      <div
+        class="surface-outcome-card surface-outcome-card--loss flex flex-col items-center gap-3 text-center"
+      >
+        <div class="outcome-badge outcome-badge--loss"></div>
+        <h2 class="font-heading text-lg text-ink">You lost this round</h2>
 
-      @if (lostBecauseBidWasTrue()) {
-        <p class="text-sm text-ink">You called liar, but the bid was true.</p>
-      } @else {
-        <p class="text-sm text-ink">Your bid was false.</p>
-      }
+        @if (lostBecauseBidWasTrue()) {
+          <p class="text-sm text-ink-muted">You called liar, but the bid was true.</p>
+        } @else {
+          <p class="text-sm text-ink-muted">Your bid was false.</p>
+        }
 
-      @if (claimedBid(); as bid) {
-        <div class="flex flex-col items-center gap-1">
-          <span class="text-xs text-wood">Claimed</span>
-          <app-bid-marker [bid]="bid" />
-        </div>
-      }
+        @if (claimedBid(); as bid) {
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-xs text-meta">Claimed</span>
+            <app-bid-marker [bid]="bid" />
+          </div>
+        }
 
-      <p class="text-sm text-ink">Actual count: {{ actualQuantity() }}</p>
-      <p class="text-sm font-semibold text-ink">You lost one die.</p>
+        <p class="text-sm text-ink-muted">Actual count: {{ actualQuantity() }}</p>
+        <p class="text-sm font-semibold text-ink">You lost one die.</p>
 
-      <ion-button (click)="close()">Close</ion-button>
+        <ion-button (click)="close()">Close</ion-button>
+      </div>
     </div>
   </ng-template>
 </ion-modal>

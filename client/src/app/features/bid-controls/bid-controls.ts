@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
-import { IonButton, IonIcon } from '@ionic/angular/standalone';
+import { IonButton } from '@ionic/angular/standalone';
+import { LucideHand } from '@lucide/angular';
 import {
   cheapestLegalBid,
   isLegalBid,
@@ -22,7 +23,7 @@ const DEFAULT_FACE: DiceValue = 2;
 @Component({
   selector: 'app-bid-controls',
   standalone: true,
-  imports: [IonButton, IonIcon, BidPicker, BidSuggestion],
+  imports: [IonButton, LucideHand, BidPicker, BidSuggestion],
   templateUrl: './bid-controls.html',
 })
 export class BidControls {

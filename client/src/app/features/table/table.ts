@@ -1,9 +1,9 @@
 import { Component, computed, inject } from '@angular/core';
-import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
+import { IonButton, IonContent } from '@ionic/angular/standalone';
+import { LucideDice5 } from '@lucide/angular';
 import { GamePhase, type Bid, type BidRecord, type Player } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
-import { BidMarker } from '../../ui/bid-marker/bid-marker';
 import { OpeningRollPanel } from '../../ui/opening-roll-panel/opening-roll-panel';
 import type { HandRollStatus, SeatSize } from '../../ui/seat-card/seat-card';
 import { CARD_WIDTH_PX, SeatCard } from '../../ui/seat-card/seat-card';
@@ -59,11 +59,10 @@ function describeBid(bid: Bid): string {
   imports: [
     IonContent,
     IonButton,
-    IonIcon,
+    LucideDice5,
     SeatCard,
     OpeningRollPanel,
     BidControls,
-    BidMarker,
     RoundLossModal,
   ],
   templateUrl: './table.html',
@@ -138,36 +137,37 @@ export class Table {
     return map;
   });
 
-  /** The public opening-die animation trigger (5.2) — passed only to OpeningRollPanel. */
-  protected readonly openingRollingPlayerIds = this.store.openingRollingPlayerIds;
-  /** The private hand-roll animation trigger (8.2) — passed only to the dice cup (SeatCard).
-   * Deliberately a different signal from openingRollingPlayerIds so a public opening-die roll
-   * can never make a player's private hand cup shake, and vice versa. */
-  protected readonly handRollingPlayerIds = this.store.handRollingPlayerIds;
-
-  protected readonly canRoll = computed(() => {
+  /** Public opening die (5.2) — not tied to a cup, so its roll button stays in the general
+   * table area rather than under any one seat. */
+  protected readonly canRollOpeningDie = computed(() => {
     const state = this.store.matchState();
     const id = this.store.playerId();
-    if (!state || !id) {
+    if (!state || !id || state.phase !== GamePhase.START_ROLL) {
       return false;
     }
-    if (state.phase === GamePhase.START_ROLL) {
-      return state.startRoll?.pendingPlayerIds.includes(id) ?? false;
-    }
-    if (state.phase === GamePhase.ROUND_ROLLING) {
-      return state.round?.pendingRolls.includes(id) ?? false;
-    }
-    return false;
+    return state.startRoll?.pendingPlayerIds.includes(id) ?? false;
   });
 
-  protected readonly rollButtonLabel = computed(() =>
-    this.store.matchState()?.phase === GamePhase.START_ROLL ? 'Roll opening die' : 'Roll your hand',
-  );
+  /** Private hand roll (5.3) — only the local player can ever roll their own hand, so this
+   * button is placed directly under their own cup rather than anyone else's. */
+  protected readonly canRollHand = computed(() => {
+    const state = this.store.matchState();
+    const id = this.store.playerId();
+    if (!state || !id || state.phase !== GamePhase.ROUND_ROLLING) {
+      return false;
+    }
+    return state.round?.pendingRolls.includes(id) ?? false;
+  });
 
   protected readonly reveal = this.store.lastReveal;
 
   protected handRollStatusFor(playerId: string): HandRollStatus | null {
     return this.handRollStatusByPlayerId()?.[playerId] ?? null;
+  }
+
+  protected currentBidFor(playerId: string): Bid | null {
+    const record = this.latestBidRecord();
+    return record && record.playerId === playerId ? record.bid : null;
   }
 
   protected roll(): void {

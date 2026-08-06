@@ -1,12 +1,9 @@
 <div
-  class="aspect-square w-full rounded-lg border-2 border-wood bg-bone shadow-inner"
-  [class.die-rolling]="rolling()"
-  [attr.aria-label]="rolling() ? 'Rolling…' : face().label"
+  class="aspect-square w-full rounded-die bg-ivory shadow-[inset_0_1px_3px_rgba(46,43,37,0.18)]"
+  [attr.aria-label]="face().label"
   role="img"
 >
-  @if (rolling()) {
-    <div class="flex h-full w-full items-center justify-center text-[70%] leading-none">🎲</div>
-  } @else if (face().imageUrl; as imageUrl) {
+  @if (face().imageUrl; as imageUrl) {
     <img [src]="imageUrl" [alt]="face().label" class="h-full w-full object-contain" />
   } @else {
     <div class="grid h-full w-full grid-cols-3 grid-rows-3 gap-0.5 p-1.5">

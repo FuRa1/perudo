@@ -1,28 +1,24 @@
-<div class="mb-3 rounded-lg border-2 border-wood bg-parchment-dark p-2">
-  <h3 class="mb-2 text-sm font-semibold text-ink">Opening roll — highest goes first</h3>
+<div class="rounded-panel mb-3 border border-border-onboard bg-fill-onboard p-3">
+  <h3 class="mb-2 text-sm font-semibold text-cream">Opening roll — highest goes first</h3>
   <div class="flex flex-wrap gap-2">
     @for (row of rows(); track row.playerId) {
       <div
-        class="flex flex-col items-center gap-1 rounded border bg-bone/40 px-2 py-1"
-        [class.border-gold]="row.isWinner"
-        [class.border-wood]="!row.isWinner"
+        class="rounded-tile flex flex-col items-center gap-1 border bg-fill-onboard-strong px-2 py-1"
+        [class.border-brass]="row.isWinner"
+        [class.border-border-onboard]="!row.isWinner"
         [class.border-2]="row.isWinner"
       >
-        <span class="text-xs font-semibold whitespace-nowrap text-ink">{{ row.nickname }}</span>
+        <span class="text-xs font-semibold whitespace-nowrap text-cream">{{ row.nickname }}</span>
 
-        <!-- Reserved die-sized slot — same footprint in every state (waiting/rolling/rolled), so
-             the panel never reflows when a result replaces the placeholder (CLAUDE.md 8.2). -->
-        <div
-          class="relative flex items-center justify-center"
-          [style.width.px]="dieSizePx"
-          [style.height.px]="dieSizePx"
-        >
+        <!-- Reserved die-sized slot — same footprint in every state (waiting/rolled), so the
+             panel never reflows when a result replaces the placeholder (CLAUDE.md 8.2). -->
+        <div class="opening-roll-die relative flex items-center justify-center">
           @if (row.status === 'waiting') {
-            <div class="h-full w-full rounded-lg border-2 border-dashed border-wood/40"></div>
-          } @else if (row.status === 'rolling') {
-            <app-die [value]="1" [rolling]="true" />
+            <div
+              class="h-full w-full rounded-die border-2 border-dashed border-border-onboard-strong"
+            ></div>
           } @else if (row.value; as v) {
-            <app-die [value]="v" />
+            <app-die [value]="v" class="block h-full w-full" />
           }
         </div>
 
@@ -30,7 +26,7 @@
              never shifts the die slot or nickname above it. -->
         <div class="flex h-5 items-center justify-center">
           @if (row.status === 'waiting') {
-            <span class="text-[10px] whitespace-nowrap text-wood">Waiting</span>
+            <span class="text-[10px] whitespace-nowrap text-cream-muted">Waiting</span>
           } @else if (row.isWinner) {
             <ion-badge color="warning">Starts round 1</ion-badge>
           }

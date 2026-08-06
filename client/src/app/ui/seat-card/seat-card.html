@@ -1,24 +1,29 @@
 <div
-  class="flex flex-col items-center gap-1 rounded-lg border-2 bg-parchment-dark p-2 shadow transition-all"
-  [class.border-gold]="isCurrentBidder()"
-  [class.border-wood]="!isCurrentBidder()"
+  class="rounded-tile flex flex-col items-center gap-1 border bg-fill-onboard-strong p-2 transition-all"
+  [class.border-brass]="isCurrentBidder()"
+  [class.border-border-onboard-strong]="!isCurrentBidder()"
   [class.w-fit]="isMe()"
   [style.min-width.px]="isMe() ? minMyCardWidthPx : null"
   [style.width.px]="isMe() ? null : size() === 'large' ? 140 : size() === 'medium' ? 104 : 76"
 >
-  <div class="flex items-center gap-1 text-center text-sm font-semibold whitespace-nowrap">
+  <div
+    class="flex items-center gap-1 text-center text-sm font-semibold whitespace-nowrap text-cream"
+  >
     @if (isMe()) {
-      <ion-icon name="person-circle" class="text-sea" />
+      <svg lucideCircleUserRound class="text-brass" aria-hidden="true"></svg>
     }
     <span class="truncate">{{ player().nickname }}</span>
   </div>
+
+  @if (currentBid(); as bid) {
+    <app-bid-marker [bid]="bid" />
+  }
 
   <div class="flex justify-center">
     <app-dice-cup
       [dice]="isMe() ? player().dice : null"
       [diceCount]="player().diceCount"
       [isOwner]="isMe()"
-      [isRolling]="isRolling()"
       [size]="size()"
     />
   </div>

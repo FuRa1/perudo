@@ -40,7 +40,7 @@ describe('BidSuggestion', () => {
     fixture.detectChanges();
 
     const button = getButton(fixture);
-    expect(button.className).toContain('text-ink');
+    expect(button.className).toContain('text-cream');
     expect(button.className).not.toContain('opacity-40');
   });
 
@@ -61,8 +61,8 @@ describe('BidSuggestion', () => {
 
     expect(emitted).toEqual([]);
     // Disabled must stay legible — a solid muted palette, not a near-transparent fade of the
-    // enabled text color against the same parchment-toned background.
-    expect(button.className).toContain('disabled:text-wood');
+    // enabled text color against the same on-table background.
+    expect(button.className).toContain('disabled:text-cream-faint');
     expect(button.className).not.toContain('opacity-40');
   });
 

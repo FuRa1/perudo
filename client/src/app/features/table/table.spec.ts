@@ -46,9 +46,9 @@ function render(playerId: string, state: MatchState) {
   return { fixture, nativeElement: fixture.nativeElement as HTMLElement };
 }
 
-/** True if the given seat card's own wrapper also contains a bid marker as a sibling. */
+/** True if the given seat card renders the bid marker inline within its own layout. */
 function seatCardHasMarker(seatCardEl: Element): boolean {
-  return !!seatCardEl.parentElement?.querySelector('app-bid-marker');
+  return !!seatCardEl.querySelector('app-bid-marker');
 }
 
 describe('Table', () => {

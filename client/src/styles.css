@@ -9,39 +9,159 @@
 @import 'tailwindcss';
 
 /*
- * Placeholder "pirate" palette (CLAUDE.md 8.1) — real values come from Figma tokens once they
- * exist; nothing that consumes these (Tailwind utilities below, Ionic's --ion-color-* vars)
- * needs to change when that happens, only the values here.
+ * Perudo design tokens — values extracted from designs/perudo-design-kit.dc.html and
+ * designs/perudo-graphics-spec.dc.html (Design Implementation Task 1). Every color, radius,
+ * shadow and font used anywhere in the app must come from one of these @theme variables (which
+ * Tailwind v4 turns into utilities: bg-, text-, border- and ring- for --color- tokens, rounded-
+ * for --radius- tokens, shadow- for --shadow- tokens, font- for --font- tokens) — never a raw
+ * hex value in a
+ * template. Swapping the "pirate lantern tavern" look for a future theme means editing only the
+ * values here.
+ *
+ * Two surface families, matching the kit:
+ *  - "off-table" (light, cream) — entry/lobby/winner and any card floating over the table.
+ *  - "on-table" (dark cabin) — the table screen itself, lit by one warm lantern.
  */
 @theme {
-  --color-parchment: #f2e4c5;
-  --color-parchment-dark: #ddc794;
-  --color-wood: #6b4226;
-  --color-wood-light: #8b5e34;
-  --color-bone: #efe4c8;
-  --color-gold: #c9a227;
-  --color-sea: #0f3d5c;
-  --color-sea-light: #1c6091;
-  --color-ink: #2b1d0f;
+  /* Off-table surfaces (light) */
+  --color-page: #e7e0d3; /* overall app canvas */
+  --color-surface: #fffdf7; /* light card/panel background */
+  --color-surface-alt: #f5ead8; /* lobby "ground" surface, stat tiles */
+  --color-sand: #ebddc5; /* secondary fill, chips, flat outcome-card bg */
+  --color-parchment: #f6ecd8; /* cream card / wager-token gradient start */
+  --color-parchment-dark: #e4d5b8; /* cream card / wager-token gradient end */
+  --color-ivory: #fffaf0; /* die body, always — on or off the table */
+
+  /* On-table surfaces (dark cabin) */
+  --color-cabin: #241d16; /* dark panel background (rail, dice-kit style boxes) */
+  --color-table-center: #5a462d; /* radial centre / "lamplit wood" */
+  --color-table-mid: #33281c; /* table gradient mid-tone */
+  --color-table-edge: #1e1811; /* table gradient / vignette edge */
+  --color-fill-onboard: rgba(242, 231, 211, 0.06); /* quiet panel fill on the table */
+  --color-fill-onboard-strong: rgba(242, 231, 211, 0.1); /* control fill on the table */
+  --color-fill-onboard-hover: rgba(242, 231, 211, 0.2); /* hover/active on-table fill */
+  --color-border-onboard: rgba(242, 231, 211, 0.16); /* quiet border on the table */
+  --color-border-onboard-strong: rgba(242, 231, 211, 0.28); /* control border on the table */
+
+  /* Ink & text */
+  --color-ink: #2e2b25; /* primary text on light surfaces */
+  --color-ink-muted: #474238; /* narration/body text on light surfaces */
+  --color-meta: #645c50; /* labels/meta text on light surfaces */
+  --color-cream: #f2e7d3; /* primary text on dark surfaces */
+  --color-cream-muted: #c0b6a5; /* secondary text on dark surfaces */
+  --color-cream-faint: #a19786; /* uppercase labels on dark surfaces */
+
+  /* Brass — active/focus accent */
+  --color-brass: #d69a52;
+  --color-brass-deep: #8c491a; /* link hover, kicker text, badge text on light */
+
+  /* Terracotta — primary action */
+  --color-terracotta: #c67139;
+  --color-terracotta-shade: #b2622d; /* hover/active */
+
+  /* Ember — danger / call-liar / loss */
+  --color-ember: #b3503f;
+  --color-ember-soft: #e08a78; /* ember label on dark */
+  --color-danger: #8c2f24; /* deep danger text/stat on light */
+
+  /* Sage — success / waiting-positive */
+  --color-sage: #7a8a5e;
+  --color-sage-deep: #4a5735; /* text on sage-soft */
+  --color-sage-soft: #e2e8d5; /* badge bg on light */
+
+  /* Neutral — "medium"/disabled/out */
+  --color-neutral: #7d7466;
+  --color-neutral-shade: #675f53;
+  --color-neutral-tint: #948b7d;
+
+  /* Borders (off-table = warm-dark hairline on cream) */
+  --color-border: rgba(46, 43, 37, 0.14);
+  --color-border-strong: rgba(46, 43, 37, 0.28);
+
+  /* Focus ring — brass, everywhere */
+  --color-focus: #d69a52;
+
+  /* Radii */
+  --radius-pip: 8px;
+  --radius-die: 12px;
+  --radius-seat: 19px;
+  --radius-panel: 20px;
+  --radius-tile: 16px;
+  --radius-card: 28px;
+
+  /* Shadows */
+  --shadow-lift: 0 3px 10px rgba(46, 43, 37, 0.07);
+  --shadow-float: 0 12px 26px rgba(0, 0, 0, 0.45);
+  --shadow-overlay: 0 24px 54px rgba(0, 0, 0, 0.5);
+  --shadow-button: 0 6px 16px rgba(198, 113, 57, 0.42);
+
+  /*
+   * Type — local/system fallbacks only (CLAUDE.md 8.1: no remote web-font loading, no invented
+   * font files). These stacks approximate the kit's Caprasimo (display headings) / Figtree
+   * (body) pairing with fonts already available on the platform; swap in the real families here
+   * once licensed webfont files are added to the repo — no template changes needed.
+   */
+  --font-heading: 'Segoe UI Black', 'Arial Black', ui-rounded, system-ui, sans-serif;
+  --font-body:
+    'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
 }
 
+/*
+ * Ionic component colors (ion-button/ion-badge `color="…"`) — mapped once here to the palette
+ * above so every Ionic-colored control automatically matches the theme with no per-usage class.
+ */
 :root {
-  --ion-background-color: var(--color-parchment);
+  --ion-background-color: var(--color-page);
   --ion-text-color: var(--color-ink);
-  --ion-color-primary: var(--color-sea);
-  --ion-color-primary-contrast: var(--color-parchment);
-  --ion-color-primary-shade: var(--color-sea);
-  --ion-color-primary-tint: var(--color-sea-light);
-  --ion-color-danger: #8c2f24;
-  --ion-color-danger-contrast: var(--color-parchment);
-  --ion-color-warning: var(--color-gold);
+
+  --ion-color-primary: var(--color-terracotta);
+  --ion-color-primary-rgb: 198, 113, 57;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: var(--color-terracotta-shade);
+  --ion-color-primary-tint: #cf8355;
+
+  --ion-color-danger: var(--color-ember);
+  --ion-color-danger-rgb: 179, 80, 63;
+  --ion-color-danger-contrast: var(--color-ivory);
+  --ion-color-danger-contrast-rgb: 255, 250, 240;
+  --ion-color-danger-shade: #9c4435;
+  --ion-color-danger-tint: #c4685a;
+
+  --ion-color-warning: var(--color-brass);
+  --ion-color-warning-rgb: 214, 154, 82;
   --ion-color-warning-contrast: var(--color-ink);
+  --ion-color-warning-contrast-rgb: 46, 43, 37;
+  --ion-color-warning-shade: #c08a45;
+  --ion-color-warning-tint: #dfae6d;
+
+  --ion-color-success: var(--color-sage);
+  --ion-color-success-rgb: 122, 138, 94;
+  --ion-color-success-contrast: var(--color-ivory);
+  --ion-color-success-contrast-rgb: 255, 250, 240;
+  --ion-color-success-shade: #6b7a51;
+  --ion-color-success-tint: #8a9a6e;
+
+  --ion-color-medium: var(--color-neutral);
+  --ion-color-medium-rgb: 125, 116, 102;
+  --ion-color-medium-contrast: var(--color-cream);
+  --ion-color-medium-contrast-rgb: 242, 231, 211;
+  --ion-color-medium-shade: var(--color-neutral-shade);
+  --ion-color-medium-tint: var(--color-neutral-tint);
 }
 
 body {
-  font-family: ui-serif, Georgia, 'Times New Roman', serif;
-  background-color: var(--color-parchment);
+  font-family: var(--font-body);
+  background-color: var(--color-page);
   color: var(--color-ink);
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-heading {
+  font-family: var(--font-heading);
 }
 
 /*
@@ -63,30 +183,65 @@ ion-content {
   --padding-end: max(var(--app-gutter-x), env(safe-area-inset-right));
   --padding-top: var(--app-gutter-y);
   --padding-bottom: max(var(--app-gutter-y), env(safe-area-inset-bottom));
+  --background: var(--color-page);
+  --color: var(--color-ink);
 }
 
-/* Cosmetic-only roll cue (8.2) — a short tilt/scale loop, cleared once the real result is
- * shown. Never implies a value; see the Die component. */
-@keyframes die-roll {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  25% {
-    transform: rotate(-12deg) scale(1.05);
-  }
-  50% {
-    transform: rotate(0deg) scale(0.95);
-  }
-  75% {
-    transform: rotate(12deg) scale(1.05);
-  }
-  100% {
-    transform: rotate(0deg) scale(1);
-  }
+/* The table screen is the app's one "on-table" (dark cabin) screen — its own ion-content
+ * background/text stay dark even though the global default (above) is the light "off-table"
+ * canvas used by entry/lobby/winner. */
+app-table ion-content {
+  --background: var(--color-table-edge);
+  --color: var(--color-cream);
 }
 
-.die-rolling {
-  animation: die-roll 0.3s ease-in-out infinite;
+/* Outcome-card shell (design-kit §6) — shared by the winner screen and the round-loss modal, the
+ * app's only two "verdict" surfaces. A light cream card is intentional even though it appears
+ * over the dark table: it is the one thing on screen that must read as unambiguously important. */
+.surface-outcome-card {
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-overlay);
+  padding: 1.75rem;
+}
+.surface-outcome-card--win {
+  background: linear-gradient(180deg, var(--color-parchment), var(--color-parchment-dark));
+  border: 1.5px solid var(--color-brass);
+}
+.surface-outcome-card--loss {
+  background: var(--color-sand);
+  border: 1.5px solid var(--color-ember);
+}
+
+/* Outcome badge (design-kit §6, graphics-spec decor/badge-won.png & badge-lost.png) — CSS
+ * fallback for the wreath/broken-ring artwork: a dashed roundel, no image required. Swaps to the
+ * generated PNG automatically once VISUAL_ASSETS_CONFIG.badgeWon/badgeLost carry an imageUrl. */
+.outcome-badge {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-seat);
+  flex: none;
+}
+.outcome-badge--won {
+  background: rgba(214, 154, 82, 0.14);
+  border: 1.5px dashed var(--color-brass);
+}
+.outcome-badge--loss {
+  background: rgba(140, 73, 26, 0.12);
+  border: 1.5px dashed var(--color-brass-deep);
+}
+
+/* Table outer surface (design-kit "table" swatch, perudo-desktop-board.dc.html) — the one radial
+ * plus a faint plank-stripe overlay; every on-table panel sits on top of this and uses the
+ * onboard fill/border tokens above rather than a flat color. CSS-only fallback (CLAUDE.md 8.1
+ * "no 3D"; this task's own "static/no-animation" decision) — swaps to
+ * VISUAL_ASSETS_CONFIG.tableSurface's image the same way DICE_FACES_CONFIG swaps in die art. */
+.table-surface {
+  position: relative;
+  background:
+    repeating-linear-gradient(96deg, rgba(255, 235, 200, 0.03) 0 2px, transparent 2px 7px),
+    radial-gradient(96% 62% at 46% 22%, var(--color-table-center) 0%, var(--color-table-mid) 54%, var(--color-table-edge) 100%);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-overlay);
 }
 
 /*
@@ -95,13 +250,13 @@ ion-content {
  * these values, never touching a component template or match-state/socket code.
  */
 :root {
-  --cup-exterior-start: #4a2c17;
-  --cup-exterior-end: #2a180c;
-  --cup-rim: #6b4226;
+  --cup-exterior-start: var(--color-table-center);
+  --cup-exterior-end: var(--color-cabin);
+  --cup-rim: var(--color-brass);
   --cup-interior: #d8b98a;
-  --cup-interior-shadow: rgba(43, 29, 15, 0.55);
-  --cup-closed-start: #5a3a20;
-  --cup-closed-end: #2e1c0e;
+  --cup-interior-shadow: rgba(30, 24, 17, 0.55);
+  --cup-closed-start: var(--color-table-center);
+  --cup-closed-end: var(--color-table-edge);
 }
 
 /* The owner's open cup is sized responsively by the browser (not JS) — DiceCup measures the
@@ -113,9 +268,15 @@ ion-content {
   aspect-ratio: 1;
 }
 
+/* The local player's "Roll your hand" button (ROUND_ROLLING) must never be wider than their own
+ * open cup — same width formula as .dice-cup-owner-shell so it lines up beneath it. */
+.dice-cup-owner-roll-button {
+  width: clamp(190px, 46vw, 260px);
+}
+
 .dice-cup-open-exterior {
   background: radial-gradient(circle at 35% 30%, var(--cup-exterior-start), var(--cup-exterior-end));
-  border: 6px solid var(--cup-rim);
+  border: 5px solid var(--cup-rim);
   box-shadow:
     0 6px 10px rgba(0, 0, 0, 0.35),
     inset 0 0 14px rgba(0, 0, 0, 0.45);
@@ -124,45 +285,27 @@ ion-content {
 .dice-cup-open-interior {
   background: radial-gradient(circle at 40% 35%, var(--cup-interior), var(--cup-exterior-start));
   box-shadow: inset 0 6px 16px var(--cup-interior-shadow);
-  /* The dice inside are z-indexed by vertical position (dice-cup.ts publishFrame — negative for
-   * the "north" half of the cup, so closer dice stack correctly over farther ones). Without its
-   * own stacking context, this element doesn't scope that z-index range: a die with a negative
-   * value has nothing here to be "above" and falls behind this div's own background instead —
-   * invisible, not just behind other dice. `isolation: isolate` contains the whole range (negative
-   * included) to this cup, so it only ever competes against its own sibling dice. */
-  isolation: isolate;
 }
 
 .dice-cup-closed {
   background: linear-gradient(180deg, var(--cup-closed-start), var(--cup-closed-end));
-  border: 4px solid var(--cup-rim);
+  border: 3px solid var(--cup-rim);
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.35),
     inset 0 -6px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* A short, restrained shake for an opponent's closed cup (8.2) — cosmetic only, never reveals
- * anything, so a plain looping CSS keyframe (unlike the owner's cup, which is driven frame-by-
- * frame by the JS physics sim) is all it needs. */
-@keyframes dice-cup-closed-shake {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  20% {
-    transform: translate(-3px, 1px) rotate(-3deg);
-  }
-  40% {
-    transform: translate(2px, -2px) rotate(2deg);
-  }
-  60% {
-    transform: translate(-2px, 2px) rotate(-2deg);
-  }
-  80% {
-    transform: translate(3px, -1px) rotate(3deg);
-  }
+/* The public opening-roll die (5.2) — the pre-game centerpiece, so it must read clearly at a
+ * glance on any screen. Floor sized for legibility, growing on wider viewports, capped so it
+ * never dominates the panel on desktop. */
+.opening-roll-die {
+  width: clamp(48px, 10vw, 64px);
+  height: clamp(48px, 10vw, 64px);
 }
 
-.dice-cup-closed-shaking {
-  animation: dice-cup-closed-shake 0.4s ease-in-out infinite;
+/* The current-bid marker's die (2.) — must be readable at a glance even on a small opponent
+ * card, hence a higher floor than other table dice; same clamp shape as .opening-roll-die. */
+.bid-marker-die {
+  width: clamp(40px, 9vw, 56px);
+  height: clamp(40px, 9vw, 56px);
 }

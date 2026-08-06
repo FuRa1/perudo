@@ -1,8 +1,8 @@
 <ion-content>
-  <h2 class="text-xl font-bold mb-1">Lobby</h2>
-  <p class="mb-3">
-    Room code: <strong class="tracking-widest">{{ roomId() }}</strong> — share it with your friends
-    so they can join.
+  <h2 class="font-heading text-xl text-ink mb-1">Lobby</h2>
+  <p class="mb-3 rounded-tile inline-block bg-surface-alt px-3 py-2 text-ink-muted">
+    Room code: <strong class="tracking-widest text-ink">{{ roomId() }}</strong> — share it with your
+    friends so they can join.
   </p>
   <ion-list>
     @for (player of players(); track player.id) {
@@ -15,7 +15,7 @@
     }
   </ion-list>
   <ion-button expand="block" class="ion-margin-top" (click)="toggleReady()">
-    <ion-icon name="checkmark-circle" slot="start" />
+    <svg lucideCheck slot="start" aria-hidden="true"></svg>
     {{ me()?.isReady ? 'Cancel ready' : "I'm ready" }}
   </ion-button>
 </ion-content>

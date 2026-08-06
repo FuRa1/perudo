@@ -1,11 +1,11 @@
 <div
-  class="flex items-center gap-1 rounded-lg border-2 border-gold bg-parchment-dark px-1.5 py-1 shadow-md"
+  class="rounded-tile flex items-center gap-1.5 border-2 border-brass bg-cabin px-2 py-1.5 shadow-float"
   role="status"
   [attr.aria-label]="'Current bid: ' + bid().quantity + ' of face ' + faceValue()"
 >
-  <span class="text-sm font-bold tabular-nums text-ink">{{ bid().quantity }}</span>
-  <span class="text-sm font-bold text-ink" aria-hidden="true">×</span>
-  <div [style.width.px]="dieSizePx" [style.height.px]="dieSizePx">
+  <span class="text-lg font-bold tabular-nums text-cream">{{ bid().quantity }}</span>
+  <span class="text-lg font-bold text-brass" aria-hidden="true">×</span>
+  <div class="bid-marker-die">
     <app-die [value]="faceValue()" />
   </div>
 </div>

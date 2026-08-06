@@ -9,7 +9,7 @@
     />
 
     @if (!isValid()) {
-      <p class="text-sm text-red-700">Not a legal raise.</p>
+      <p class="text-sm text-ember-soft">Not a legal raise.</p>
     }
 
     <div class="flex flex-wrap justify-center gap-2">
@@ -33,12 +33,14 @@
     <div class="flex flex-wrap justify-center gap-2">
       <ion-button [disabled]="!isValid()" (click)="placeBid()">Place bid</ion-button>
       <ion-button color="danger" [disabled]="!canCallLiar()" (click)="callLiar()">
-        <ion-icon name="skull" slot="start" />
+        <svg lucideHand slot="start" aria-hidden="true"></svg>
         Call liar!
       </ion-button>
     </div>
   } @else {
-    <p class="rounded-lg border-2 border-wood bg-parchment-dark px-3 py-2 text-sm text-ink">
+    <p
+      class="rounded-panel border border-border-onboard bg-fill-onboard px-3 py-2 text-sm text-cream"
+    >
       Waiting for {{ currentPlayerName() ?? 'the next player' }} to bid
     </p>
   }

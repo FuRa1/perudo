@@ -1,6 +1,8 @@
 import { Component, input } from '@angular/core';
-import { IonBadge, IonIcon } from '@ionic/angular/standalone';
-import type { Player } from '@shared';
+import { IonBadge } from '@ionic/angular/standalone';
+import { LucideCircleUserRound } from '@lucide/angular';
+import type { Bid, Player } from '@shared';
+import { BidMarker } from '../bid-marker/bid-marker';
 import { DiceCup } from '../dice-cup/dice-cup';
 
 export type SeatSize = 'large' | 'medium' | 'small';
@@ -18,7 +20,7 @@ const MIN_MY_CARD_WIDTH_PX = CARD_WIDTH_PX.large + 10;
 @Component({
   selector: 'app-seat-card',
   standalone: true,
-  imports: [IonBadge, IonIcon, DiceCup],
+  imports: [IonBadge, LucideCircleUserRound, DiceCup, BidMarker],
   templateUrl: './seat-card.html',
 })
 export class SeatCard {
@@ -28,10 +30,10 @@ export class SeatCard {
   readonly size = input<SeatSize>('medium');
   /** null outside ROUND_ROLLING — Table only sets this while hand-rolling is in progress. */
   readonly handRollStatus = input<HandRollStatus | null>(null);
-  /** Cosmetic-only "currently rolling" cue (8.2) — never implies a value; forwarded straight to
-   * the dice cup, which is the only place that decides what a roll animation actually looks
-   * like (SeatCard has no rendering logic of its own for dice anymore). */
-  readonly isRolling = input(false);
+  /** This player's latest bid, or null if they aren't the current bid holder. Rendered inline in
+   * the card's own vertical flow (never a floating overlay) so it can never cover the nickname,
+   * cup, dice count, or "Bidding" badge — it just takes its own row between them. */
+  readonly currentBid = input<Bid | null>(null);
 
   protected readonly minMyCardWidthPx = MIN_MY_CARD_WIDTH_PX;
 }

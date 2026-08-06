@@ -1,10 +1,6 @@
 @if (isOwner()) {
   <div #ownerCupEl class="relative dice-cup-owner-shell">
-    <div
-      class="absolute inset-0 rounded-full"
-      [class]="cssClass.openExterior"
-      [style.transform]="cupTransform()"
-    >
+    <div class="absolute inset-0 rounded-full" [class]="cssClass.openExterior">
       <div
         class="absolute overflow-hidden rounded-full"
         [class]="cssClass.openInterior"
@@ -16,8 +12,6 @@
             [style.width.px]="dieSizePx"
             [style.height.px]="dieSizePx"
             [style.transform]="view.transform"
-            [style.opacity]="view.opacity"
-            [style.z-index]="view.zIndex"
           >
             <app-die [value]="view.face" />
           </div>
@@ -29,10 +23,9 @@
   <div
     class="relative flex items-center justify-center rounded-t-full"
     [class]="cssClass.closed"
-    [class.dice-cup-closed-shaking]="isClosedShaking()"
     [style.width.px]="cupSizePx() * 0.78"
     [style.height.px]="cupSizePx() * 0.62"
   >
-    <span class="text-xs font-semibold text-parchment">{{ diceCount() }}</span>
+    <span class="text-xs font-semibold text-cream">{{ diceCount() }}</span>
   </div>
 }
