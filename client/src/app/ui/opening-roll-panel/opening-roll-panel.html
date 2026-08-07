@@ -1,22 +1,22 @@
-<div class="rounded-panel mb-3 border border-border-onboard bg-fill-onboard p-3">
-  <h3 class="mb-2 text-sm font-semibold text-cream">Opening roll — highest goes first</h3>
+<div class="opening-roll-panel mb-3 p-3">
+  <h3 class="opening-roll-panel__title mb-2 text-sm font-semibold">
+    Opening roll — highest goes first
+  </h3>
   <div class="flex flex-wrap gap-2">
     @for (row of rows(); track row.playerId) {
       <div
-        class="rounded-tile flex flex-col items-center gap-1 border bg-fill-onboard-strong px-2 py-1"
-        [class.border-brass]="row.isWinner"
-        [class.border-border-onboard]="!row.isWinner"
-        [class.border-2]="row.isWinner"
+        class="opening-roll-panel__row flex flex-col items-center gap-1 px-2 py-1"
+        [class.opening-roll-panel__row--winner]="row.isWinner"
       >
-        <span class="text-xs font-semibold whitespace-nowrap text-cream">{{ row.nickname }}</span>
+        <span class="opening-roll-panel__name text-xs font-semibold whitespace-nowrap">{{
+          row.nickname
+        }}</span>
 
         <!-- Reserved die-sized slot — same footprint in every state (waiting/rolled), so the
              panel never reflows when a result replaces the placeholder (CLAUDE.md 8.2). -->
         <div class="opening-roll-die relative flex items-center justify-center">
           @if (row.status === 'waiting') {
-            <div
-              class="h-full w-full rounded-die border-2 border-dashed border-border-onboard-strong"
-            ></div>
+            <div class="opening-roll-panel__placeholder h-full w-full"></div>
           } @else if (row.value; as v) {
             <app-die [value]="v" class="block h-full w-full" />
           }
@@ -26,7 +26,7 @@
              never shifts the die slot or nickname above it. -->
         <div class="flex h-5 items-center justify-center">
           @if (row.status === 'waiting') {
-            <span class="text-[10px] whitespace-nowrap text-cream-muted">Waiting</span>
+            <span class="opening-roll-panel__status text-[10px] whitespace-nowrap">Waiting</span>
           } @else if (row.isWinner) {
             <ion-badge color="warning">Starts round 1</ion-badge>
           }

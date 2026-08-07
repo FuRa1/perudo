@@ -1,0 +1,25 @@
+@use 'theme/mixins' as mixins;
+
+.bid-suggestion {
+  @include mixins.focus-ring;
+  border-radius: var(--radius-tile);
+  border: 1px solid var(--color-border-onboard);
+  background: var(--color-fill-onboard);
+  color: var(--color-cream);
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-brass);
+    background: var(--color-fill-onboard-hover);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    border-color: var(--color-border-onboard);
+    background: transparent;
+    color: var(--color-cream-faint);
+  }
+}

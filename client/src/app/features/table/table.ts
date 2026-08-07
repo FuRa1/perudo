@@ -66,6 +66,7 @@ function describeBid(bid: Bid): string {
     RoundLossModal,
   ],
   templateUrl: './table.html',
+  styleUrl: './table.scss',
 })
 export class Table {
   protected readonly store = inject(GameStore);

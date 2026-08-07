@@ -9,7 +9,7 @@
     />
 
     @if (!isValid()) {
-      <p class="text-sm text-ember-soft">Not a legal raise.</p>
+      <p class="bid-controls__invalid text-sm">Not a legal raise.</p>
     }
 
     <div class="flex flex-wrap justify-center gap-2">
@@ -38,9 +38,7 @@
       </ion-button>
     </div>
   } @else {
-    <p
-      class="rounded-panel border border-border-onboard bg-fill-onboard px-3 py-2 text-sm text-cream"
-    >
+    <p class="bid-controls__waiting px-3 py-2 text-sm">
       Waiting for {{ currentPlayerName() ?? 'the next player' }} to bid
     </p>
   }

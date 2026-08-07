@@ -1,0 +1,22 @@
+@use 'theme/mixins' as mixins;
+
+.bid-marker {
+  border-radius: var(--radius-tile);
+  border: 2px solid var(--color-brass);
+  background: var(--color-cabin);
+  box-shadow: var(--shadow-float);
+}
+
+.bid-marker__quantity {
+  color: var(--color-cream);
+}
+
+.bid-marker__times {
+  color: var(--color-brass);
+}
+
+// The current-bid marker's die (2.) — must be readable at a glance even on a small opponent
+// card, hence a higher floor than other table dice.
+.bid-marker__die {
+  @include mixins.clamp-square(40px, 9vw, 56px);
+}

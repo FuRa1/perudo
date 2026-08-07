@@ -25,6 +25,7 @@ const DEFAULT_FACE: DiceValue = 2;
   standalone: true,
   imports: [IonButton, LucideHand, BidPicker, BidSuggestion],
   templateUrl: './bid-controls.html',
+  styleUrl: './bid-controls.scss',
 })
 export class BidControls {
   private readonly store = inject(GameStore);

@@ -9,6 +9,7 @@ import { SocketService } from '../../core/socket.service';
   standalone: true,
   imports: [IonContent, IonList, IonItem, IonBadge, IonButton, LucideCheck],
   templateUrl: './lobby.html',
+  styleUrl: './lobby.scss',
 })
 export class Lobby {
   private readonly store = inject(GameStore);

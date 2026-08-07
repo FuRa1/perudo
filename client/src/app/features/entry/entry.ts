@@ -19,6 +19,7 @@ function generateRoomCode(length = 5): string {
   standalone: true,
   imports: [IonContent, IonList, IonItem, IonInput, IonButton],
   templateUrl: './entry.html',
+  styleUrl: './entry.scss',
 })
 export class Entry {
   private readonly socket = inject(SocketService);

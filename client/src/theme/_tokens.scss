@@ -1,0 +1,112 @@
+// Perudo design tokens — values extracted from designs/perudo-design-kit.dc.html and
+// designs/perudo-graphics-spec.dc.html (Design Implementation Task 1). Every color, radius,
+// shadow and font used anywhere in the app must come from one of these custom properties —
+// never a raw hex value in a template or component stylesheet.
+//
+// Two surface families, matching the kit:
+//  - "off-table" (light, cream) — entry/lobby/winner and any card floating over the table.
+//  - "on-table" (dark cabin) — the table screen itself, lit by one warm lantern.
+//
+// Swapping the "pirate lantern tavern" look for a future theme means editing only the values in
+// this file. Component-scoped stylesheets consume these exclusively via var(--token-name), never
+// a literal color/size — see theme/_mixins.scss and theme/_variables.scss for the shared
+// building blocks built on top of them.
+//
+// Deliberately a plain :root block, not a Tailwind `@theme` block: Tailwind v4 tree-shakes
+// `@theme` custom properties per compiled file, keeping only the ones a utility class in that
+// SAME file's own output actually resolves to. Since every component now owns its presentation
+// in its own co-located .scss file (compiled separately from this one), a token used only by,
+// say, table.scss would get silently pruned from this file's output before table.scss's
+// `var(--color-table-center)` ever had anything to resolve against. A plain :root block is
+// ordinary CSS to Tailwind — passed through untouched, regardless of where it's referenced.
+:root {
+  // Off-table surfaces (light)
+  --color-page: #e7e0d3; // overall app canvas
+  --color-surface: #fffdf7; // light card/panel background
+  --color-surface-alt: #f5ead8; // lobby "ground" surface, stat tiles
+  --color-sand: #ebddc5; // secondary fill, chips, flat outcome-card bg
+  --color-parchment: #f6ecd8; // cream card / wager-token gradient start
+  --color-parchment-dark: #e4d5b8; // cream card / wager-token gradient end
+  --color-ivory: #fffaf0; // die body, always — on or off the table
+
+  // On-table surfaces (dark cabin)
+  --color-cabin: #241d16; // dark panel background (rail, dice-kit style boxes)
+  --color-table-center: #5a462d; // radial centre / "lamplit wood"
+  --color-table-mid: #33281c; // table gradient mid-tone
+  --color-table-edge: #1e1811; // table gradient / vignette edge
+  --color-fill-onboard: rgba(242, 231, 211, 0.06); // quiet panel fill on the table
+  --color-fill-onboard-strong: rgba(242, 231, 211, 0.1); // control fill on the table
+  --color-fill-onboard-hover: rgba(242, 231, 211, 0.2); // hover/active on-table fill
+  --color-border-onboard: rgba(242, 231, 211, 0.16); // quiet border on the table
+  --color-border-onboard-strong: rgba(242, 231, 211, 0.28); // control border on the table
+
+  // Ink & text
+  --color-ink: #2e2b25; // primary text on light surfaces
+  --color-ink-muted: #474238; // narration/body text on light surfaces
+  --color-meta: #645c50; // labels/meta text on light surfaces
+  --color-cream: #f2e7d3; // primary text on dark surfaces
+  --color-cream-muted: #c0b6a5; // secondary text on dark surfaces
+  --color-cream-faint: #a19786; // uppercase labels on dark surfaces
+
+  // Brass — active/focus accent
+  --color-brass: #d69a52;
+  --color-brass-deep: #8c491a; // link hover, kicker text, badge text on light
+
+  // Terracotta — primary action
+  --color-terracotta: #c67139;
+  --color-terracotta-shade: #b2622d; // hover/active
+
+  // Ember — danger / call-liar / loss
+  --color-ember: #b3503f;
+  --color-ember-soft: #e08a78; // ember label on dark
+  --color-danger: #8c2f24; // deep danger text/stat on light
+
+  // Sage — success / waiting-positive
+  --color-sage: #7a8a5e;
+  --color-sage-deep: #4a5735; // text on sage-soft
+  --color-sage-soft: #e2e8d5; // badge bg on light
+
+  // Neutral — "medium"/disabled/out
+  --color-neutral: #7d7466;
+  --color-neutral-shade: #675f53;
+  --color-neutral-tint: #948b7d;
+
+  // Borders (off-table = warm-dark hairline on cream)
+  --color-border: rgba(46, 43, 37, 0.14);
+  --color-border-strong: rgba(46, 43, 37, 0.28);
+
+  // Focus ring — brass, everywhere
+  --color-focus: #d69a52;
+
+  // Radii
+  --radius-pip: 8px;
+  --radius-die: 12px;
+  --radius-seat: 19px;
+  --radius-panel: 20px;
+  --radius-tile: 16px;
+  --radius-card: 28px;
+
+  // Shadows
+  --shadow-lift: 0 3px 10px rgba(46, 43, 37, 0.07);
+  --shadow-float: 0 12px 26px rgba(0, 0, 0, 0.45);
+  --shadow-overlay: 0 24px 54px rgba(0, 0, 0, 0.5);
+  --shadow-button: 0 6px 16px rgba(198, 113, 57, 0.42);
+
+  // Type — local/system fallbacks only (CLAUDE.md 8.1: no remote web-font loading, no invented
+  // font files). These stacks approximate the kit's Caprasimo (display headings) / Figtree
+  // (body) pairing with fonts already available on the platform; swap in the real families here
+  // once licensed webfont files are added to the repo — no template or component-style changes
+  // needed.
+  --font-heading: 'Segoe UI Black', 'Arial Black', ui-rounded, system-ui, sans-serif;
+  --font-body: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+}
+
+// Single page-edge gutter system for the whole app — every screen's <ion-content> gets this,
+// instead of ad hoc per-component margins. A mobile floor around 16px, growing toward a roomier
+// desktop gutter as the viewport allows, capped so it never eats too much width on a big screen.
+// env(safe-area-inset-*) keeps the gutter clear of notches/home indicators on devices that report
+// them; max() means the safe-area inset only ever adds space, never shrinks the floor.
+:root {
+  --app-gutter-x: clamp(1rem, 1rem + 2vw, 2.5rem);
+  --app-gutter-y: clamp(0.75rem, 0.75rem + 1.5vh, 1.5rem);
+}

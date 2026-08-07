@@ -1,6 +1,6 @@
 <ion-content>
   <div class="table-surface flex flex-col gap-3 p-3 md:p-5">
-    <h2 class="font-heading text-lg text-cream">
+    <h2 class="table__heading font-heading text-lg">
       Round {{ store.matchState()?.round?.roundNumber ?? '-' }} — {{ store.matchState()?.phase }}
     </h2>
 
@@ -13,10 +13,7 @@
     }
 
     <div class="overflow-x-auto">
-      <div
-        class="relative h-56 w-full rounded-full border border-border-onboard bg-fill-onboard"
-        [style.min-width.px]="arcMinWidthPx()"
-      >
+      <div class="table__arc relative h-56 w-full" [style.min-width.px]="arcMinWidthPx()">
         @for (opponent of opponents(); track opponent.id; let i = $index) {
           <div
             class="absolute -translate-x-1/2 -translate-y-1/2"
@@ -64,7 +61,7 @@
     }
 
     @if (reveal(); as r) {
-      <div class="rounded-panel border border-border-onboard bg-fill-onboard-strong p-3 text-cream">
+      <div class="table__reveal p-3">
         <p>
           <strong>Reveal:</strong> claimed {{ describeBid(r.claimedBid) }}, actual
           {{ r.actualQuantity }}.
@@ -80,9 +77,9 @@
     }
 
     @if (store.matchState()?.round?.bidHistory; as history) {
-      <div class="rounded-panel border border-border-onboard bg-fill-onboard p-3">
-        <h3 class="font-heading mb-1 text-sm text-cream">Bid history</h3>
-        <ul class="flex flex-col gap-0.5 text-sm text-cream-muted">
+      <div class="table__bid-history p-3">
+        <h3 class="table__bid-history-title font-heading mb-1 text-sm">Bid history</h3>
+        <ul class="table__bid-history-list flex flex-col gap-0.5 text-sm">
           @for (record of history; track $index) {
             <li>{{ nicknameFor(record.playerId) }}: {{ describeBid(record.bid) }}</li>
           }

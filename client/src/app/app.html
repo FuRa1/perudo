@@ -9,9 +9,7 @@
 }
 
 @if (store.lastError(); as error) {
-  <div
-    class="rounded-tile fixed right-2 bottom-2 left-2 border border-ember bg-danger p-2 text-center text-ivory shadow-float"
-  >
+  <div class="app-error-toast fixed right-2 bottom-2 left-2 p-2 text-center">
     {{ error.code }}: {{ error.message }}
   </div>
 }

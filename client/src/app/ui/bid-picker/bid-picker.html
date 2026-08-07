@@ -1,11 +1,9 @@
-<div
-  class="rounded-panel inline-flex items-stretch gap-3 border border-border-onboard bg-fill-onboard p-2"
->
+<div class="bid-picker inline-flex items-stretch gap-3 p-2">
   <!-- Quantity stepper -->
   <div class="flex flex-col items-center gap-1" role="group" aria-label="Bid quantity">
     <button
       type="button"
-      class="flex h-6 w-8 items-center justify-center rounded border border-border-onboard-strong bg-fill-onboard-strong leading-none text-cream transition hover:bg-fill-onboard-hover focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+      class="bid-picker__button flex h-6 w-8 items-center justify-center rounded leading-none"
       [disabled]="disabled()"
       aria-label="Increase quantity"
       (click)="incrementQuantity()"
@@ -14,7 +12,7 @@
     </button>
 
     <div
-      class="w-10 text-center text-xl font-bold tabular-nums text-cream select-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none"
+      class="bid-picker__value w-10 text-center text-xl font-bold tabular-nums select-none"
       role="spinbutton"
       [attr.tabindex]="disabled() ? -1 : 0"
       [attr.aria-valuenow]="quantity()"
@@ -28,7 +26,7 @@
 
     <button
       type="button"
-      class="flex h-6 w-8 items-center justify-center rounded border border-border-onboard-strong bg-fill-onboard-strong leading-none text-cream transition hover:bg-fill-onboard-hover focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+      class="bid-picker__button flex h-6 w-8 items-center justify-center rounded leading-none"
       [disabled]="!canDecrementQuantity()"
       aria-label="Decrease quantity"
       (click)="decrementQuantity()"
@@ -37,13 +35,13 @@
     </button>
   </div>
 
-  <span class="self-center text-2xl font-bold text-cream-muted" aria-hidden="true">×</span>
+  <span class="bid-picker__separator self-center text-2xl font-bold" aria-hidden="true">×</span>
 
   <!-- Face stepper -->
   <div class="flex flex-col items-center gap-1" role="group" aria-label="Bid face">
     <button
       type="button"
-      class="flex h-6 w-8 items-center justify-center rounded border border-border-onboard-strong bg-fill-onboard-strong leading-none text-cream transition hover:bg-fill-onboard-hover focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+      class="bid-picker__button flex h-6 w-8 items-center justify-center rounded leading-none"
       [disabled]="!canChangeFace()"
       aria-label="Next face"
       (click)="incrementFace()"
@@ -52,7 +50,7 @@
     </button>
 
     <div
-      class="focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none"
+      class="bid-picker__value"
       [style.width.px]="dieSizePx"
       role="spinbutton"
       [attr.tabindex]="canChangeFace() ? 0 : -1"
@@ -68,7 +66,7 @@
 
     <button
       type="button"
-      class="flex h-6 w-8 items-center justify-center rounded border border-border-onboard-strong bg-fill-onboard-strong leading-none text-cream transition hover:bg-fill-onboard-hover focus-visible:ring-2 focus-visible:ring-focus focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40"
+      class="bid-picker__button flex h-6 w-8 items-center justify-center rounded leading-none"
       [disabled]="!canChangeFace()"
       aria-label="Previous face"
       (click)="decrementFace()"

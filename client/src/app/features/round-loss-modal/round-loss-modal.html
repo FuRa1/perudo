@@ -7,27 +7,25 @@
 >
   <ng-template>
     <div class="flex h-full flex-col items-center justify-center">
-      <div
-        class="surface-outcome-card surface-outcome-card--loss flex flex-col items-center gap-3 text-center"
-      >
-        <div class="outcome-badge outcome-badge--loss"></div>
-        <h2 class="font-heading text-lg text-ink">You lost this round</h2>
+      <div class="round-loss-card flex flex-col items-center gap-3 text-center">
+        <div class="round-loss-badge"></div>
+        <h2 class="round-loss__title font-heading text-lg">You lost this round</h2>
 
         @if (lostBecauseBidWasTrue()) {
-          <p class="text-sm text-ink-muted">You called liar, but the bid was true.</p>
+          <p class="round-loss__body text-sm">You called liar, but the bid was true.</p>
         } @else {
-          <p class="text-sm text-ink-muted">Your bid was false.</p>
+          <p class="round-loss__body text-sm">Your bid was false.</p>
         }
 
         @if (claimedBid(); as bid) {
           <div class="flex flex-col items-center gap-1">
-            <span class="text-xs text-meta">Claimed</span>
+            <span class="round-loss__claimed-label text-xs">Claimed</span>
             <app-bid-marker [bid]="bid" />
           </div>
         }
 
-        <p class="text-sm text-ink-muted">Actual count: {{ actualQuantity() }}</p>
-        <p class="text-sm font-semibold text-ink">You lost one die.</p>
+        <p class="round-loss__body text-sm">Actual count: {{ actualQuantity() }}</p>
+        <p class="round-loss__final text-sm font-semibold">You lost one die.</p>
 
         <ion-button (click)="close()">Close</ion-button>
       </div>

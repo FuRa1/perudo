@@ -22,6 +22,7 @@ const MIN_MY_CARD_WIDTH_PX = CARD_WIDTH_PX.large + 10;
   standalone: true,
   imports: [IonBadge, LucideCircleUserRound, DiceCup, BidMarker],
   templateUrl: './seat-card.html',
+  styleUrl: './seat-card.scss',
 })
 export class SeatCard {
   readonly player = input.required<Player>();

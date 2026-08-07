@@ -60,6 +60,7 @@ const FACE_BY_VALUE = Object.fromEntries(DICE_FACES_CONFIG.map((f) => [f.value, 
   selector: 'app-die',
   standalone: true,
   templateUrl: './die.html',
+  styleUrl: './die.scss',
 })
 export class Die {
   readonly value = input.required<DiceValue>();

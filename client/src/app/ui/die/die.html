@@ -1,8 +1,4 @@
-<div
-  class="aspect-square w-full rounded-die bg-ivory shadow-[inset_0_1px_3px_rgba(46,43,37,0.18)]"
-  [attr.aria-label]="face().label"
-  role="img"
->
+<div class="die aspect-square w-full" [attr.aria-label]="face().label" role="img">
   @if (face().imageUrl; as imageUrl) {
     <img [src]="imageUrl" [alt]="face().label" class="h-full w-full object-contain" />
   } @else {
@@ -13,7 +9,7 @@
           [style.grid-row]="pip.row"
           [style.grid-column]="pip.col"
         >
-          <span class="aspect-square w-full rounded-full bg-ink"></span>
+          <span class="die__pip aspect-square w-full rounded-full"></span>
         </span>
       }
     </div>

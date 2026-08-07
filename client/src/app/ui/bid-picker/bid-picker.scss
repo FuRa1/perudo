@@ -1,0 +1,25 @@
+@use 'theme/mixins' as mixins;
+
+.bid-picker {
+  @include mixins.onboard-panel;
+}
+
+.bid-picker__button {
+  @include mixins.onboard-control;
+  @include mixins.focus-ring;
+  color: var(--color-cream);
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+}
+
+.bid-picker__value {
+  @include mixins.focus-ring;
+  color: var(--color-cream);
+}
+
+.bid-picker__separator {
+  color: var(--color-cream-muted);
+}

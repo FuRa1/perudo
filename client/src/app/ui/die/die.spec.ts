@@ -12,7 +12,7 @@ describe('Die', () => {
     fixture.detectChanges();
 
     const nativeElement = fixture.nativeElement as HTMLElement;
-    const pipDots = nativeElement.querySelectorAll('.rounded-full.bg-ink');
+    const pipDots = nativeElement.querySelectorAll('.rounded-full.die__pip');
     expect(pipDots.length).toBe(6);
     expect(nativeElement.textContent).not.toContain('💀');
     expect(nativeElement.innerHTML.toLowerCase()).not.toContain('skull');
@@ -27,7 +27,7 @@ describe('Die', () => {
       fixture.detectChanges();
 
       const nativeElement = fixture.nativeElement as HTMLElement;
-      const pipDots = nativeElement.querySelectorAll('.rounded-full.bg-ink');
+      const pipDots = nativeElement.querySelectorAll('.rounded-full.die__pip');
       expect(pipDots.length).toBe(expectedCount);
       expect(nativeElement.textContent).not.toContain('💀');
     }

@@ -19,6 +19,7 @@ const AUTO_CLOSE_MS = 5000;
   standalone: true,
   imports: [IonModal, IonButton, BidMarker],
   templateUrl: './round-loss-modal.html',
+  styleUrl: './round-loss-modal.scss',
 })
 export class RoundLossModal {
   private readonly store = inject(GameStore);

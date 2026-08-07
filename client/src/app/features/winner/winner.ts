@@ -7,6 +7,7 @@ import { GameStore } from '../../core/game-store';
   standalone: true,
   imports: [IonContent],
   templateUrl: './winner.html',
+  styleUrl: './winner.scss',
 })
 export class Winner {
   private readonly store = inject(GameStore);

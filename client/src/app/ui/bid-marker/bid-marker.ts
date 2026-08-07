@@ -14,6 +14,7 @@ import { bidToFaceValue } from '../bid-picker/bid-face.util';
   standalone: true,
   imports: [Die],
   templateUrl: './bid-marker.html',
+  styleUrl: './bid-marker.scss',
 })
 export class BidMarker {
   protected readonly dieSizePx = DIE_SIZE_PX.bidMarker;

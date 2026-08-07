@@ -9,7 +9,7 @@ import { Winner } from './features/winner/winner';
   selector: 'app-root',
   imports: [Entry, Lobby, Table, Winner],
   templateUrl: './app.html',
-  styleUrl: './app.css',
+  styleUrl: './app.scss',
 })
 export class App {
   protected readonly store = inject(GameStore);

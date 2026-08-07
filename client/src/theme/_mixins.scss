@@ -1,0 +1,97 @@
+// Shared building blocks over the CSS custom properties in theme/_tokens.scss. Component
+// stylesheets `@use 'theme/mixins' as mixins;` (see angular.json's
+// build.stylePreprocessorOptions.includePaths) and `@include mixins.<name>` instead of repeating
+// the same border/fill/radius combination — the "on-table" (dark cabin) quiet-panel language in
+// particular repeats across the table, opening-roll panel, bid picker, bid suggestions and the
+// waiting-for-bid message.
+
+/// A quiet panel resting directly on the dark table surface (design-kit "on the table" ramp).
+@mixin onboard-panel {
+  border-radius: var(--radius-panel);
+  border: 1px solid var(--color-border-onboard);
+  background: var(--color-fill-onboard);
+}
+
+/// Same panel, with the slightly more opaque fill used for panels that need to stand out a
+/// little more against the table (e.g. the reveal banner).
+@mixin onboard-panel-strong {
+  border-radius: var(--radius-panel);
+  border: 1px solid var(--color-border-onboard);
+  background: var(--color-fill-onboard-strong);
+}
+
+/// The smaller-radius tile variant of the onboard panel — seat cards, opening-roll rows.
+@mixin onboard-tile {
+  border-radius: var(--radius-tile);
+  border: 1px solid var(--color-border-onboard);
+  background: var(--color-fill-onboard-strong);
+}
+
+/// An interactive control resting on the table (stepper buttons, bid suggestion chips): a
+/// slightly stronger fill/border than a static panel, with a hover state.
+@mixin onboard-control {
+  border-radius: var(--radius-tile);
+  border: 1px solid var(--color-border-onboard-strong);
+  background: var(--color-fill-onboard-strong);
+  transition: background-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: var(--color-fill-onboard-hover);
+  }
+}
+
+/// Brass focus ring, everywhere — matches the kit's single focus treatment (design-kit §5).
+@mixin focus-ring {
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-focus);
+  }
+}
+
+/// Outcome-card shell (design-kit §6) — shared by the winner screen and the round-loss modal,
+/// the app's only two "verdict" surfaces. A light cream card is intentional even though it
+/// appears over the dark table: it is the one thing on screen that must read as unambiguously
+/// important. $variant is 'win' (cream/brass gradient) or 'loss' (flat sand/ember).
+@mixin outcome-card($variant) {
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-overlay);
+  padding: 1.75rem;
+
+  @if $variant == 'win' {
+    background: linear-gradient(180deg, var(--color-parchment), var(--color-parchment-dark));
+    border: 1.5px solid var(--color-brass);
+  } @else if $variant == 'loss' {
+    background: var(--color-sand);
+    border: 1.5px solid var(--color-ember);
+  } @else {
+    @error "outcome-card: unknown $variant '#{$variant}', expected 'win' or 'loss'";
+  }
+}
+
+/// Outcome badge (design-kit §6, graphics-spec decor/badge-won.png & badge-lost.png) — CSS
+/// fallback for the wreath/broken-ring artwork: a dashed roundel, no image required. Swaps to
+/// the generated PNG automatically once VISUAL_ASSETS_CONFIG.badgeWon/badgeLost carry an
+/// imageUrl (client/src/app/ui/visual-assets/visual-assets.config.ts).
+@mixin outcome-badge($variant) {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-seat);
+  flex: none;
+
+  @if $variant == 'won' {
+    background: rgba(214, 154, 82, 0.14);
+    border: 1.5px dashed var(--color-brass);
+  } @else if $variant == 'loss' {
+    background: rgba(140, 73, 26, 0.12);
+    border: 1.5px dashed var(--color-brass-deep);
+  } @else {
+    @error "outcome-badge: unknown $variant '#{$variant}', expected 'won' or 'loss'";
+  }
+}
+
+/// A square element that grows with the viewport between a legible floor and a sane ceiling —
+/// the opening-roll die, the bid-marker die, and other must-read-at-a-glance table elements.
+@mixin clamp-square($min, $preferred, $max) {
+  width: clamp(#{$min}, #{$preferred}, #{$max});
+  height: clamp(#{$min}, #{$preferred}, #{$max});
+}

@@ -1,0 +1,43 @@
+// Ionic component colors (ion-button/ion-badge `color="…"`) — mapped once here to the palette in
+// theme/_tokens.scss so every Ionic-colored control automatically matches the theme with no
+// per-usage class. This is the Ionic-convention "theme/variables.scss" override file, just named
+// to match the rest of this app's theme/ folder.
+:root {
+  --ion-background-color: var(--color-page);
+  --ion-text-color: var(--color-ink);
+
+  --ion-color-primary: var(--color-terracotta);
+  --ion-color-primary-rgb: 198, 113, 57;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: var(--color-terracotta-shade);
+  --ion-color-primary-tint: #cf8355;
+
+  --ion-color-danger: var(--color-ember);
+  --ion-color-danger-rgb: 179, 80, 63;
+  --ion-color-danger-contrast: var(--color-ivory);
+  --ion-color-danger-contrast-rgb: 255, 250, 240;
+  --ion-color-danger-shade: #9c4435;
+  --ion-color-danger-tint: #c4685a;
+
+  --ion-color-warning: var(--color-brass);
+  --ion-color-warning-rgb: 214, 154, 82;
+  --ion-color-warning-contrast: var(--color-ink);
+  --ion-color-warning-contrast-rgb: 46, 43, 37;
+  --ion-color-warning-shade: #c08a45;
+  --ion-color-warning-tint: #dfae6d;
+
+  --ion-color-success: var(--color-sage);
+  --ion-color-success-rgb: 122, 138, 94;
+  --ion-color-success-contrast: var(--color-ivory);
+  --ion-color-success-contrast-rgb: 255, 250, 240;
+  --ion-color-success-shade: #6b7a51;
+  --ion-color-success-tint: #8a9a6e;
+
+  --ion-color-medium: var(--color-neutral);
+  --ion-color-medium-rgb: 125, 116, 102;
+  --ion-color-medium-contrast: var(--color-cream);
+  --ion-color-medium-contrast-rgb: 242, 231, 211;
+  --ion-color-medium-shade: var(--color-neutral-shade);
+  --ion-color-medium-tint: var(--color-neutral-tint);
+}

@@ -1,0 +1,63 @@
+@use 'theme/mixins' as mixins;
+@use 'theme/variables' as vars;
+
+// The table screen is the app's one "on-table" (dark cabin) screen — its own ion-content
+// background/text stay dark even though the global default (styles.scss) is the light
+// "off-table" canvas used by entry/lobby/winner. Angular's emulated view encapsulation scopes
+// this to only the <ion-content> this component's own template renders.
+ion-content {
+  --background: var(--color-table-edge);
+  --color: var(--color-cream);
+}
+
+// Table outer surface (design-kit "table" swatch, perudo-desktop-board.dc.html) — the one radial
+// plus a faint plank-stripe overlay; every on-table panel sits on top of this and uses the
+// onboard fill/border tokens below rather than a flat color. CSS-only fallback (CLAUDE.md 8.1
+// "no 3D"; the static/no-animation decision) — swaps to VISUAL_ASSETS_CONFIG.tableSurface's
+// image the same way DICE_FACES_CONFIG swaps in die art.
+.table-surface {
+  position: relative;
+  background:
+    repeating-linear-gradient(96deg, rgba(255, 235, 200, 0.03) 0 2px, transparent 2px 7px),
+    radial-gradient(
+      96% 62% at 46% 22%,
+      var(--color-table-center) 0%,
+      var(--color-table-mid) 54%,
+      var(--color-table-edge) 100%
+    );
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-overlay);
+}
+
+.table__heading {
+  color: var(--color-cream);
+}
+
+.table__arc {
+  @include mixins.onboard-panel;
+  border-radius: 9999px;
+}
+
+// The local player's "Roll your hand" button (ROUND_ROLLING) must never be wider than their own
+// open cup — same width formula as dice-cup's .dice-cup-owner-shell (theme/_variables.scss) so
+// it lines up beneath it.
+.dice-cup-owner-roll-button {
+  width: vars.$owner-cup-size;
+}
+
+.table__reveal {
+  @include mixins.onboard-panel-strong;
+  color: var(--color-cream);
+}
+
+.table__bid-history {
+  @include mixins.onboard-panel;
+}
+
+.table__bid-history-title {
+  color: var(--color-cream);
+}
+
+.table__bid-history-list {
+  color: var(--color-cream-muted);
+}

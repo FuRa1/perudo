@@ -1,11 +1,11 @@
 <div
-  class="rounded-tile flex items-center gap-1.5 border-2 border-brass bg-cabin px-2 py-1.5 shadow-float"
+  class="bid-marker flex items-center gap-1.5 px-2 py-1.5"
   role="status"
   [attr.aria-label]="'Current bid: ' + bid().quantity + ' of face ' + faceValue()"
 >
-  <span class="text-lg font-bold tabular-nums text-cream">{{ bid().quantity }}</span>
-  <span class="text-lg font-bold text-brass" aria-hidden="true">×</span>
-  <div class="bid-marker-die">
+  <span class="bid-marker__quantity text-lg font-bold tabular-nums">{{ bid().quantity }}</span>
+  <span class="bid-marker__times text-lg font-bold" aria-hidden="true">×</span>
+  <div class="bid-marker__die">
     <app-die [value]="faceValue()" />
   </div>
 </div>

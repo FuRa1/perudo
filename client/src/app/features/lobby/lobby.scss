@@ -1,0 +1,13 @@
+.lobby__title {
+  color: var(--color-ink);
+}
+
+.lobby__room-code {
+  border-radius: var(--radius-tile);
+  background: var(--color-surface-alt);
+  color: var(--color-ink-muted);
+
+  strong {
+    color: var(--color-ink);
+  }
+}

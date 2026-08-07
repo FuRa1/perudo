@@ -15,6 +15,7 @@ import { bidToFaceValue } from '../bid-picker/bid-face.util';
   standalone: true,
   imports: [Die],
   templateUrl: './bid-suggestion.html',
+  styleUrl: './bid-suggestion.scss',
 })
 export class BidSuggestion {
   protected readonly dieSizePx = DIE_SIZE_PX.picker;

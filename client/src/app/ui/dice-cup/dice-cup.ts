@@ -85,6 +85,7 @@ function prefersReducedMotion(): boolean {
   standalone: true,
   imports: [Die],
   templateUrl: './dice-cup.html',
+  styleUrl: './dice-cup.scss',
 })
 export class DiceCup {
   /** The local player's authoritative dice, once known — null/empty means "not dealt yet". */

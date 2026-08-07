@@ -30,6 +30,7 @@ interface OpeningRollRow {
   standalone: true,
   imports: [Die, IonBadge],
   templateUrl: './opening-roll-panel.html',
+  styleUrl: './opening-roll-panel.scss',
 })
 export class OpeningRollPanel {
   protected readonly dieSizePx = DIE_SIZE_PX.openingRoll;

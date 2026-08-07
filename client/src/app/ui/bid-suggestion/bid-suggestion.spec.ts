@@ -33,14 +33,17 @@ describe('BidSuggestion', () => {
     expect(emitted).toEqual([bid]);
   });
 
-  it('renders an available suggestion with solid, non-faded text (no opacity-based fade)', () => {
+  it('renders an available suggestion with the shared button treatment (no opacity-based fade)', () => {
     const fixture = TestBed.createComponent(BidSuggestion);
     fixture.componentRef.setInput('label', 'Minimum');
     fixture.componentRef.setInput('bid', normalBid(4, 3));
     fixture.detectChanges();
 
     const button = getButton(fixture);
-    expect(button.className).toContain('text-cream');
+    // Color comes from bid-suggestion.scss's `.bid-suggestion` rule (solid var(--color-cream)),
+    // not a toggled utility class — this just confirms that styling hook is present and that
+    // there's no opacity-based fade class riding along with it.
+    expect(button.className).toContain('bid-suggestion');
     expect(button.className).not.toContain('opacity-40');
   });
 
@@ -60,9 +63,8 @@ describe('BidSuggestion', () => {
     button.click();
 
     expect(emitted).toEqual([]);
-    // Disabled must stay legible — a solid muted palette, not a near-transparent fade of the
-    // enabled text color against the same on-table background.
-    expect(button.className).toContain('disabled:text-cream-faint');
+    // Disabled must stay legible — bid-suggestion.scss's `&:disabled` rule swaps in a solid
+    // muted color (var(--color-cream-faint)), never a near-transparent opacity-based fade.
     expect(button.className).not.toContain('opacity-40');
   });
 

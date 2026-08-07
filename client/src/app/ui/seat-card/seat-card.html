@@ -1,16 +1,15 @@
 <div
-  class="rounded-tile flex flex-col items-center gap-1 border bg-fill-onboard-strong p-2 transition-all"
-  [class.border-brass]="isCurrentBidder()"
-  [class.border-border-onboard-strong]="!isCurrentBidder()"
+  class="seat-card flex flex-col items-center gap-1 p-2 transition-all"
+  [class.seat-card--active]="isCurrentBidder()"
   [class.w-fit]="isMe()"
   [style.min-width.px]="isMe() ? minMyCardWidthPx : null"
   [style.width.px]="isMe() ? null : size() === 'large' ? 140 : size() === 'medium' ? 104 : 76"
 >
   <div
-    class="flex items-center gap-1 text-center text-sm font-semibold whitespace-nowrap text-cream"
+    class="seat-card__name flex items-center gap-1 text-center text-sm font-semibold whitespace-nowrap"
   >
     @if (isMe()) {
-      <svg lucideCircleUserRound class="text-brass" aria-hidden="true"></svg>
+      <svg lucideCircleUserRound class="seat-card__icon" aria-hidden="true"></svg>
     }
     <span class="truncate">{{ player().nickname }}</span>
   </div>

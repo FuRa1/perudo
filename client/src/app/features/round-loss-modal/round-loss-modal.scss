@@ -1,0 +1,22 @@
+@use 'theme/mixins' as mixins;
+
+.round-loss-card {
+  @include mixins.outcome-card('loss');
+}
+
+.round-loss-badge {
+  @include mixins.outcome-badge('loss');
+}
+
+.round-loss__title,
+.round-loss__final {
+  color: var(--color-ink);
+}
+
+.round-loss__body {
+  color: var(--color-ink-muted);
+}
+
+.round-loss__claimed-label {
+  color: var(--color-meta);
+}

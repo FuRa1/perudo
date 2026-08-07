@@ -17,6 +17,7 @@ const MIN_QUANTITY = 1;
   standalone: true,
   imports: [Die],
   templateUrl: './bid-picker.html',
+  styleUrl: './bid-picker.scss',
 })
 export class BidPicker {
   protected readonly dieSizePx = DIE_SIZE_PX.picker;
