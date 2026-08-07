@@ -1,4 +1,13 @@
-import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { IonButton, IonModal } from '@ionic/angular/standalone';
 import type { ServerEvent } from '@shared';
 import { GameStore } from '../../core/game-store';
@@ -24,6 +33,9 @@ const AUTO_CLOSE_MS = 5000;
 export class RoundLossModal {
   private readonly store = inject(GameStore);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly modalElementRef = viewChild<unknown, ElementRef<HTMLElement>>('modalEl', {
+    read: ElementRef,
+  });
 
   protected readonly isOpen = signal(false);
   private readonly reveal = signal<RoundRevealedEvent | null>(null);
@@ -44,14 +56,42 @@ export class RoundLossModal {
     effect(() => {
       const latest = this.store.lastReveal();
       const myId = this.store.playerId();
-      if (latest && myId && latest.loserId === myId && latest !== this.lastShownReveal) {
+      // The server always sends 'events' (ROUND_REVEALED) before 'state' for the same batch
+      // (game.gateway.ts), so a loss that also ends the match is briefly seen before isGameOver()
+      // catches up — this guard is the common case, the destroy-time cleanup below is the
+      // guaranteed one (see its comment for why this alone is not sufficient).
+      if (
+        latest &&
+        myId &&
+        latest.loserId === myId &&
+        latest !== this.lastShownReveal &&
+        !this.store.isGameOver()
+      ) {
         this.lastShownReveal = latest;
         this.reveal.set(latest);
         this.isOpen.set(true);
         this.scheduleAutoClose();
       }
     });
-    this.destroyRef.onDestroy(() => this.clearAutoClose());
+    // GAME_OVER always wins over a still-open round-loss notification: the moment authoritative
+    // state reports the match has ended, the winner screen takes over (CLAUDE.md 5.9/6.1).
+    effect(() => {
+      if (this.store.isGameOver() && this.isOpen()) {
+        this.close();
+      }
+    });
+    this.destroyRef.onDestroy(() => {
+      this.clearAutoClose();
+      // Once presented, Ionic's <ion-modal> relocates its rendered overlay to document.body for
+      // stacking (outside this component's own DOM subtree). app.html swaps Table for Winner in
+      // the same change-detection pass that flips isGameOver() — that synchronous teardown can
+      // beat the isOpen-driven close effect above, which only runs on the next microtask flush.
+      // A modal already relocated to document.body when that race is lost is never touched by
+      // Angular's removal of this (now-destroyed) component's original template position, so it
+      // is orphaned there, permanently covering the winner screen. Force it out directly,
+      // independent of Ionic's own dismiss lifecycle/timing.
+      this.modalElementRef()?.nativeElement.remove();
+    });
   }
 
   private scheduleAutoClose(): void {

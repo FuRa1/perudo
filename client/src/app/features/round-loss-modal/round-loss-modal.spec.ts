@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-import type { ServerEvent } from '@shared';
+import { GamePhase, type MatchState, type ServerEvent } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { RoundLossModal } from './round-loss-modal';
 
@@ -23,6 +23,18 @@ function setup() {
   const fixture = TestBed.createComponent(RoundLossModal);
   const store = TestBed.inject(GameStore);
   return { fixture, store, instance: fixture.componentInstance };
+}
+
+function gameOverState(winnerId: string): MatchState {
+  return {
+    phase: GamePhase.GAME_OVER,
+    roomId: 'room-1',
+    players: [],
+    startRoll: null,
+    completedStartRoll: null,
+    round: null,
+    winnerId,
+  };
 }
 
 describe('RoundLossModal', () => {
@@ -169,5 +181,80 @@ describe('RoundLossModal', () => {
 
     fixture.destroy();
     expect(clearSpy).toHaveBeenCalled();
+  });
+
+  // Regression: once presented, Ionic's <ion-modal> relocates its rendered overlay outside this
+  // component's own DOM subtree (to document.body in a real browser) — an ordinary Angular
+  // component teardown does not reach it, so it must be force-removed via a direct element
+  // reference in the destroy hook. An earlier version of that hook read the wrong viewChild
+  // result (the IonModal component instance instead of its ElementRef), which crashed on
+  // `.nativeElement.remove()` the moment the parent tore this component down while a modal was
+  // open — exactly the GAME_OVER-during-an-open-modal case this component exists to handle.
+  it('does not throw when destroyed while open, and removes the modal element from the DOM', () => {
+    const { fixture, store } = setup();
+    const nativeElement = fixture.nativeElement as HTMLElement;
+    store.playerId.set('p1');
+    fixture.detectChanges();
+    store.lastReveal.set(reveal({ loserId: 'p1' }));
+    fixture.detectChanges();
+    expect(nativeElement.querySelector('ion-modal')).not.toBeNull();
+
+    expect(() => fixture.destroy()).not.toThrow();
+    expect(nativeElement.querySelector('ion-modal')).toBeNull();
+  });
+
+  // GAME_OVER always wins over a still-open round-loss notification (terminal-state
+  // correction): the server sends 'events' (ROUND_REVEALED) before 'state' for the same batch
+  // (game.gateway.ts), so a loss that also eliminates the player and ends the match is briefly
+  // seen by this component before GameStore's matchState reports GAME_OVER — the modal must
+  // never end up covering the winner screen either way that lands.
+  describe('terminal-state correction (GAME_OVER)', () => {
+    it('does not open for a loss reveal that arrives once the match is already GAME_OVER', () => {
+      const { fixture, store, instance } = setup();
+      store.playerId.set('p1');
+      store.setState(gameOverState('p2'));
+      fixture.detectChanges();
+
+      store.lastReveal.set(reveal({ loserId: 'p1' }));
+      fixture.detectChanges();
+
+      expect(instance['isOpen']()).toBe(false);
+    });
+
+    it('closes immediately if the match ends while the modal is already open (the loss reveal arrived before the GAME_OVER state update)', () => {
+      const { fixture, store, instance } = setup();
+      store.playerId.set('p1');
+      fixture.detectChanges();
+      store.lastReveal.set(reveal({ loserId: 'p1' }));
+      fixture.detectChanges();
+      expect(instance['isOpen']()).toBe(true);
+
+      // The 'state' update reporting GAME_OVER lands after the 'events' update already opened
+      // the modal — it must be force-closed rather than left covering the winner screen.
+      store.setState(gameOverState('p2'));
+      fixture.detectChanges();
+
+      expect(instance['isOpen']()).toBe(false);
+    });
+
+    it('a normal, non-terminal round loss still shows the modal as before', () => {
+      const { fixture, store, instance } = setup();
+      store.playerId.set('p1');
+      store.setState({
+        phase: GamePhase.BIDDING,
+        roomId: 'room-1',
+        players: [],
+        startRoll: null,
+        completedStartRoll: null,
+        round: null,
+        winnerId: null,
+      });
+      fixture.detectChanges();
+
+      store.lastReveal.set(reveal({ loserId: 'p1' }));
+      fixture.detectChanges();
+
+      expect(instance['isOpen']()).toBe(true);
+    });
   });
 });
