@@ -1,46 +1,85 @@
 <ion-content>
-  <h1 class="entry__title font-heading text-2xl mb-4">Perudo</h1>
+  <div class="entry-surface flex flex-col items-center px-2 py-6 md:py-10">
+    <div class="entry-card flex w-full max-w-md flex-col gap-5 p-6 md:p-8">
+      <div class="flex flex-col items-center gap-2 text-center">
+        <div class="entry__badge" aria-hidden="true"></div>
+        <h1 class="entry__title font-heading text-3xl">Perudo</h1>
+        <p class="entry__tagline text-sm">
+          Five dice, a closed cup, and a table full of bluffs — gather your crew and call some
+          liars.
+        </p>
+      </div>
 
-  <ion-list>
-    <ion-item>
-      <ion-input
-        label="Nickname"
-        labelPlacement="stacked"
-        placeholder="e.g. Jack"
-        [value]="nickname()"
-        (ionInput)="nickname.set($any($event.detail.value ?? ''))"
-      />
-    </ion-item>
-  </ion-list>
+      @if (!connected()) {
+        <p class="entry__status flex items-center justify-center gap-2 text-sm" role="status">
+          <ion-spinner name="crescent" aria-hidden="true" />
+          Connecting to the table...
+        </p>
+      }
 
-  <ion-button
-    expand="block"
-    class="ion-margin-top"
-    [disabled]="!nickname().trim()"
-    (click)="createRoom()"
-  >
-    Create a new room
-  </ion-button>
+      <form class="flex flex-col gap-4" (submit)="$event.preventDefault()">
+        <ion-list class="entry__field-group" lines="none">
+          <ion-item>
+            <ion-input
+              label="Room code"
+              labelPlacement="stacked"
+              placeholder="e.g. TORTUGA — leave blank to start a new table"
+              autocapitalize="characters"
+              [value]="roomId()"
+              (ionInput)="roomId.set($any($event.detail.value ?? ''))"
+            />
+          </ion-item>
+        </ion-list>
 
-  <p class="entry__divider text-center text-sm my-3">— or join one a friend created —</p>
+        <ion-list class="entry__field-group" lines="none">
+          <ion-item>
+            <ion-input
+              label="Nickname"
+              labelPlacement="stacked"
+              placeholder="e.g. Jack"
+              autocomplete="nickname"
+              [value]="nickname()"
+              (ionInput)="nickname.set($any($event.detail.value ?? ''))"
+            />
+          </ion-item>
+        </ion-list>
 
-  <ion-list>
-    <ion-item>
-      <ion-input
-        label="Room code"
-        labelPlacement="stacked"
-        placeholder="e.g. TORTUGA"
-        [value]="roomId()"
-        (ionInput)="roomId.set($any($event.detail.value ?? ''))"
-      />
-    </ion-item>
-  </ion-list>
-  <ion-button
-    expand="block"
-    fill="outline"
-    [disabled]="!nickname().trim() || !roomId().trim()"
-    (click)="joinRoom()"
-  >
-    Join room
-  </ion-button>
+        @if (store.lastError(); as error) {
+          <p class="entry__error text-sm" role="alert">{{ error.message }}</p>
+        }
+
+        <div class="flex flex-col gap-2">
+          <ion-button
+            expand="block"
+            color="primary"
+            [disabled]="!canCreate() || !connected() || pendingAction() !== null"
+            (click)="createRoom()"
+          >
+            @if (pendingAction() === 'create') {
+              <ion-spinner name="crescent" slot="start" aria-hidden="true" />
+              Creating...
+            } @else {
+              Create a new room
+            }
+          </ion-button>
+
+          <p class="entry__divider text-center text-sm">or join one a friend created</p>
+
+          <ion-button
+            expand="block"
+            fill="outline"
+            [disabled]="!canJoin() || !connected() || pendingAction() !== null"
+            (click)="joinRoom()"
+          >
+            @if (pendingAction() === 'join') {
+              <ion-spinner name="crescent" slot="start" aria-hidden="true" />
+              Joining...
+            } @else {
+              Join room
+            }
+          </ion-button>
+        </div>
+      </form>
+    </div>
+  </div>
 </ion-content>

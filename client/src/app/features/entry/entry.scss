@@ -1,7 +1,61 @@
+@use 'theme/mixins' as mixins;
+
+// A soft, CSS-only glow behind the card (design-kit "off the table" light ramp) — no image asset,
+// just a radial tint using the same warm tones as the on-table lantern glow.
+.entry-surface {
+  min-height: 100%;
+  background: radial-gradient(60% 50% at 50% 0%, var(--color-surface-alt), var(--color-page) 70%);
+}
+
+.entry-card {
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lift);
+}
+
+.entry__badge {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-seat);
+  background: linear-gradient(160deg, var(--color-identity-start), var(--color-identity-end));
+  border: 1px solid var(--color-border-strong);
+  box-shadow: var(--shadow-lift);
+}
+
 .entry__title {
   color: var(--color-ink);
 }
 
+.entry__tagline {
+  color: var(--color-ink-muted);
+  max-width: 34ch;
+}
+
+.entry__status {
+  color: var(--color-meta);
+}
+
+.entry__field-group {
+  border-radius: var(--radius-tile);
+  background: transparent;
+
+  // Ionic's own focused-underline color defaults to the primary (terracotta) accent — pin it to
+  // the same brass focus token every custom control on the table already uses (focus-ring mixin,
+  // theme/_mixins.scss), so keyboard focus reads consistently across the whole app.
+  ion-input {
+    --highlight-color-focused: var(--color-focus);
+  }
+}
+
 .entry__divider {
   color: var(--color-meta);
+}
+
+.entry__error {
+  border-radius: var(--radius-tile);
+  border: 1px solid var(--color-ember);
+  background: var(--color-sand);
+  color: var(--color-danger);
+  padding: 0.5rem 0.75rem;
 }

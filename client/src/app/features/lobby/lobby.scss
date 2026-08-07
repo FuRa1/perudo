@@ -1,3 +1,19 @@
+@use 'theme/mixins' as mixins;
+
+// Same "off the table" light ramp as Entry (design-kit) — kept in each screen's own file since
+// neither shares a parent shell, not because the language differs.
+.lobby-surface {
+  min-height: 100%;
+  background: radial-gradient(60% 50% at 50% 0%, var(--color-surface-alt), var(--color-page) 70%);
+}
+
+.lobby-card {
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-lift);
+}
+
 .lobby__title {
   color: var(--color-ink);
 }
@@ -10,4 +26,58 @@
   strong {
     color: var(--color-ink);
   }
+}
+
+.lobby__hint {
+  color: var(--color-meta);
+}
+
+// Handles 2-12 players without an unreadable single column or page overflow: as many columns as
+// fit at a legible minimum width, wrapping to more rows rather than shrinking cards.
+.lobby__roster {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lobby__row {
+  border-radius: var(--radius-tile);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  // The local player's own row (design-kit "seated" entrant state) — a brass ring, the same
+  // active/mine language the table already uses, so "this one is you" reads consistently
+  // wherever the player looks.
+  &--me {
+    border-color: var(--color-brass);
+    border-width: 1.5px;
+    box-shadow: 0 0 0 2px rgba(214, 154, 82, 0.22);
+  }
+}
+
+.lobby__avatar {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-tile);
+  background: linear-gradient(160deg, var(--color-identity-start), var(--color-identity-end));
+  color: var(--color-ivory);
+  border: 1px solid var(--color-border-strong);
+}
+
+.lobby__name {
+  color: var(--color-ink);
+}
+
+.lobby__you-tag {
+  color: var(--color-brass-deep);
+  font-weight: 600;
+}
+
+.lobby__status {
+  color: var(--color-meta);
 }

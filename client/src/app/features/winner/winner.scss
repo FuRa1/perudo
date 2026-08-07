@@ -1,11 +1,26 @@
 @use 'theme/mixins' as mixins;
 
+// ion-content manages its own scrollable area in a shadow-DOM inner wrapper — flex-centering
+// classes applied directly to <ion-content> itself don't reach it, leaving content pinned to the
+// top-left instead of centered. A plain child div (as Entry/Lobby already use for their own
+// surface wrapper) sits inside that scrollable area normally, where min-height: 100% and flex
+// centering both work as expected.
+.winner-surface {
+  min-height: 100%;
+}
+
 .winner-card {
   @include mixins.outcome-card('win');
 }
 
 .winner-badge {
   @include mixins.outcome-badge('won');
+}
+
+.winner__kicker {
+  color: var(--color-brass-deep);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .winner__title {

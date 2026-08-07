@@ -1,21 +1,52 @@
 <ion-content>
-  <h2 class="lobby__title font-heading text-xl mb-1">Lobby</h2>
-  <p class="lobby__room-code mb-3 inline-block px-3 py-2">
-    Room code: <strong class="tracking-widest">{{ roomId() }}</strong> — share it with your friends
-    so they can join.
-  </p>
-  <ion-list>
-    @for (player of players(); track player.id) {
-      <ion-item>
-        {{ player.nickname }}
-        <ion-badge slot="end" [color]="player.isReady ? 'success' : 'medium'">
-          {{ player.isReady ? 'Ready' : 'Not ready' }}
-        </ion-badge>
-      </ion-item>
-    }
-  </ion-list>
-  <ion-button expand="block" class="ion-margin-top" (click)="toggleReady()">
-    <svg lucideCheck slot="start" aria-hidden="true"></svg>
-    {{ me()?.isReady ? 'Cancel ready' : "I'm ready" }}
-  </ion-button>
+  <div class="lobby-surface flex flex-col gap-4 px-2 py-6 md:py-10">
+    <div class="lobby-card flex flex-col gap-4 p-5 md:p-7">
+      <div class="flex flex-col gap-1">
+        <h2 class="lobby__title font-heading text-2xl">The crew is gathering</h2>
+        <p class="lobby__room-code inline-flex w-fit items-center gap-2 px-3 py-2 text-sm">
+          Room code
+          <strong class="tracking-widest">{{ roomId() }}</strong>
+        </p>
+        <p class="lobby__hint text-sm">Share the code above so your friends can join.</p>
+      </div>
+
+      <ul class="lobby__roster grid gap-2" aria-label="Players in this room">
+        @for (player of players(); track player.id) {
+          <li
+            class="lobby__row flex items-center gap-3 p-3"
+            [class.lobby__row--me]="player.id === playerId()"
+          >
+            <div class="lobby__avatar flex items-center justify-center text-sm font-semibold">
+              {{ initialFor(player.nickname) }}
+            </div>
+            <div class="flex min-w-0 flex-1 flex-col">
+              <span class="lobby__name truncate text-sm font-semibold">
+                {{ player.nickname }}
+                @if (player.id === playerId()) {
+                  <span class="lobby__you-tag">(you)</span>
+                }
+              </span>
+            </div>
+            <ion-badge [color]="player.isReady ? 'success' : 'medium'">
+              {{ player.isReady ? 'Ready' : 'Not ready' }}
+            </ion-badge>
+          </li>
+        }
+      </ul>
+
+      <p class="lobby__status text-sm" role="status">
+        @if (allReady()) {
+          Everyone is ready — the match will begin any moment.
+        } @else {
+          {{ readyCount() }} of {{ players().length }} ready — the match begins once every player is
+          ready.
+        }
+      </p>
+
+      <ion-button expand="block" color="primary" (click)="toggleReady()">
+        <svg lucideCheck slot="start" aria-hidden="true"></svg>
+        {{ me()?.isReady ? 'Cancel ready' : "I'm ready" }}
+      </ion-button>
+    </div>
+  </div>
 </ion-content>

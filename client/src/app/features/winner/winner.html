@@ -1,9 +1,10 @@
-<ion-content class="flex min-h-screen flex-col items-center justify-center text-center">
-  <div class="winner-card flex flex-col items-center gap-3">
-    <div class="winner-badge"></div>
-    <h1 class="winner__title font-heading text-3xl">{{ winnerName() }} wins!</h1>
-    @if (isMe()) {
-      <p class="winner__subtitle">Congratulations, you won the match.</p>
-    }
+<ion-content>
+  <div class="winner-surface flex flex-col items-center justify-center px-2 text-center">
+    <div class="winner-card flex w-full max-w-md flex-col items-center gap-3">
+      <div class="winner-badge" aria-hidden="true"></div>
+      <p class="winner__kicker text-xs font-semibold" role="status">Match complete</p>
+      <h1 class="winner__title font-heading text-3xl">{{ winnerName() }} wins!</h1>
+      <p class="winner__subtitle">{{ subtitle() }}</p>
+    </div>
   </div>
 </ion-content>
