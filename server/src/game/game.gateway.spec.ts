@@ -68,7 +68,9 @@ async function setupBiddingRoom(
   await gateway.handleSetReady(s1.socket, { isReady: true });
   await gateway.handleSetReady(s2.socket, { isReady: true });
   await gateway.handleRollDice(s1.socket); // start-roll: p1
-  await gateway.handleRollDice(s2.socket); // start-roll: p2 (decides), then round 1 hands auto-deal
+  await gateway.handleRollDice(s2.socket); // start-roll: p2 (decides) -> ROUND_ROLLING
+  await gateway.handleRollDice(s1.socket); // hand roll: p1
+  await gateway.handleRollDice(s2.socket); // hand roll: p2 -> BIDDING
 
   return { s1, s2 };
 }
