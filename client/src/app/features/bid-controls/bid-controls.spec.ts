@@ -71,6 +71,16 @@ describe('BidControls', () => {
     expect(text).not.toContain('Waiting for');
   });
 
+  it('marks Place bid as the primary action and Call liar as the distinct danger action', () => {
+    const { fixture } = render('p1', biddingState());
+    const nativeElement = fixture.nativeElement as HTMLElement;
+    const buttons = Array.from(nativeElement.querySelectorAll('ion-button'));
+    const placeBid = buttons.find((b) => b.textContent?.includes('Place bid'));
+    const callLiar = buttons.find((b) => b.textContent?.includes('Call liar'));
+    expect(placeBid?.getAttribute('color')).toBe('primary');
+    expect(callLiar?.getAttribute('color')).toBe('danger');
+  });
+
   it('shows a neutral waiting status instead of the picker for the inactive player', () => {
     const { text } = render('p2', biddingState());
     expect(text).toContain('Waiting for Alice to bid');

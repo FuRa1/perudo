@@ -48,3 +48,17 @@
 .dice-cup-closed__count {
   color: var(--color-cream);
 }
+
+// Owner's open cup, before the hand roll (empty/ready state) — same dashed-placeholder language
+// as the opening-roll panel's waiting slot, scaled to fit the round bowl instead of a die square.
+.dice-cup-owner-empty__ring {
+  width: 62%;
+  height: 62%;
+  border: 2px dashed var(--color-border-onboard-strong);
+}
+
+.dice-cup-owner-empty__label {
+  color: var(--color-cream-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

@@ -9,9 +9,14 @@
   @include mixins.focus-ring;
   color: var(--color-cream);
 
+  // A solid muted color reads as "disabled but still legible" (design-kit §5 "Disabled" pill,
+  // color #7d7466 / var(--color-neutral)) — never an opacity fade, which would just look like a
+  // dimmed-out version of the same active button instead of a distinct, readable state.
   &:disabled {
     cursor: not-allowed;
-    opacity: 0.4;
+    border-color: var(--color-border-onboard);
+    background: transparent;
+    color: var(--color-neutral);
   }
 }
 

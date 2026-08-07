@@ -1,9 +1,9 @@
-<div class="bid-picker inline-flex items-stretch gap-3 p-2">
+<div class="bid-picker inline-flex items-stretch gap-4 p-3">
   <!-- Quantity stepper -->
-  <div class="flex flex-col items-center gap-1" role="group" aria-label="Bid quantity">
+  <div class="flex flex-col items-center gap-2" role="group" aria-label="Bid quantity">
     <button
       type="button"
-      class="bid-picker__button flex h-6 w-8 items-center justify-center rounded leading-none"
+      class="bid-picker__button flex h-11 w-14 items-center justify-center rounded-xl text-base leading-none"
       [disabled]="disabled()"
       aria-label="Increase quantity"
       (click)="incrementQuantity()"
@@ -12,7 +12,7 @@
     </button>
 
     <div
-      class="bid-picker__value w-10 text-center text-xl font-bold tabular-nums select-none"
+      class="bid-picker__value w-14 text-center text-4xl font-bold tabular-nums select-none"
       role="spinbutton"
       [attr.tabindex]="disabled() ? -1 : 0"
       [attr.aria-valuenow]="quantity()"
@@ -26,7 +26,7 @@
 
     <button
       type="button"
-      class="bid-picker__button flex h-6 w-8 items-center justify-center rounded leading-none"
+      class="bid-picker__button flex h-11 w-14 items-center justify-center rounded-xl text-base leading-none"
       [disabled]="!canDecrementQuantity()"
       aria-label="Decrease quantity"
       (click)="decrementQuantity()"
@@ -35,13 +35,13 @@
     </button>
   </div>
 
-  <span class="bid-picker__separator self-center text-2xl font-bold" aria-hidden="true">×</span>
+  <span class="bid-picker__separator self-center text-3xl font-bold" aria-hidden="true">×</span>
 
   <!-- Face stepper -->
-  <div class="flex flex-col items-center gap-1" role="group" aria-label="Bid face">
+  <div class="flex flex-col items-center gap-2" role="group" aria-label="Bid face">
     <button
       type="button"
-      class="bid-picker__button flex h-6 w-8 items-center justify-center rounded leading-none"
+      class="bid-picker__button flex h-11 w-14 items-center justify-center rounded-xl text-base leading-none"
       [disabled]="!canChangeFace()"
       aria-label="Next face"
       (click)="incrementFace()"
@@ -66,7 +66,7 @@
 
     <button
       type="button"
-      class="bid-picker__button flex h-6 w-8 items-center justify-center rounded leading-none"
+      class="bid-picker__button flex h-11 w-14 items-center justify-center rounded-xl text-base leading-none"
       [disabled]="!canChangeFace()"
       aria-label="Previous face"
       (click)="decrementFace()"

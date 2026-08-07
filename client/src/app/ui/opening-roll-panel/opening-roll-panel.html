@@ -23,12 +23,20 @@
         </div>
 
         <!-- Reserved fixed-height status/badge row — always present, so its own appearance
-             never shifts the die slot or nickname above it. -->
+             never shifts the die slot or nickname above it. Three distinct states: waiting to
+             roll, rolled (but not yet known to be the winner), and the resolved winner. -->
         <div class="flex h-5 items-center justify-center">
-          @if (row.status === 'waiting') {
-            <span class="opening-roll-panel__status text-[10px] whitespace-nowrap">Waiting</span>
-          } @else if (row.isWinner) {
+          @if (row.isWinner) {
             <ion-badge color="warning">Starts round 1</ion-badge>
+          } @else if (row.status === 'waiting') {
+            <span class="opening-roll-panel__status text-[10px] whitespace-nowrap"
+              >Waiting to roll</span
+            >
+          } @else {
+            <span
+              class="opening-roll-panel__status opening-roll-panel__status--rolled text-[10px] whitespace-nowrap"
+              >Rolled</span
+            >
           }
         </div>
       </div>

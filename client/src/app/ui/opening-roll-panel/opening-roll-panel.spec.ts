@@ -51,4 +51,18 @@ describe('OpeningRollPanel', () => {
     const text = render([player('p1', 'Alice'), player('p2', 'Bob')], null, completed);
     expect(text).toContain('Starts round 1');
   });
+
+  it('distinguishes all three states at once: waiting to roll, rolled (not yet the winner), and the winner', () => {
+    const text = render(
+      [player('p1', 'Alice'), player('p2', 'Bob'), player('p3', 'Cara')],
+      { pendingPlayerIds: ['p3'], rolls: { p1: 6, p2: 4 } },
+      { rolls: { p1: 6, p2: 4 }, firstPlayerId: 'p1' },
+    );
+    // Alice (the winner) gets the winner badge, never the generic "Rolled" text.
+    expect(text).toContain('Starts round 1');
+    // Bob rolled but isn't the winner — a distinct "Rolled" state, not blank and not "Waiting".
+    expect(text).toContain('Rolled');
+    // Cara hasn't rolled yet.
+    expect(text).toContain('Waiting to roll');
+  });
 });

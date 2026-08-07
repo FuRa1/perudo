@@ -6,6 +6,18 @@
         [class]="cssClass.openInterior"
         [style.inset]="innerBowlInset()"
       >
+        @if (dieViews().length === 0) {
+          <!-- Empty/ready state (before the hand roll): the bowl is genuinely empty, not just
+               visually blank, so it needs its own affordance — a dashed ring echoing the
+               opening-roll panel's waiting placeholder, plus a short label naming the state. -->
+          <div class="dice-cup-owner-empty absolute inset-0 flex items-center justify-center">
+            <div class="dice-cup-owner-empty__ring flex items-center justify-center rounded-full">
+              <span class="dice-cup-owner-empty__label text-center text-xs font-semibold"
+                >Ready</span
+              >
+            </div>
+          </div>
+        }
         @for (view of dieViews(); track $index) {
           <div
             class="absolute top-1/2 left-1/2"

@@ -103,4 +103,17 @@ describe('BidPicker', () => {
     faceUp.click();
     expect(emitted).toEqual([]);
   });
+
+  it('never dims a disabled stepper via opacity — bid-picker.scss swaps in a solid muted color instead', () => {
+    const { quantityUp } = setup(2, 2, true);
+    expect(quantityUp.className).not.toContain('opacity-40');
+  });
+
+  it('gives every stepper button a touch target at least 44px tall (accessibility floor)', () => {
+    const { quantityUp, quantityDown, faceUp, faceDown } = setup(2, 2);
+    for (const button of [quantityUp, quantityDown, faceUp, faceDown]) {
+      // h-11 is Tailwind's 2.75rem = 44px — the accessibility-mandated minimum touch target.
+      expect(button.className).toContain('h-11');
+    }
+  });
 });

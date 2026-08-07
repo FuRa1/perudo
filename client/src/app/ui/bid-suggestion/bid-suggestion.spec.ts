@@ -68,6 +68,17 @@ describe('BidSuggestion', () => {
     expect(button.className).not.toContain('opacity-40');
   });
 
+  it('has a touch target at least 44px tall (accessibility floor)', () => {
+    const fixture = TestBed.createComponent(BidSuggestion);
+    fixture.componentRef.setInput('label', 'Minimum');
+    fixture.componentRef.setInput('bid', normalBid(4, 3));
+    fixture.detectChanges();
+
+    // min-h-11 is Tailwind's 2.75rem = 44px, enforced regardless of content so the shorter
+    // "unavailable" state can't shrink below the same floor.
+    expect(getButton(fixture).className).toContain('min-h-11');
+  });
+
   it('does not submit when no suggestion is available (bid is null)', () => {
     const fixture = TestBed.createComponent(BidSuggestion);
     fixture.componentRef.setInput('label', 'Switch to aces');

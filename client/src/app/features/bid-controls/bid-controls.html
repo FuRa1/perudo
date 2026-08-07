@@ -31,7 +31,9 @@
     </div>
 
     <div class="flex flex-wrap justify-center gap-2">
-      <ion-button [disabled]="!isValid()" (click)="placeBid()">Place bid</ion-button>
+      <ion-button color="primary" [disabled]="!isValid()" (click)="placeBid()">
+        Place bid
+      </ion-button>
       <ion-button color="danger" [disabled]="!canCallLiar()" (click)="callLiar()">
         <svg lucideHand slot="start" aria-hidden="true"></svg>
         Call liar!

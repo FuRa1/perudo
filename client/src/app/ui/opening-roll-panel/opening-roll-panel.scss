@@ -28,11 +28,19 @@
 
 .opening-roll-panel__status {
   color: var(--color-cream-muted);
+
+  // Distinct from "Waiting to roll" (muted grey) without reaching for the winner's brass —
+  // matches the sage tone SeatCard already uses for "Hand rolled" (seat-card.html), so the same
+  // state reads the same color everywhere in the app.
+  &--rolled {
+    color: var(--color-sage);
+    font-weight: 700;
+  }
 }
 
 // The public opening-roll die (5.2) — the pre-game centerpiece, so it must read clearly at a
 // glance on any screen. Floor sized for legibility, growing on wider viewports, capped so it
 // never dominates the panel on desktop.
 .opening-roll-die {
-  @include mixins.clamp-square(48px, 10vw, 64px);
+  @include mixins.clamp-square(56px, 11vw, 72px);
 }

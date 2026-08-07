@@ -77,6 +77,17 @@ describe('DiceCup', () => {
     expect(instance.dieViews()).toEqual([]);
   });
 
+  it('renders a distinct ready affordance in the empty owner cup, not just a blank bowl', () => {
+    const { nativeElement } = render({ isOwner: true, diceCount: 5, dice: null });
+    expect(nativeElement.querySelector('.dice-cup-owner-empty')).not.toBeNull();
+    expect(nativeElement.textContent).toContain('Ready');
+  });
+
+  it('replaces the ready affordance with the actual dice once the hand is dealt', () => {
+    const { nativeElement } = render({ isOwner: true, diceCount: 3, dice: [2, 4, 6] });
+    expect(nativeElement.querySelector('.dice-cup-owner-empty')).toBeNull();
+  });
+
   it('renders a closed cup for an opponent, never a die-face component or value', () => {
     const { nativeElement } = render({ isOwner: false, diceCount: 5 });
     expect(nativeElement.querySelectorAll('app-die')).toHaveLength(0);
