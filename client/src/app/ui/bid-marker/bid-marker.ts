@@ -6,7 +6,9 @@ import { bidToFaceValue } from '../bid-picker/bid-face.util';
 /**
  * The current claim, rendered visually (quantity × die face) rather than as text — used to mark
  * the active bid next to whichever seat card placed it. Purely presentational: no store/socket
- * injection, no knowledge of whose turn it is or where it's positioned — the parent decides that.
+ * injection, no knowledge of whose turn it is or where it's positioned — the parent decides that
+ * (SeatCard renders it inline in its own layout, never as a floating overlay, so it can never
+ * cover the nickname/cup/badges it sits alongside).
  */
 @Component({
   selector: 'app-bid-marker',

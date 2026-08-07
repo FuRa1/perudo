@@ -2,10 +2,31 @@
   border-radius: var(--radius-tile);
   background: var(--color-fill-onboard-strong);
   border: 1px solid var(--color-border-onboard-strong);
-  transition: border-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 
+  // The current bidder must be obvious at a glance without making every other seat visually
+  // loud (design-kit "on turn" state) — a brass border plus a soft matching glow, nothing else
+  // on the table changes.
   &--active {
     border-color: var(--color-brass);
+    box-shadow: 0 0 0 3px rgba(214, 154, 82, 0.28);
+  }
+
+  // The local player is the dominant bottom-centre anchor (8.3) — a bigger radius and a real
+  // drop shadow give it more visual weight than any opponent card without changing its color
+  // language, so it still reads as "the same kind of thing", just the important one.
+  &--mine {
+    border-radius: var(--radius-panel);
+    border-width: 1.5px;
+    box-shadow: var(--shadow-float);
+
+    &.seat-card--active {
+      box-shadow:
+        var(--shadow-float),
+        0 0 0 3px rgba(214, 154, 82, 0.28);
+    }
   }
 }
 

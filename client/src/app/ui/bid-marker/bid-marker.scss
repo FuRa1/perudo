@@ -1,18 +1,22 @@
 @use 'theme/mixins' as mixins;
 
+// The wager token (design-kit §4): "the only light object on the table — it always reads as the
+// current claim". A cream/brass gradient chip reads as unmistakably more important than the dark
+// on-table cards around it, satisfying "prominent, high-contrast" without inventing a new color.
 .bid-marker {
   border-radius: var(--radius-tile);
-  border: 2px solid var(--color-brass);
-  background: var(--color-cabin);
+  border: 1.5px solid var(--color-brass);
+  background: linear-gradient(180deg, var(--color-parchment), var(--color-parchment-dark));
   box-shadow: var(--shadow-float);
 }
 
 .bid-marker__quantity {
-  color: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-heading);
 }
 
 .bid-marker__times {
-  color: var(--color-brass);
+  color: var(--color-brass-deep);
 }
 
 // The current-bid marker's die (2.) — must be readable at a glance even on a small opponent

@@ -49,6 +49,19 @@ function seatSizeFor(opponentCount: number): SeatSize {
 
 const CARD_GAP_PX = 12;
 
+/** Fixes the known vertical-clipping bug: the arc's own sine curve (computeArcPosition) puts the
+ * topmost seat's *center* as little as 4% down the arc box, and each card is centered on that
+ * point via `-translate-y-1/2` — so a card's upper half can extend well above the arc box's own
+ * y=0. Harmless on its own, except the arc sits inside a horizontally-scrolling wrapper, and
+ * setting `overflow-x` on an element forces `overflow-y` to compute to `auto` too (a CSS quirk,
+ * not a bug we can select our way out of) — so that clipped region was actually being cut off
+ * rather than merely overflowing visibly. Padding the scroll wrapper by more than the tallest
+ * seat card's own half-height (large tier, with a current-bid marker showing) gives every card
+ * room to render in full before the scrollable box's content even starts. One constant for every
+ * tier rather than a tighter per-tier value: simpler to reason about and verify, and the small
+ * amount of extra headroom at smaller tiers matches the arc's own generous space in the design. */
+const ARC_TOP_PADDING_PX = 140;
+
 function describeBid(bid: Bid): string {
   return bid.kind === 'ACE' ? `${bid.quantity} aces` : `${bid.quantity} × face ${bid.face}`;
 }
@@ -74,6 +87,7 @@ export class Table {
 
   protected readonly GamePhase = GamePhase;
   protected readonly describeBid = describeBid;
+  protected readonly arcTopPaddingPx = ARC_TOP_PADDING_PX;
 
   protected readonly allPlayers = computed<readonly Player[]>(
     () => this.store.matchState()?.players ?? [],

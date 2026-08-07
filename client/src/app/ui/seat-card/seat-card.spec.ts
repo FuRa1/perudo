@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import type { Player } from '@shared';
+import { normalBid, type Player } from '@shared';
 import { CARD_WIDTH_PX, SeatCard } from './seat-card';
 
 function player(overrides: Partial<Player> = {}): Player {
@@ -45,6 +45,27 @@ describe('SeatCard', () => {
     const { text } = render({ player: player(), handRollStatus: null });
     expect(text).not.toContain('Hand rolled');
     expect(text).not.toContain('Waiting to roll');
+  });
+
+  it('renders no bid marker when currentBid is null', () => {
+    const { nativeElement } = render({ player: player(), currentBid: null });
+    expect(nativeElement.querySelector('app-bid-marker')).toBeNull();
+  });
+
+  it('renders the bid marker inline, between the nickname and the dice cup (never a floating overlay)', () => {
+    const { nativeElement } = render({ player: player(), currentBid: normalBid(4, 5) });
+    const marker = nativeElement.querySelector('app-bid-marker');
+    const cup = nativeElement.querySelector('app-dice-cup');
+    expect(marker).toBeTruthy();
+    expect(marker?.textContent ?? '').toContain('4');
+    // It must sit in the card's own document flow (no inline positioning styles) and come before
+    // the dice cup in DOM order — never absolutely positioned on top of the nickname/cup/badges.
+    expect(marker?.getAttribute('style')).toBeNull();
+    expect(
+      marker !== null &&
+        cup !== null &&
+        !!(marker.compareDocumentPosition(cup as Node) & Node.DOCUMENT_POSITION_FOLLOWING),
+    ).toBe(true);
   });
 
   it('is at least as wide as a large opponent card before the local player has rolled anything', () => {

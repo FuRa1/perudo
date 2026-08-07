@@ -50,14 +50,22 @@ ion-content {
   color: var(--color-cream);
 }
 
+// Bid history is a secondary ledger/debug section (design-kit "Label 11 uppercase — column
+// headers" scale) — quieter border, no fill, smaller and more muted text than every other panel
+// on the table, so it reads as reference material rather than something needing attention.
 .table__bid-history {
-  @include mixins.onboard-panel;
+  border-radius: var(--radius-tile);
+  border: 1px solid var(--color-border-onboard);
 }
 
 .table__bid-history-title {
-  color: var(--color-cream);
+  color: var(--color-cream-faint);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .table__bid-history-list {
-  color: var(--color-cream-muted);
+  color: var(--color-cream-faint);
+  font-size: 12px;
 }

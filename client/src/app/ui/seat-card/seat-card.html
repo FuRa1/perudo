@@ -1,6 +1,7 @@
 <div
   class="seat-card flex flex-col items-center gap-1 p-2 transition-all"
   [class.seat-card--active]="isCurrentBidder()"
+  [class.seat-card--mine]="isMe()"
   [class.w-fit]="isMe()"
   [style.min-width.px]="isMe() ? minMyCardWidthPx : null"
   [style.width.px]="isMe() ? null : size() === 'large' ? 140 : size() === 'medium' ? 104 : 76"
