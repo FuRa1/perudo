@@ -51,10 +51,6 @@ const FACE_BY_VALUE = Object.fromEntries(DICE_FACES_CONFIG.map((f) => [f.value, 
  * Renders a single die face entirely from DICE_FACES_CONFIG (3.4, 8.2) — CSS pips today, an
  * `<img>` automatically once a face gets a real `imageUrl` (3.5: rendering is swappable, no
  * component changes needed when Phase 4's art integration happens).
- *
- * `rolling` shows a short CSS-only spin instead of the face — a purely cosmetic cue (8.2: "no
- * pseudo-hints in the animation"). It never stands in for a result: `value` is ignored while
- * `rolling` is true, and the real face only ever appears once the server has actually sent it.
  */
 @Component({
   selector: 'app-die',
@@ -64,7 +60,6 @@ const FACE_BY_VALUE = Object.fromEntries(DICE_FACES_CONFIG.map((f) => [f.value, 
 })
 export class Die {
   readonly value = input.required<DiceValue>();
-  readonly rolling = input(false);
 
   protected readonly face = computed(() => FACE_BY_VALUE[this.value()]);
   protected readonly pips = computed(() => PIP_LAYOUTS[this.value()]);

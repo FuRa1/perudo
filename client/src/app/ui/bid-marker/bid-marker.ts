@@ -1,7 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import type { Bid } from '@shared';
 import { Die } from '../die/die';
-import { DIE_SIZE_PX } from '../die/die-size.config';
 import { bidToFaceValue } from '../bid-picker/bid-face.util';
 
 /**
@@ -17,8 +16,6 @@ import { bidToFaceValue } from '../bid-picker/bid-face.util';
   styleUrl: './bid-marker.scss',
 })
 export class BidMarker {
-  protected readonly dieSizePx = DIE_SIZE_PX.bidMarker;
-
   readonly bid = input.required<Bid>();
 
   protected readonly faceValue = computed(() => bidToFaceValue(this.bid()));

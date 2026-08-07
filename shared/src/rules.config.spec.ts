@@ -11,10 +11,6 @@ describe('RULES_CONFIG', () => {
       personalBankMs: 30_000,
     });
     expect(RULES_CONFIG.specialRoundBonusTimerMs).toBe(7_000);
-    expect(RULES_CONFIG.shakeGesture).toEqual({
-      maxDurationMs: 5_000,
-      stillnessThresholdToCommitMs: 500,
-    });
     expect(RULES_CONFIG.reconnectWaitWindowMs).toBe(60_000);
   });
 });

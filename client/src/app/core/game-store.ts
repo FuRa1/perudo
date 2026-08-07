@@ -1,4 +1,4 @@
-import { Injectable, computed, signal, type WritableSignal } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
 import { GamePhase, type GameError, type MatchState, type ServerEvent } from '@shared';
 
 /**
@@ -18,19 +18,6 @@ export class GameStore {
    * ever observe it. Consumers that care about "is this reveal still fresh" (e.g. the round-loss
    * modal) track that themselves by object identity, not by relying on this being nulled. */
   readonly lastReveal = signal<Extract<ServerEvent, { type: 'ROUND_REVEALED' }> | null>(null);
-  /** Player IDs currently showing the cosmetic public opening-die roll animation (5.2, 8.2) —
-   * set on START_ROLL_ROLLED, cleared a fixed short delay later regardless of when the state
-   * update lands. Consumed only by OpeningRollPanel — never implies a value. */
-  readonly openingRollingPlayerIds = signal<ReadonlySet<string>>(new Set());
-  /** Player IDs currently showing the cosmetic hand-roll animation (8.2) — set on
-   * PLAYER_ROLLED_HAND. Consumed only by the dice cup (SeatCard/DiceCup): this is a distinct
-   * signal from openingRollingPlayerIds specifically so an opening-die roll can never trigger a
-   * player's private hand cup to shake, and vice versa. For the local owner this is only a
-   * rising-edge trigger — DiceCup manages its own animation timing once started, independent of
-   * how long this stays true. */
-  readonly handRollingPlayerIds = signal<ReadonlySet<string>>(new Set());
-  private static readonly OPENING_ROLL_ANIMATION_MS = 500;
-  private static readonly HAND_ROLL_ANIMATION_MS = 1000;
 
   readonly me = computed(() => {
     const state = this.matchState();
@@ -67,36 +54,6 @@ export class GameStore {
     if (revealed) {
       this.lastReveal.set(revealed);
     }
-    for (const event of events) {
-      if (event.type === 'START_ROLL_ROLLED') {
-        this.markRolling(
-          this.openingRollingPlayerIds,
-          event.playerId,
-          GameStore.OPENING_ROLL_ANIMATION_MS,
-        );
-      } else if (event.type === 'PLAYER_ROLLED_HAND') {
-        this.markRolling(
-          this.handRollingPlayerIds,
-          event.playerId,
-          GameStore.HAND_ROLL_ANIMATION_MS,
-        );
-      }
-    }
-  }
-
-  private markRolling(
-    target: WritableSignal<ReadonlySet<string>>,
-    playerId: string,
-    durationMs: number,
-  ): void {
-    target.update((current) => new Set(current).add(playerId));
-    setTimeout(() => {
-      target.update((current) => {
-        const next = new Set(current);
-        next.delete(playerId);
-        return next;
-      });
-    }, durationMs);
   }
 
   setError(error: GameError): void {

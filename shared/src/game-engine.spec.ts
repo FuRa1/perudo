@@ -11,7 +11,6 @@ import {
   type EngineResult,
 } from './game-engine';
 import { SequenceDiceRoller } from '@shared/testing/sequence-dice-roller';
-import { RULES_CONFIG } from './rules.config';
 
 function deps(sequence: readonly DiceValue[]): EngineDeps {
   return { diceRoller: new SequenceDiceRoller(sequence) };
@@ -117,10 +116,8 @@ describe('LOBBY — joining and readying up', () => {
 });
 
 describe('START_ROLL (5.2) — highest die goes first, ties re-roll among the tied', () => {
-  it('resolves immediately when there is no tie, dealing private hands and entering BIDDING directly', () => {
-    // Opening rolls: p1=4, p2=6, p3=2. Then round-1 hands are dealt server-side, one player at a
-    // time in seating order (p1, p2, p3), 5 dice each — no separate manual "roll your hand" step.
-    const d = deps([4, 6, 2, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3]);
+  it('resolves the decisive roll into ROUND_ROLLING, not BIDDING, with no private hands dealt', () => {
+    const d = deps([4, 6, 2]);
     let state = createInitialMatchState('room-1');
     for (const id of ['p1', 'p2', 'p3']) {
       state = expectOk(
@@ -147,12 +144,13 @@ describe('START_ROLL (5.2) — highest die goes first, ties re-roll among the ti
       applyIntent(state, { type: 'ROLL_DICE', playerId: 'p3' }, d),
     ); // rolls 2
 
-    // Straight to BIDDING — no intervening ROUND_ROLLING/manual hand-roll for round 1.
-    expect(afterLast.phase).toBe(GamePhase.BIDDING);
+    // Into ROUND_ROLLING, not straight to BIDDING — every active player must still manually roll
+    // their own hand (5.3).
+    expect(afterLast.phase).toBe(GamePhase.ROUND_ROLLING);
     expect(events.some((e) => e.type === 'ROUND_STARTED' && e.firstPlayerId === 'p2')).toBe(true);
     expect(afterLast.startRoll).toBeNull();
     // Final resolution: startRoll is cleared, but the complete decisive result is preserved
-    // publicly for temporary debug visibility (retained through round 1's initial BIDDING).
+    // publicly for temporary debug visibility (retained through round 1's ROUND_ROLLING/BIDDING).
     expect(afterLast.completedStartRoll).toEqual({
       rolls: { p1: 4, p2: 6, p3: 2 },
       firstPlayerId: 'p2',
@@ -162,52 +160,18 @@ describe('START_ROLL (5.2) — highest die goes first, ties re-roll among the ti
     expect(round?.turnOrder).toEqual(['p2', 'p3', 'p1']);
     expect(round?.currentTurnIndex).toBe(0);
     expect(round?.bidHistory).toEqual([]);
-    expect(round?.pendingRolls).toEqual([]);
+    // No auto-deal: every active player still owes a manual hand roll.
+    expect([...(round?.pendingRolls ?? [])].sort()).toEqual(['p1', 'p2', 'p3']);
 
-    // Every player's private hand was dealt server-side...
-    expect(afterLast.players.find((p) => p.id === 'p1')?.dice).toEqual([1, 1, 1, 1, 1]);
-    expect(afterLast.players.find((p) => p.id === 'p2')?.dice).toEqual([2, 2, 2, 2, 2]);
-    expect(afterLast.players.find((p) => p.id === 'p3')?.dice).toEqual([3, 3, 3, 3, 3]);
-  });
-
-  it('deals every active player exactly RULES_CONFIG.startingDicePerPlayer private dice the moment a fresh two-player match reaches round-1 BIDDING (regression: dice must not go missing across the START_ROLL -> BIDDING transition)', () => {
-    const d = deps([3, 5, 1, 2, 3, 4, 5, 6, 6, 5, 4, 3, 2, 1]);
-    let state = createInitialMatchState('room-1');
-    for (const id of ['p1', 'p2']) {
-      state = expectOk(
-        applyIntent(state, { type: 'JOIN_ROOM', playerId: id, nickname: id }, d),
-      ).state;
-    }
-    for (const player of state.players) {
-      expect(player.diceCount).toBe(RULES_CONFIG.startingDicePerPlayer);
-      expect(player.dice).toHaveLength(0);
-    }
-    for (const id of ['p1', 'p2']) {
-      state = expectOk(
-        applyIntent(state, { type: 'SET_READY', playerId: id, isReady: true }, d),
-      ).state;
-    }
-    expect(state.phase).toBe(GamePhase.START_ROLL);
-
-    state = expectOk(applyIntent(state, { type: 'ROLL_DICE', playerId: 'p1' }, d)).state; // rolls 3
-    const { state: afterLast } = expectOk(
-      applyIntent(state, { type: 'ROLL_DICE', playerId: 'p2' }, d), // rolls 5, wins outright
-    );
-
-    expect(afterLast.phase).toBe(GamePhase.BIDDING);
-    expect(afterLast.round).not.toBeNull();
-    for (const player of afterLast.players) {
-      expect(player.diceCount).toBe(RULES_CONFIG.startingDicePerPlayer);
-      expect(player.dice).toHaveLength(RULES_CONFIG.startingDicePerPlayer);
-    }
-    expect(afterLast.players.find((p) => p.id === 'p1')?.dice).toEqual([1, 2, 3, 4, 5]);
-    expect(afterLast.players.find((p) => p.id === 'p2')?.dice).toEqual([6, 6, 5, 4, 3]);
+    // No private hand was dealt for anyone yet.
+    expect(afterLast.players.find((p) => p.id === 'p1')?.dice).toEqual([]);
+    expect(afterLast.players.find((p) => p.id === 'p2')?.dice).toEqual([]);
+    expect(afterLast.players.find((p) => p.id === 'p3')?.dice).toEqual([]);
   });
 
   it('makes the tied players re-roll among themselves, leaving the others out of it', () => {
-    // p1 & p2 tie at 5; p3 rolled 3 and waits. Re-roll: p1=2, p2=6 -> p2 wins. Then round-1
-    // hands are dealt for all three players (p1, p2, p3), 5 dice each.
-    const d = deps([5, 5, 3, 2, 6, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3]);
+    // p1 & p2 tie at 5; p3 rolled 3 and waits. Re-roll: p1=2, p2=6 -> p2 wins.
+    const d = deps([5, 5, 3, 2, 6]);
     let state = createInitialMatchState('room-1');
     for (const id of ['p1', 'p2', 'p3']) {
       state = expectOk(
@@ -244,16 +208,16 @@ describe('START_ROLL (5.2) — highest die goes first, ties re-roll among the ti
     const { state: resolved } = expectOk(
       applyIntent(state, { type: 'ROLL_DICE', playerId: 'p2' }, d), // rerolls 6
     );
-    expect(resolved.phase).toBe(GamePhase.BIDDING);
+    expect(resolved.phase).toBe(GamePhase.ROUND_ROLLING);
     expect(resolved.round?.turnOrder[0]).toBe('p2');
-    expect(resolved.round?.pendingRolls).toEqual([]);
+    expect([...(resolved.round?.pendingRolls ?? [])].sort()).toEqual(['p1', 'p2', 'p3']);
     // Only the decisive reroll (p1: 2, p2: 6) is retained — neither the discarded tied 5s nor
     // p3's un-tied 3 leak into the completed public result.
     expect(resolved.completedStartRoll).toEqual({ rolls: { p1: 2, p2: 6 }, firstPlayerId: 'p2' });
-    // And every player's private round-1 hand was dealt, same as the no-tie path.
-    expect(resolved.players.find((p) => p.id === 'p1')?.dice).toEqual([1, 1, 1, 1, 1]);
-    expect(resolved.players.find((p) => p.id === 'p2')?.dice).toEqual([2, 2, 2, 2, 2]);
-    expect(resolved.players.find((p) => p.id === 'p3')?.dice).toEqual([3, 3, 3, 3, 3]);
+    // No private hand dealt for anyone yet.
+    expect(resolved.players.find((p) => p.id === 'p1')?.dice).toEqual([]);
+    expect(resolved.players.find((p) => p.id === 'p2')?.dice).toEqual([]);
+    expect(resolved.players.find((p) => p.id === 'p3')?.dice).toEqual([]);
   });
 
   it('clears the round-1 opening-roll debug result once round 1 ends', () => {
@@ -271,10 +235,18 @@ describe('START_ROLL (5.2) — highest die goes first, ties re-roll among the ti
       ).state;
     }
     state = expectOk(applyIntent(state, { type: 'ROLL_DICE', playerId: 'p1' }, d)).state;
+    const { state: afterOpeningRoll } = expectOk(
+      applyIntent(state, { type: 'ROLL_DICE', playerId: 'p2' }, d),
+    );
+    expect(afterOpeningRoll.phase).toBe(GamePhase.ROUND_ROLLING);
+    expect(afterOpeningRoll.completedStartRoll).not.toBeNull();
+
+    state = expectOk(applyIntent(afterOpeningRoll, { type: 'ROLL_DICE', playerId: 'p1' }, d)).state;
     const { state: afterLast } = expectOk(
       applyIntent(state, { type: 'ROLL_DICE', playerId: 'p2' }, d),
     );
     expect(afterLast.phase).toBe(GamePhase.BIDDING);
+    // Still round 1, now bidding — the debug view survives both manual hand rolls.
     expect(afterLast.completedStartRoll).not.toBeNull();
 
     const currentPlayerId = afterLast.round?.turnOrder[afterLast.round.currentTurnIndex] as string;
@@ -297,7 +269,7 @@ describe('START_ROLL (5.2) — highest die goes first, ties re-roll among the ti
   });
 });
 
-describe('ROUND_ROLLING (5.3, 4.5) — manual hand rolls for round 2+ (round 1 deals automatically)', () => {
+describe('ROUND_ROLLING (5.3, 4.5) — every active player must manually roll their own hand', () => {
   it('gives each player only their own dice and advances to BIDDING once all have rolled', () => {
     const d = deps([3, 3, 5, 1, 1, 3, 4, 4, 6, 1]);
     const players = [makePlayer('p1'), makePlayer('p2')];
@@ -322,6 +294,12 @@ describe('ROUND_ROLLING (5.3, 4.5) — manual hand rolls for round 2+ (round 1 d
     expect(afterP1.state.phase).toBe(GamePhase.ROUND_ROLLING);
     expect(afterP1.state.players.find((p) => p.id === 'p1')?.dice).toEqual([3, 3, 5, 1, 1]);
     expect(afterP1.state.players.find((p) => p.id === 'p2')?.dice).toEqual([]);
+
+    // p1 cannot roll again on p2's behalf, or their own hand a second time.
+    expect(expectError(applyIntent(afterP1.state, { type: 'ROLL_DICE', playerId: 'p1' }, d))).toBe(
+      ErrorCode.ALREADY_ROLLED,
+    );
+    expect(afterP1.state.phase).toBe(GamePhase.ROUND_ROLLING);
 
     const afterP2 = expectOk(applyIntent(afterP1.state, { type: 'ROLL_DICE', playerId: 'p2' }, d));
     expect(afterP2.state.phase).toBe(GamePhase.BIDDING);

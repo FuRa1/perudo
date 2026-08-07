@@ -19,10 +19,6 @@ export const RULES_CONFIG = {
     personalBankMs: 30_000,
   },
   specialRoundBonusTimerMs: 7_000,
-  shakeGesture: {
-    maxDurationMs: 5_000,
-    stillnessThresholdToCommitMs: 500,
-  },
   reconnectWaitWindowMs: 60_000,
 } as const;
 

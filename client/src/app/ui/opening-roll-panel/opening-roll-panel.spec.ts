@@ -10,13 +10,11 @@ function render(
   players: Player[],
   startRoll: StartRollState | null,
   completedStartRoll: CompletedStartRoll | null = null,
-  rollingPlayerIds: ReadonlySet<string> = new Set(),
 ) {
   const fixture = TestBed.createComponent(OpeningRollPanel);
   fixture.componentRef.setInput('players', players);
   fixture.componentRef.setInput('startRoll', startRoll);
   fixture.componentRef.setInput('completedStartRoll', completedStartRoll);
-  fixture.componentRef.setInput('rollingPlayerIds', rollingPlayerIds);
   fixture.detectChanges();
   return (fixture.nativeElement as HTMLElement).textContent ?? '';
 }
@@ -33,20 +31,6 @@ describe('OpeningRollPanel', () => {
     });
     expect(text).toContain('Alice');
     expect(text).toContain('Waiting');
-  });
-
-  it('shows the cosmetic rolling cue instead of any value for a player mid-roll', () => {
-    // Single player so the assertion is unambiguous — a same-panel opponent still "waiting" is
-    // legitimately part of the next test instead.
-    const text = render(
-      [player('p1', 'Alice')],
-      { pendingPlayerIds: ['p1'], rolls: {} },
-      null,
-      new Set(['p1']),
-    );
-    expect(text).not.toContain('Waiting');
-    // The rolling placeholder renders the generic die glyph, never a specific pip count.
-    expect(text).toContain('🎲');
   });
 
   it('shows the actual public die once a player has rolled, while others still wait', () => {

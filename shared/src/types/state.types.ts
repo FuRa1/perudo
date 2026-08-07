@@ -36,8 +36,8 @@ export interface StartRollState {
  * filtering in selectPlayerView. `rolls` holds only the winning sub-round's entries (a tie
  * resets `StartRollState.rolls` before rerolling among just the tied players, so this never
  * contains discarded pre-tie values — see game-engine.ts). Kept around through round 1's
- * ROUND_ROLLING purely as a temporary debugging aid (it is not itself game state anything reads
- * for rules), then cleared once round 1 reaches BIDDING.
+ * ROUND_ROLLING and BIDDING purely as a temporary debugging aid (it is not itself game state
+ * anything reads for rules), then cleared once round 1 ends.
  */
 export interface CompletedStartRoll {
   readonly rolls: Readonly<Record<string, DiceValue>>;

@@ -1,11 +1,19 @@
 /**
- * Deterministic final resting layouts for the dice cup (client presentation only). Distinct from
- * the random scattered/chaotic positions used mid-shake (dice-physics.ts) — once settling
- * begins, dice must land in a clearly spaced, non-overlapping, deliberate arrangement rather than
- * random final spots. Pure and framework-free, same reasoning as dice-physics.ts.
+ * Deterministic resting layout for a dice cup's dice (client presentation only) — pure,
+ * framework-free geometry with no notion of movement or time.
  */
 
-import type { CupBounds, Vec2 } from './dice-physics';
+export interface Vec2 {
+  readonly x: number;
+  readonly y: number;
+}
+
+/** The cup's usable inner bowl, an ellipse centered at the origin in the same coordinate space
+ * as die positions (already excludes rim thickness and a small die-radius padding). */
+export interface CupBounds {
+  readonly radiusX: number;
+  readonly radiusY: number;
+}
 
 /** Deliberate angular arrangement per supported dice count (radians, 0 = +x/"east"), not a
  * generic even spread — chosen so each count reads as an intentional shape: 2 balanced
@@ -44,9 +52,8 @@ function requiredCircumRadius(diceCount: number, minSeparation: number): number 
  * Computes stable, non-overlapping final resting positions for `diceCount` dice inside the
  * cup's inner bowl.
  *
- * - `dieHalfSize` is the full visual die's half-width (not the smaller physics collision radius
- *   used during the chaotic shake — final positions must not overlap, so the real footprint is
- *   used here).
+ * - `dieHalfSize` is the full visual die's half-width — final positions must not overlap, so the
+ *   real footprint is used here.
  * - `gap` is the minimum visible gap between adjacent dice.
  * - Every returned position is clamped so the die (inset by `dieHalfSize`) stays inside the
  *   bowl's inscribed circle, which is always inside the bowl ellipse itself — "validate/clamp

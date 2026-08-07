@@ -16,7 +16,8 @@ export interface SetReadyIntent {
   readonly isReady: boolean;
 }
 
-/** The shake gesture completing — server rolls dice, client only triggers the request (5.3). */
+/** The player pressing "roll" (opening die or their own hand) — server rolls dice, the client
+ * only triggers the request (5.3). */
 export interface RollDiceIntent {
   readonly type: 'ROLL_DICE';
   readonly playerId: string;

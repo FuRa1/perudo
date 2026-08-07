@@ -147,9 +147,9 @@ function createRoundState(
   };
 }
 
-/** Generates a brand-new hand for a player, sized to their current `diceCount` — the only place
- * ROLL_DICE-triggered hand generation happens, whether it's this round-1 auto-deal or a manual
- * per-player roll in later rounds (applyHandRoll). */
+/** Generates a brand-new hand for a player, sized to their current `diceCount` — used for every
+ * manual per-player roll during ROUND_ROLLING (applyHandRoll), whether it's round 1 or any later
+ * round. */
 function rollFreshHand(player: Player, deps: EngineDeps): readonly DiceValue[] {
   return Array.from({ length: player.diceCount }, () => deps.diceRoller.roll());
 }
@@ -186,27 +186,18 @@ function applyStartRollRoll(
   }
 
   const firstPlayerId = winners[0] as string;
-  // Round 1's private hands are dealt right here, atomically with the decisive opening-roll
-  // resolution — no separate manual "roll your hand" step for round 1 (it was a redundant
-  // second roll from the player's point of view; see CLAUDE.md 5.2/5.3). Each active player
-  // gets a fresh hand sized to their current diceCount, so BIDDING opens with pendingRolls
-  // empty from the start.
-  const players = state.players.map((p) =>
-    p.diceCount > 0 ? { ...p, dice: rollFreshHand(p, deps) } : p,
-  );
-  const round: RoundState = {
-    ...createRoundState(state.players, firstPlayerId, 1),
-    pendingRolls: [],
-  };
+  // Round 1 now goes through the same manual per-player hand roll as every later round (5.2/5.3)
+  // — no auto-deal here. createRoundState seeds pendingRolls with the whole turn order, so
+  // BIDDING only opens once every active player has rolled their own hand via applyHandRoll.
+  const round: RoundState = createRoundState(state.players, firstPlayerId, 1);
   events.push({ type: 'ROUND_STARTED', roundNumber: 1, firstPlayerId });
   // `rolls` here is exactly the decisive sub-round's map — a tie already reset it above, so
   // discarded pre-tie values never make it into the completed (public, debug-visible) result.
-  // It stays set through round 1's BIDDING for debug visibility and is cleared once round 1
-  // ends (finishRoundAfterLoss), not here.
+  // It stays set through round 1's ROUND_ROLLING and BIDDING for debug visibility and is cleared
+  // once round 1 ends (finishRoundAfterLoss), not here.
   const newState: MatchState = {
     ...state,
-    players,
-    phase: GamePhase.BIDDING,
+    phase: GamePhase.ROUND_ROLLING,
     startRoll: null,
     completedStartRoll: { rolls, firstPlayerId },
     round,
@@ -237,9 +228,9 @@ function applyHandRoll(
     return ok({ ...state, players, round: { ...round, pendingRolls } }, events);
   }
 
-  // completedStartRoll is only ever non-null during round 1, which no longer reaches this
-  // manual-roll path at all (see applyStartRollRoll) — it's already null by the time round 2+
-  // gets here (cleared in finishRoundAfterLoss when round 1 ended), so nothing to clear here.
+  // completedStartRoll, when set (round 1's temporary debug view), is deliberately left
+  // untouched here — it is only ever cleared once the round actually ends, in
+  // finishRoundAfterLoss, not the moment BIDDING is reached.
   const newState: MatchState = {
     ...state,
     players,
@@ -409,10 +400,8 @@ function finishRoundAfterLoss(
     ...state,
     players: clearedPlayers,
     phase: GamePhase.ROUND_ROLLING,
-    // This is where round 1's temporary opening-roll debug view (CompletedStartRoll) actually
-    // ends its life now that round 1 no longer passes through a separate ROUND_ROLLING/BIDDING
-    // transition of its own — it was retained through the whole of round 1's BIDDING, and is
-    // cleared here as round 1 concludes. A no-op for round 2+ (already null by then).
+    // This is where round 1's temporary opening-roll debug view (CompletedStartRoll) is cleared,
+    // as round 1 concludes just like any other round. A no-op for round 2+ (already null by then).
     completedStartRoll: null,
     round,
   };

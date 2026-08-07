@@ -1,5 +1,4 @@
-import { computeFinalLayout } from './dice-layout';
-import type { CupBounds } from './dice-physics';
+import { computeFinalLayout, type CupBounds } from './dice-layout';
 
 // Generous bowl relative to a small die — the "normal" case where the ideal spacing fits
 // comfortably, so tests can assert exact minimum-separation guarantees.
