@@ -204,4 +204,62 @@ describe('Table', () => {
       expect(nativeElement.querySelectorAll('app-bid-marker')).toHaveLength(0);
     });
   });
+
+  describe('bidding rail (Design Layout Task 4)', () => {
+    it('renders exactly one app-bid-controls, inside the rail column, never duplicated', () => {
+      const { nativeElement } = render('p1', biddingState());
+      const rail = nativeElement.querySelector('.table-layout__rail');
+      expect(rail).not.toBeNull();
+      expect(nativeElement.querySelectorAll('app-bid-controls')).toHaveLength(1);
+      expect(rail?.querySelector('app-bid-controls')).not.toBeNull();
+    });
+
+    it('shows a neutral opening-bid summary in the rail when no bid has been placed yet', () => {
+      const { nativeElement } = render('p1', biddingState());
+      const summary = nativeElement.querySelector('.table-rail__summary');
+      expect(summary?.textContent ?? '').toContain('No bids yet this round');
+    });
+
+    it("shows the latest bidder's name and bid in the rail summary once a bid exists", () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 1,
+          bidHistory: [{ playerId: 'p1', bid: { kind: 'NORMAL', quantity: 4, face: 5 } }],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p2', state);
+      const summary = nativeElement.querySelector('.table-rail__summary');
+      expect(summary?.textContent ?? '').toContain('Alice claimed');
+      expect(summary?.textContent ?? '').toContain('4 × face 5');
+    });
+
+    it('keeps the bid-history ledger inside the rail column alongside the controls', () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 1,
+          bidHistory: [{ playerId: 'p1', bid: { kind: 'NORMAL', quantity: 4, face: 5 } }],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p1', state);
+      const rail = nativeElement.querySelector('.table-layout__rail');
+      expect(rail?.querySelector('.table__bid-history')).not.toBeNull();
+    });
+
+    it('does not render the rail summary or bid-controls outside the BIDDING phase', () => {
+      const { nativeElement } = render(
+        'p1',
+        biddingState({ phase: GamePhase.ROUND_ROLLING, round: null }),
+      );
+      expect(nativeElement.querySelector('.table-rail__summary')).toBeNull();
+      expect(nativeElement.querySelectorAll('app-bid-controls')).toHaveLength(0);
+    });
+  });
 });

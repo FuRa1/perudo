@@ -50,6 +50,23 @@ ion-content {
   color: var(--color-cream);
 }
 
+// The bidding rail (design-kit desktop board, right-hand "wager rail" column) — a quiet hairline
+// separates it from the table only once it's actually a side column (Tailwind's lg: grid switch
+// in table.html, same 1024px breakpoint as this media query); below that it's just the next
+// section in a single stacked column, no border needed. Deliberately no fill of its own — it
+// reads as part of the same table surface, subordinate to the arc/mat, not a competing panel.
+.table-layout__rail {
+  @media (min-width: 1024px) {
+    border-left: 1px solid var(--color-border-onboard);
+    padding-left: 1.25rem;
+  }
+}
+
+.table-rail__summary {
+  @include mixins.onboard-panel;
+  color: var(--color-cream-muted);
+}
+
 // Bid history is a secondary ledger/debug section (design-kit "Label 11 uppercase — column
 // headers" scale) — quieter border, no fill, smaller and more muted text than every other panel
 // on the table, so it reads as reference material rather than something needing attention.
