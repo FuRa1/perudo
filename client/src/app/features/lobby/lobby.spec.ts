@@ -116,4 +116,58 @@ describe('Lobby', () => {
     const { nativeElement } = render('p0', players);
     expect(nativeElement.querySelectorAll('.lobby__row')).toHaveLength(12);
   });
+
+  // Design QA Task 6, finding 2: the roster grid used to pin real cards to a ~200px floor even
+  // with only 2-3 players (auto-fill reserves tracks for empty columns too), and the "(you)" tag
+  // + ready badge could be swallowed by the same truncating span as the nickname. jsdom doesn't
+  // run a real CSS Grid layout algorithm, so the auto-fill -> auto-fit switch itself (and actual
+  // card widths) is verified live in a real browser instead (Playwright, at 2p and 12p) — these
+  // tests cover the structural DOM contract that has to hold regardless of viewport.
+  describe('roster layout contract (Design QA Task 6)', () => {
+    it('keeps the "(you)" tag and the ready badge as separate elements from the truncated nickname span, never nested inside it', () => {
+      const { nativeElement } = render('p1', [player('p1', 'Alice', false)]);
+      const row = nativeElement.querySelector('.lobby__row') as HTMLElement;
+      const nameSpan = row.querySelector('.lobby__name') as HTMLElement;
+      const youTag = row.querySelector('.lobby__you-tag') as HTMLElement;
+      const badge = row.querySelector('ion-badge') as HTMLElement;
+
+      expect(nameSpan.className).toContain('truncate');
+      // The truncated span holds only the nickname text — "(you)" must never be inside it, or it
+      // would be silently clipped along with a long nickname.
+      expect(nameSpan.textContent?.trim()).toBe('Alice');
+      expect(nameSpan.contains(youTag)).toBe(false);
+      expect(nameSpan.contains(badge)).toBe(false);
+
+      // Both must be flex-none siblings so they never shrink/truncate under space pressure.
+      expect(youTag.className).toContain('flex-none');
+      expect(badge.className).toContain('flex-none');
+    });
+
+    it('keeps local-player identity and ready state fully readable even with a very long nickname', () => {
+      const longName = 'ACaptainWithAnExtraordinarilyLongPirateNickname';
+      const { nativeElement } = render('p1', [player('p1', longName, true)]);
+      const row = nativeElement.querySelector('.lobby__row') as HTMLElement;
+      const youTag = row.querySelector('.lobby__you-tag');
+      const badge = row.querySelector('ion-badge');
+      expect(youTag?.textContent ?? '').toContain('(you)');
+      expect(badge?.textContent ?? '').toContain('Ready');
+    });
+
+    it('keeps every "(you)" tag and ready badge present and un-truncated across a full 12-player room', () => {
+      const players = Array.from({ length: 12 }, (_, i) =>
+        player(`p${i}`, `Player${i}`, i % 2 === 0),
+      );
+      const { nativeElement } = render('p0', players);
+      const rows = Array.from(nativeElement.querySelectorAll('.lobby__row'));
+      expect(rows).toHaveLength(12);
+
+      const ownRow = rows.find((r) => r.className.includes('lobby__row--me'));
+      expect(ownRow?.querySelector('.lobby__you-tag')?.textContent ?? '').toContain('(you)');
+
+      for (const row of rows) {
+        const badge = row.querySelector('ion-badge');
+        expect(badge?.textContent?.trim().length ?? 0).toBeGreaterThan(0);
+      }
+    });
+  });
 });

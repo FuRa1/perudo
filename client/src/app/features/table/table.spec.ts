@@ -37,6 +37,28 @@ function biddingState(overrides: Partial<MatchState> = {}): MatchState {
   };
 }
 
+/** ROUND_ROLLING already has turnOrder/currentTurnIndex populated (they're decided as soon as
+ * the round starts) — the state this task's fix has to distinguish from BIDDING. */
+function roundRollingState(overrides: Partial<MatchState> = {}): MatchState {
+  return {
+    phase: GamePhase.ROUND_ROLLING,
+    roomId: 'room-1',
+    players: [player('p1', 'Alice'), player('p2', 'Bob')],
+    startRoll: null,
+    completedStartRoll: null,
+    winnerId: null,
+    round: {
+      roundNumber: 1,
+      turnOrder: ['p2', 'p1'],
+      currentTurnIndex: 0,
+      bidHistory: [],
+      isSpecialRoundDeclared: false,
+      pendingRolls: ['p1', 'p2'],
+    },
+    ...overrides,
+  };
+}
+
 function render(playerId: string, state: MatchState) {
   const store = TestBed.inject(GameStore);
   store.playerId.set(playerId);
@@ -260,6 +282,39 @@ describe('Table', () => {
       );
       expect(nativeElement.querySelector('.table-rail__summary')).toBeNull();
       expect(nativeElement.querySelectorAll('app-bid-controls')).toHaveLength(0);
+    });
+  });
+
+  // Design QA Task 6, finding 1: turnOrder/currentTurnIndex are already decided as soon as a
+  // round starts, well before bidding — the eventual first bidder must not read as "Bidding"
+  // while hands are still being rolled.
+  describe('current-bidder badge phase gating (Design QA Task 6)', () => {
+    it('shows no "Bidding" badge on any seat during ROUND_ROLLING, even though turn order is already decided', () => {
+      const { nativeElement } = render('p1', roundRollingState());
+      const seatCards = Array.from(nativeElement.querySelectorAll('app-seat-card'));
+      expect(seatCards.length).toBeGreaterThan(0);
+      for (const card of seatCards) {
+        expect(card.textContent ?? '').not.toContain('Bidding');
+      }
+    });
+
+    it('shows the "Bidding" badge on exactly the current bidder once phase is BIDDING', () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p2', 'p1'],
+          currentTurnIndex: 0,
+          bidHistory: [],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p1', state);
+      const seatCards = Array.from(nativeElement.querySelectorAll('app-seat-card'));
+      const aliceCard = seatCards.find((c) => (c.textContent ?? '').includes('Alice'));
+      const bobCard = seatCards.find((c) => (c.textContent ?? '').includes('Bob'));
+      expect(bobCard?.textContent ?? '').toContain('Bidding');
+      expect(aliceCard?.textContent ?? '').not.toContain('Bidding');
     });
   });
 });

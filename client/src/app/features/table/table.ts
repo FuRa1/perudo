@@ -107,9 +107,16 @@ export class Table {
     return this.opponents().length * (width + CARD_GAP_PX);
   });
 
+  /** The turn order/index exist as soon as a round starts (well before bidding), so this must
+   * also gate on phase — otherwise the eventual first bidder shows a "Bidding" badge all through
+   * ROUND_ROLLING, before anyone has actually bid (Design QA Task 6, finding 1). Turn-order
+   * itself is untouched; this only controls when the seat-card badge is allowed to show it. */
   protected readonly currentBidderId = computed(() => {
-    const round = this.store.matchState()?.round;
-    return round ? round.turnOrder[round.currentTurnIndex] : null;
+    const state = this.store.matchState();
+    if (state?.phase !== GamePhase.BIDDING || !state.round) {
+      return null;
+    }
+    return state.round.turnOrder[state.round.currentTurnIndex];
   });
 
   /** The most recently placed bid this round, or null once history is empty (round just ended

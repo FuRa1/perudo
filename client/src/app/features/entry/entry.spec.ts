@@ -128,6 +128,38 @@ describe('Entry', () => {
     expect(nativeElement.textContent ?? '').toContain('Creating');
   });
 
+  // Design QA Task 6, finding 3: the room-code field's "leave it blank" instruction used to be
+  // packed entirely into the placeholder, where it got clipped on both desktop and mobile.
+  describe('room-code instruction (Design QA Task 6)', () => {
+    it('uses a short placeholder that fits, not the full instruction', () => {
+      const { nativeElement } = render();
+      const roomCodeInput = nativeElement.querySelector('ion-input[label="Room code"]');
+      const placeholder =
+        roomCodeInput?.getAttribute('placeholder') ??
+        (roomCodeInput as unknown as { placeholder?: string } | null)?.placeholder;
+      expect(placeholder).toBe('e.g. TORTUGA');
+    });
+
+    it('moves the actual instruction into visible helper text below the field', () => {
+      const { nativeElement } = render();
+      const roomCodeInput = nativeElement.querySelector('ion-input[label="Room code"]');
+      const helperText =
+        roomCodeInput?.getAttribute('helperText') ??
+        roomCodeInput?.getAttribute('helpertext') ??
+        (roomCodeInput as unknown as { helperText?: string } | null)?.helperText;
+      expect(helperText).toBe('Leave blank to start a new table.');
+    });
+
+    it('does not smuggle the instruction back into the room-code placeholder', () => {
+      const { nativeElement } = render();
+      const roomCodeInput = nativeElement.querySelector('ion-input[label="Room code"]');
+      const placeholder =
+        roomCodeInput?.getAttribute('placeholder') ??
+        (roomCodeInput as unknown as { placeholder?: string } | null)?.placeholder;
+      expect(placeholder ?? '').not.toContain('leave blank');
+    });
+  });
+
   it('shows the server error and clears the loading state once an error arrives', () => {
     const { fixture, store, nativeElement, buttons } = render();
     setInputValue(fixture, 1, 'Jack');

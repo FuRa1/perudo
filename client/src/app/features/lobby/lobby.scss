@@ -33,9 +33,15 @@
 }
 
 // Handles 2-12 players without an unreadable single column or page overflow: as many columns as
-// fit at a legible minimum width, wrapping to more rows rather than shrinking cards.
+// fit at a legible minimum width, wrapping to more rows rather than shrinking cards below it.
+// auto-fit (not auto-fill) is the deliberate choice here: auto-fill reserves a track for every
+// column that *could* fit even when no player occupies it, so with only 2-3 players the real
+// cards stayed pinned at the ~200px floor with dead grid tracks to their right — auto-fit
+// collapses those empty tracks and lets the 1fr growth go entirely to the real cards instead
+// (Design QA Task 6, finding 2). 220px (up from 200px) gives the nickname/"(you)"/badge row a
+// little more breathing room; at 12 players this still comfortably fits 5-6 columns.
 .lobby__roster {
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   list-style: none;
   padding: 0;
   margin: 0;

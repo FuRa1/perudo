@@ -23,7 +23,8 @@
             <ion-input
               label="Room code"
               labelPlacement="stacked"
-              placeholder="e.g. TORTUGA — leave blank to start a new table"
+              placeholder="e.g. TORTUGA"
+              helperText="Leave blank to start a new table."
               autocapitalize="characters"
               [value]="roomId()"
               (ionInput)="roomId.set($any($event.detail.value ?? ''))"

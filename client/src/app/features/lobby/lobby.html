@@ -16,18 +16,22 @@
             class="lobby__row flex items-center gap-3 p-3"
             [class.lobby__row--me]="player.id === playerId()"
           >
-            <div class="lobby__avatar flex items-center justify-center text-sm font-semibold">
+            <div
+              class="lobby__avatar flex flex-none items-center justify-center text-sm font-semibold"
+            >
               {{ initialFor(player.nickname) }}
             </div>
-            <div class="flex min-w-0 flex-1 flex-col">
-              <span class="lobby__name truncate text-sm font-semibold">
-                {{ player.nickname }}
-                @if (player.id === playerId()) {
-                  <span class="lobby__you-tag">(you)</span>
-                }
-              </span>
+            <!-- Only the nickname itself may truncate under space pressure — the "(you)" tag and
+                 the ready badge are separate, non-shrinking flex items (never inside the
+                 truncated span), so local-player identity and ready state stay fully readable
+                 even when the nickname doesn't fit (Design QA Task 6, finding 2). -->
+            <div class="flex min-w-0 flex-1 items-baseline gap-1">
+              <span class="lobby__name truncate text-sm font-semibold">{{ player.nickname }}</span>
+              @if (player.id === playerId()) {
+                <span class="lobby__you-tag flex-none">(you)</span>
+              }
             </div>
-            <ion-badge [color]="player.isReady ? 'success' : 'medium'">
+            <ion-badge class="flex-none" [color]="player.isReady ? 'success' : 'medium'">
               {{ player.isReady ? 'Ready' : 'Not ready' }}
             </ion-badge>
           </li>
