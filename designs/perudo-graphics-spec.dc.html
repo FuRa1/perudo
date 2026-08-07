@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/organic-9224328c-04f1-452d-a816-2af010030574/styles.css">
+<script src="_ds/organic-9224328c-04f1-452d-a816-2af010030574/_ds_bundle.js"></script>
+<style>
+  body { margin:0; background:#f0e3cd; }
+  a { color:#8c491a; text-decoration:none; }
+  a:hover { color:#c67139; }
+</style>
+</helmet>
+
+<div style="font-family:var(--font-body);color:#201e1d;padding:44px 46px 70px;display:flex;flex-direction:column;gap:40px;max-width:1180px;margin:0 auto">
+
+  <div style="background:#241d16;border-radius:26px;padding:34px 36px;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:16px">
+    <div style="position:absolute;inset:0;background:radial-gradient(88% 120% at 20% 0%,#5a462d 0%,#33281c 58%,#241d16 100%)"></div>
+    <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.03) 0 2px,transparent 2px 7px)"></div>
+    <div style="position:relative;display:flex;flex-direction:column;gap:12px;max-width:760px">
+      <div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#d69a52;font-weight:700">Perudo &middot; art request sheet</div>
+      <div style="font-family:var(--font-heading);font-size:42px;line-height:1.04;color:#fffaf0">Graphics the build needs</div>
+      <div style="font-size:14.5px;line-height:1.62;color:#c0b6a5;text-wrap:pretty">Every image the desktop board, desktop flow and mobile flow currently fake with CSS gradients and empty squares &mdash; read off those three files. Each entry names the file, the exact pixel box it drops into, whether it needs alpha, and a generation prompt written to be pasted straight into Scenario. Anything listed as an icon is Lucide &mdash; do not generate it.</div>
+    </div>
+    <div style="position:relative;display:flex;gap:9px;flex-wrap:wrap;margin-top:6px">
+      <div style="display:flex;align-items:center;gap:8px;height:34px;padding:0 15px;border-radius:999px;background:rgba(255,250,240,.09);border:1px solid rgba(255,250,240,.2);font-size:12.5px;color:#f2e7d3">{{ countTotal }} to generate</div>
+      <div style="display:flex;align-items:center;gap:8px;height:34px;padding:0 15px;border-radius:999px;background:rgba(255,250,240,.09);border:1px solid rgba(255,250,240,.2);font-size:12.5px;color:#f2e7d3">{{ countIcons }} Lucide icons</div>
+      <div style="display:flex;align-items:center;gap:8px;height:34px;padding:0 15px;border-radius:999px;background:rgba(214,154,82,.18);border:1px solid rgba(214,154,82,.5);font-size:12.5px;color:#f0c98d">Export @1x / @2x / @3x</div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="font-family:var(--font-heading);font-size:26px">Art direction &mdash; prepend to every prompt</div>
+    <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:22px;padding:24px 26px;display:flex;flex-direction:column;gap:20px;box-shadow:0 3px 10px rgba(46,43,37,.05)">
+      <div style="font-size:13.5px;line-height:1.65;color:#474238;text-wrap:pretty">Warm lantern-lit cabin, late evening. Painted, softly rounded, matte &mdash; hand-illustrated storybook rather than rendered 3D. No sharp corners, no hairline geometry, no chrome or neon. Light falls from one lantern above and slightly left of centre; everything else sits in warm brown shadow. Cream and sand ground, terracotta accent, sage as the second voice.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:6px;width:104px"><div style="height:52px;border-radius:14px;background:#f5ead8;border:1px solid rgba(46,43,37,.14)"></div><div style="font-size:11px;color:#645c50">#f5ead8 ground</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px;width:104px"><div style="height:52px;border-radius:14px;background:#ebddc5"></div><div style="font-size:11px;color:#645c50">#ebddc5 sand</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px;width:104px"><div style="height:52px;border-radius:14px;background:#fffaf0;border:1px solid rgba(46,43,37,.14)"></div><div style="font-size:11px;color:#645c50">#fffaf0 die ivory</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px;width:104px"><div style="height:52px;border-radius:14px;background:#c67139"></div><div style="font-size:11px;color:#645c50">#c67139 terracotta</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px;width:104px"><div style="height:52px;border-radius:14px;background:#d69a52"></div><div style="font-size:11px;color:#645c50">#d69a52 brass</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px;width:104px"><div style="height:52px;border-radius:14px;background:#7a8a5e"></div><div style="font-size:11px;color:#645c50">#7a8a5e sage</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px;width:104px"><div style="height:52px;border-radius:14px;background:#5a462d"></div><div style="font-size:11px;color:#645c50">#5a462d wood</div></div>
+        <div style="display:flex;flex-direction:column;gap:6px;width:104px"><div style="height:52px;border-radius:14px;background:#241d16"></div><div style="font-size:11px;color:#645c50">#241d16 cabin</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div style="background:#f5ead8;border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#645c50;font-weight:700">Always ask for</div>
+          <div style="font-size:12.5px;line-height:1.6;color:#474238">Matte painted texture &middot; rounded silhouettes &middot; one warm light source &middot; generous empty space &middot; desaturated mid-tones so UI text reads on top &middot; flat-on or shallow three-quarter angle, never dramatic perspective.</div>
+        </div>
+        <div style="background:rgba(140,73,26,.09);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8c491a;font-weight:700">Negative prompt</div>
+          <div style="font-size:12.5px;line-height:1.6;color:#474238">casino, chips, felt green, neon, glossy plastic, chrome, lens flare, HDR, photorealistic skin, text, numbers, letters, watermark, logo, UI frames, drop shadows baked in, high contrast black.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <sc-for list="{{ groups }}" as="g" hint-placeholder-count="4">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+          <div style="font-family:var(--font-heading);font-size:26px">{{ g.title }}</div>
+          <div style="font-size:12.5px;color:#8c491a;font-weight:600">{{ g.count }}</div>
+        </div>
+        <div style="font-size:13.5px;line-height:1.6;color:#474238;max-width:820px;text-wrap:pretty">{{ g.blurb }}</div>
+        <div style="height:3px;width:74px;border-radius:999px;background:#c67139;margin-top:4px"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <sc-for list="{{ g.items }}" as="a" hint-placeholder-count="3">
+          <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:22px;padding:22px 24px;display:flex;flex-direction:column;gap:14px;box-shadow:0 3px 10px rgba(46,43,37,.05)">
+            <div style="display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap">
+              <div style="display:flex;flex-direction:column;gap:5px;min-width:280px">
+                <div style="font-family:var(--font-heading);font-size:19px;line-height:1.15">{{ a.name }}</div>
+                <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:#8c491a">{{ a.file }}</div>
+              </div>
+              <div style="display:flex;gap:7px;flex-wrap:wrap">
+                <div style="height:28px;padding:0 12px;border-radius:999px;background:#ebddc5;font-size:11.5px;font-weight:600;color:#474238;display:flex;align-items:center">{{ a.format }}</div>
+                <div style="height:28px;padding:0 12px;border-radius:999px;background:#f5ead8;border:1px solid rgba(46,43,37,.14);font-size:11.5px;color:#474238;display:flex;align-items:center">{{ a.size }}</div>
+                <div style="height:28px;padding:0 12px;border-radius:999px;background:rgba(122,138,94,.16);font-size:11.5px;color:#3f4a2c;display:flex;align-items:center">{{ a.alpha }}</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#645c50;font-weight:700">Where it lands</div>
+                <div style="font-size:12.5px;line-height:1.6;color:#474238;text-wrap:pretty">{{ a.usage }}</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#645c50;font-weight:700">Constraints</div>
+                <div style="font-size:12.5px;line-height:1.6;color:#474238;text-wrap:pretty">{{ a.rules }}</div>
+              </div>
+            </div>
+            <div style="background:#241d16;border-radius:16px;padding:15px 17px;display:flex;flex-direction:column;gap:7px">
+              <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#d69a52;font-weight:700">Prompt</div>
+              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.62;color:#f2e7d3;white-space:pre-wrap">{{ a.prompt }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-for>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="font-family:var(--font-heading);font-size:26px">Icons &mdash; Lucide, not generated</div>
+      <div style="font-size:13.5px;line-height:1.6;color:#474238;max-width:820px">Ship the SVGs from lucide.dev at stroke-width 2.75, sized 18&ndash;24px, coloured by <span style="font-family:ui-monospace,monospace;font-size:12px">currentColor</span>. Nothing here should be sent to an image model.</div>
+      <div style="height:3px;width:74px;border-radius:999px;background:#7a8a5e;margin-top:4px"></div>
+    </div>
+    <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:22px;padding:8px 24px;box-shadow:0 3px 10px rgba(46,43,37,.05)">
+      <div style="display:grid;grid-template-columns:190px 1fr;gap:0 20px">
+        <sc-for list="{{ icons }}" as="i" hint-placeholder-count="10">
+          <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:#8c491a;padding:11px 0;border-bottom:1px solid rgba(46,43,37,.09)">{{ i.name }}</div>
+          <div style="font-size:12.5px;line-height:1.5;color:#474238;padding:11px 0;border-bottom:1px solid rgba(46,43,37,.09)">{{ i.use }}</div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <div style="font-family:var(--font-heading);font-size:26px">Delivery</div>
+      <div style="height:3px;width:74px;border-radius:999px;background:#d69a52;margin-top:4px"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:22px;padding:22px 24px;display:flex;flex-direction:column;gap:11px">
+        <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#645c50;font-weight:700">Naming &amp; folders</div>
+        <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.75;color:#474238;white-space:pre-wrap">assets/
+  bg/      table-*, lobby-*, cabin-*
+  dice/    die-face-*, die-state-*
+  cups/    cup-open-top, cup-closed-side
+  avatar/  seat-avatar-01…12
+  decor/   token-*, badge-*, banner-*
+  brand/   app-icon, splash, og-card
+  icons/   lucide/*.svg</div>
+        <div style="font-size:12.5px;line-height:1.6;color:#474238">Lowercase, hyphenated, no spaces. Scale suffix only above @1x: <span style="font-family:ui-monospace,monospace;font-size:12px">die-face-3@2x.png</span>.</div>
+      </div>
+      <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:22px;padding:22px 24px;display:flex;flex-direction:column;gap:11px">
+        <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#645c50;font-weight:700">Format rules</div>
+        <div style="font-size:12.5px;line-height:1.7;color:#474238;text-wrap:pretty">PNG-24 with alpha for anything that overlaps the table &mdash; dice, tokens, badges, avatars. JPG q86 for full-bleed backgrounds with no transparency (plus a WebP sibling). SVG only for flat vector marks: the app wordmark, the palifico banner ribbon, connection glyph. No baked drop shadows &mdash; the UI adds elevation. Trim to content, then pad roughly 6% transparent margin so glow does not clip — this applies to both dice cups too. No asset carries a baked drop shadow: the UI applies its own CSS elevation. Every raster arrives at @3x and downsamples; nothing is upscaled.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  renderVals() {
+    const bg = [
+      { name: 'Table surface — desktop board', file: 'bg/table-surface-desktop.jpg', format: 'JPG + WebP', size: '2880×1800 (1440×900 @2x)', alpha: 'opaque',
+        usage: 'Replaces the radial gradient behind the nineteen-seat desktop board. Seats, ledger and wager token sit on top, so the centre third must stay quiet.',
+        rules: 'Vignette to #241d16 at all four edges. Brightest patch at 46% / 20% where the lantern hangs. No object above 30% opacity contrast in the middle 60%.',
+        prompt: 'Overhead view of a worn round wooden tavern table, warm lantern light pooling near the top centre, deep brown shadow at the edges, painted matte illustration, very soft focus, empty surface, no objects, muted #5a462d wood tones fading to #241d16, generous flat central area, storybook texture' },
+      { name: 'Table surface — mobile', file: 'bg/table-surface-mobile.jpg', format: 'JPG + WebP', size: '1170×2532 (390×844 @3x)', alpha: 'opaque',
+        usage: 'Mobile flow table screens. Portrait crop of the same surface; the bottom 320px is covered by the bid sheet so detail there is wasted.',
+        rules: 'Same palette and light direction as the desktop plate so screens feel like one room. Keep the top 180px darkest for the status bar and round header.',
+        prompt: 'Vertical crop of a worn wooden tavern table lit by one hanging lantern from above, painted matte illustration, warm brown to almost black falloff, no objects, soft grain, quiet empty centre, muted terracotta and sand highlights' },
+      { name: 'Lantern glow overlay', file: 'bg/cabin-lantern-glow.png', format: 'PNG-24', size: '1040×440', alpha: 'alpha required',
+        usage: 'The breathing ellipse over the entrance screen and above the active seat. Animated with an 8–9s opacity loop, so it must read at 30% opacity.',
+        rules: 'Pure light, no lamp body. Radial falloff to fully transparent at the bounding box — no hard edge anywhere. Colour #ffe1a8.',
+        prompt: 'Soft warm golden light bloom on transparent background, elliptical falloff, no visible lamp or fixture, colour #ffe1a8, feathered edges, subtle dust motes, painted, low contrast' },
+      { name: 'Cabin wall / lobby band', file: 'bg/lobby-header-band.jpg', format: 'JPG + WebP', size: '2880×260', alpha: 'opaque',
+        usage: 'The dark header band at the top of the lobby, currently a gradient plus a repeating-linear-gradient plank texture.',
+        rules: 'Horizontal plank rhythm at roughly 7px spacing @1x, ~3% contrast. White nav text and the brass avatar sit on it, so nothing brighter than #5a462d.',
+        prompt: 'Wide horizontal panel of dark stained timber planks, warm brown, very subtle grain, lit dimly from the upper left, painted matte, almost flat, extremely low contrast, no knots or hardware' },
+      { name: 'Wood grain tile', file: 'bg/wood-grain-tile.png', format: 'PNG-24', size: '512×512 seamless', alpha: 'alpha required',
+        usage: 'Multiplied over the cabin panels in the design kit and the outcome-card backdrops so large dark fields are not flat.',
+        rules: 'Seamless in both axes. Greyscale-warm, delivered as alpha texture so it can tint. Total contrast under 8%.',
+        prompt: 'Seamless tileable subtle wood grain texture, transparent background, faint warm brown streaks, very low contrast, painted matte, no knots, no borders' }
+    ];
+    const dice = [
+      { name: 'Die faces 1–6', file: 'dice/die-face-1…6.png', format: 'PNG-24', size: '156×156 (52 @3x)', alpha: 'alpha required',
+        usage: 'Every die on both boards: your hand, revealed table dice, the ledger, the wager token. Six files, identical body, pips only differ.',
+        rules: 'Ivory #fffaf0 body, 12px-equivalent corner radius, pip ink #2e2b25. Pips must sit on the exact CSS positions in the kit (centre, ±14px). Flat-on, zero perspective, no cast shadow.',
+        prompt: 'Single ivory white die seen flat from directly above, rounded corners, matte painted ceramic, warm off-white #fffaf0, dark brown pips, soft interior shading only, no cast shadow, transparent background, one face showing N pips, centred, storybook illustration' },
+      { name: 'Wild one (ace)', file: 'dice/die-face-wild.png', format: 'PNG-24', size: '156×156', alpha: 'alpha required',
+        usage: 'Ones count for everything, so the one has its own treatment in the ledger and reveal — currently a brass ring.',
+        rules: 'Same body as the faces. Single pip becomes a small brass #d69a52 rosette, plus a 1px brass edge. Must still read at 30px.',
+        prompt: 'Single ivory white die flat from above, one central pip rendered as a small brass rosette, thin warm brass edge line, matte painted, transparent background, no shadow, rounded corners' },
+      { name: 'Face-down die', file: 'dice/die-state-hidden.png', format: 'PNG-24', size: '156×156', alpha: 'alpha required',
+        usage: 'Other players’ hands, and the whole hand on the connection-lost mobile screen.',
+        rules: 'Same silhouette, sand #ebddc5 body, no pips, faint brass hatch across the top face. Should read as "not yours" at a glance.',
+        prompt: 'Single die flat from above with a blank sand-coloured top face, matte painted, faint diagonal hatch texture, rounded corners, transparent background, no pips, no shadow' },
+      { name: 'Lost die — cracked', file: 'dice/die-state-lost.png', format: 'PNG-24', size: '156×156', alpha: 'alpha required',
+        usage: 'The die that falls and splits on the die-lost outcome card, and the greyed slot in the ledger afterwards.',
+        rules: 'Split roughly down the middle with a chip missing; two loose shards inside the frame. Desaturated toward #c0b6a5.',
+        prompt: 'Single ivory die flat from above, cracked in half with a small chip missing, two tiny shards beside it, desaturated warm grey, matte painted, transparent background, no shadow' },
+      { name: 'Rolling blur set', file: 'dice/die-roll-01…04.png', format: 'PNG-24', size: '156×156 ×4', alpha: 'alpha required',
+        usage: 'Four frames cycled during the 700ms shake before a reveal, on both platforms.',
+        rules: 'Same body, progressively tumbled with motion smear. Frames must loop without a visible jump.',
+        prompt: 'Ivory die tumbling in mid air, slight motion blur smear, matte painted, transparent background, rotated N degrees, no shadow, consistent lighting from above' },
+      { name: 'Scatter hero (five dice)', file: 'dice/dice-scatter-hero.png', format: 'PNG-24', size: '1600×900', alpha: 'alpha required',
+        usage: 'Decorative bleed behind the entrance screen title and the lobby empty state — the only place dice appear as illustration rather than data.',
+        rules: 'Five dice loosely scattered, faces unreadable enough not to imply a real hand. Keep the middle clear for 46px display type.',
+        prompt: 'Five ivory dice scattered loosely on a dark wooden surface, warm lantern light from above left, painted matte storybook illustration, deep brown shadows, transparent background around the group, empty space in the centre' }
+    ];
+    const cups = [
+      { name: 'Open player cup — top-down', file: 'cups/cup-open-top.png', format: 'PNG-24', size: '780×780 (260 @3x)', alpha: 'alpha required',
+        usage: 'The local player’s private hand container, displayed 190–260px wide. The UI absolutely-positions 1–5 separate die sprites inside the bowl, so the asset is the vessel only.',
+        rules: 'Inner bowl a clean circle or gentle ellipse, centred, occupying ~68% of the frame with the rim ring around it. Interior kept quiet and low-contrast so ivory #fffaf0 dice stay highly readable on top — no carving, grain detail or hotspot inside the bowl. Rim tactile, warm, matte. No dice, text, numbers, symbols, hand or background baked in. Transparent background; trim to content plus ~6% padding. No baked drop shadow — the UI adds its own CSS elevation.',
+        prompt: 'Seen directly from above: an open carved dark coconut-shell dice cup with a thick warm brown wooden rim, empty smooth interior, painted matte storybook illustration, pirate tavern feel, one soft light source from the upper left, muted brown shadow, softly rounded silhouette, transparent background, no dice inside, no text, no numbers, no hand, no background, no glossy 3D, no drop shadow' },
+      { name: 'Closed opponent cup — three-quarter', file: 'cups/cup-closed-side.png', format: 'PNG-24', size: '330×330 (110 @3x)', alpha: 'alpha required',
+        usage: 'Stands in for every opponent’s hidden dice on the seat cards, displayed 72–110px wide. Must read as "a cup, upside down" at the smallest seat size.',
+        rules: 'Compact closed cup, upside down, shallow side or three-quarter view. Same material, upper-left light direction, line weight and painted matte style as the open cup so the pair reads as one object. No visible dice, no opening, no text, no background. Transparent background; trim to content plus ~6% padding. No baked drop shadow — the UI adds its own CSS elevation.',
+        prompt: 'Compact closed coconut-shell dice cup turned upside down, shallow three-quarter view, dark carved shell with a warm brown wooden base rim, painted matte storybook illustration, pirate tavern feel, one soft light source from the upper left, muted brown shadow, bold simple rounded silhouette readable at small size, transparent background, no opening, no dice, no text, no background, no glossy 3D, no drop shadow' }
+    ];
+    const people = [
+      { name: 'Seat avatars — twelve', file: 'avatar/seat-avatar-01…12.png', format: 'PNG-24', size: '204×204 (68 @3x)', alpha: 'alpha required',
+        usage: 'Every seat square, the friends list, the entrance line-up and the nav. Twelve so the largest table never repeats a face.',
+        rules: 'Square, filled to the edge (the UI applies an 11–22px radius mask). Shoulders-up, three-quarter turn, one figure each, distinct silhouette and hat/hair per file. No facial detail below 34px legibility — read by silhouette and colour.',
+        prompt: 'Shoulders-up portrait of a tavern card player, three-quarter turn, painted matte storybook illustration, warm lantern light from above left, muted sand terracotta and sage clothing, dark brown background fill, simple readable silhouette, no text, distinct hat and hair, gentle expression' },
+      { name: 'Empty seat mark', file: 'avatar/seat-empty.png', format: 'PNG-24', size: '204×204', alpha: 'alpha required',
+        usage: 'Open seats in the lobby cards and the board, currently a dashed square.',
+        rules: 'A simple empty stool or chair back, centred, drawn in one line weight, 40% opacity friendly.',
+        prompt: 'Simple empty wooden stool seen from the front, single flat warm brown shape, painted matte, transparent background, centred, minimal detail, no shadow' }
+    ];
+    const decor = [
+      { name: 'Wager token frame', file: 'decor/token-frame.png', format: 'PNG-24', size: '9-slice, 660×220', alpha: 'alpha required',
+        usage: 'The cream-and-brass plate holding "4 × [die]" at the centre of both boards. Stretches with the number, so it must be sliceable.',
+        rules: 'Deliver with 40px insets marked in a sidecar JSON. Cream gradient #f6ecd8 → #e4d5b8, 1.5px brass border, corners 20px. Centre must be a flat fill.',
+        prompt: 'Ornate but simple cream parchment plaque with a thin warm brass border and rounded corners, empty centre, matte painted, transparent background, no text, symmetrical, subtle top-to-bottom cream gradient' },
+      { name: 'Outcome badge — won', file: 'decor/badge-won.png', format: 'PNG-24', size: '240×240', alpha: 'alpha required',
+        usage: 'The 60–74px square badge at the head of the win card, desktop and mobile sheet.',
+        rules: 'Brass wreath or laurel ring with a hollow centre — the UI drops a die sprite inside. Rounded, no sharp points.',
+        prompt: 'Small circular brass laurel wreath with an empty centre, painted matte, warm gold and terracotta, transparent background, soft rounded leaves, no text, front facing' },
+      { name: 'Outcome badge — lost', file: 'decor/badge-lost.png', format: 'PNG-24', size: '240×240', alpha: 'alpha required',
+        usage: 'Head of the die-lost card, and the eliminated state in the ledger.',
+        rules: 'Same footprint and weight as the won badge so the card shell does not shift. Deep terracotta #8c491a, dashed feel.',
+        prompt: 'Small circular broken brass ring, one segment missing, deep terracotta and dull gold, painted matte, transparent background, rounded ends, no text, front facing' },
+      { name: 'Palifico banner', file: 'decor/banner-palifico.svg', format: 'SVG', size: '860×120 viewBox', alpha: 'alpha required',
+        usage: 'The announcement strip that sweeps in when a player drops to one die — mobile flow screen 6 and the desktop board toast.',
+        rules: 'Flat vector ribbon with rounded tails, one path, currentColor-friendly. Text is set in Caprasimo by the UI, not drawn in.',
+        prompt: 'Flat vector ribbon banner with softly rounded ends, single warm terracotta shape, no text, no gradients, centred, generous inner space' },
+      { name: 'Ledger bar texture', file: 'decor/ledger-bar.png', format: 'PNG-24', size: '600×48, tileable X', alpha: 'alpha required',
+        usage: 'The count bars in the reveal ledger that currently use a flat fill; a faint paper tooth keeps them from looking like a chart.',
+        rules: 'Tile horizontally. Under 6% contrast, warm neutral, so it works under both the sage and terracotta tints.',
+        prompt: 'Seamless horizontal strip of faint warm paper tooth texture, transparent background, extremely low contrast, painted, no borders' },
+      { name: 'Connection-lost glyph', file: 'decor/glyph-offline.svg', format: 'SVG', size: '160×160 viewBox', alpha: 'alpha required',
+        usage: 'Centre of the connection-lost mobile screen, above the face-down hand.',
+        rules: 'A single stroked shape — an unlit lantern reads better here than a wifi symbol. Stroke-width 2.75 to match Lucide.',
+        prompt: 'Minimal single-line drawing of a small unlit hanging lantern, rounded strokes, even 2.75 stroke weight, no fill, transparent background, centred, no text' }
+    ];
+    const brand = [
+      { name: 'App icon', file: 'brand/app-icon.png', format: 'PNG-24', size: '1024×1024 + maskable 432 safe area', alpha: 'opaque',
+        usage: 'Store listings, PWA manifest, favicon set.',
+        rules: 'One die and one lantern glow, nothing else. Must survive a circular mask and 40px rendering. Ground #241d16 so it reads on light home screens.',
+        prompt: 'App icon: single ivory die glowing under warm lantern light, deep brown rounded square background, painted matte storybook illustration, centred, simple bold silhouette, no text, no border' },
+      { name: 'Splash / loading plate', file: 'brand/splash.jpg', format: 'JPG + WebP', size: '1170×2532 and 2880×1800', alpha: 'opaque',
+        usage: 'Cold start on both platforms, behind the wordmark and a shuffling die.',
+        rules: 'Centre 400×400 must be near-flat for the mark. Same lantern position as the table plates.',
+        prompt: 'Dark warm tavern interior far out of focus, one lantern glowing top centre, deep brown, painted matte, almost abstract, very low detail, empty centre' },
+      { name: 'Share / OG card', file: 'brand/og-card.jpg', format: 'JPG', size: '1200×630', alpha: 'opaque',
+        usage: 'Invite links to a table, posted in chat apps.',
+        rules: 'Left 55% kept quiet for the table name overlay. Dice group on the right.',
+        prompt: 'Wide illustration of a lantern-lit tavern table with a few ivory dice on the right side, warm browns and cream, painted matte storybook style, empty space on the left, no text' }
+    ];
+    const groups = [
+      { title: 'Backgrounds & environment', blurb: 'Five plates replace the radial and repeating gradients standing in for the room across all three files. They carry the mood, so they are the ones to generate first.', items: bg, count: bg.length + ' assets' },
+      { title: 'Dice', blurb: 'The only sprites that carry information — they appear at 30, 52 and 58px and in the ledger, so pip positions must match the kit exactly. Nine files plus a four-frame roll cycle.', items: dice, count: dice.length + ' sets' },
+      { title: 'Dice cups', blurb: 'The primary game component: one open cup the local player’s dice sit inside, one closed cup standing in for every opponent’s hidden hand. Both are vessels only — the dice are separate sprites the UI positions on top.', items: cups, count: cups.length + ' assets' },
+      { title: 'Seats & people', blurb: 'Twelve avatars, because the twelve-hand table in the lobby shows every seat at once and repeats would be obvious. Currently brass gradient squares.', items: people, count: people.length + ' sets' },
+      { title: 'Decorative marks', blurb: 'The brass-and-cream furniture around a round: the wager plate, both outcome badges, the palifico ribbon and two textures.', items: decor, count: decor.length + ' assets' },
+      { title: 'Brand & store', blurb: 'Everything outside the game frame. Generate last — they should quote the table plates rather than introduce new imagery.', items: brand, count: brand.length + ' assets' }
+    ];
+    const icons = [
+      { name: 'users', use: 'Seat count on lobby table cards' },
+      { name: 'dice-5', use: 'Dice-per-player house rule chip' },
+      { name: 'timer', use: 'Round clock, fast-clock table chip' },
+      { name: 'crown', use: 'Table host beside the host name' },
+      { name: 'flame', use: 'Palifico round active indicator' },
+      { name: 'eye', use: 'Peek at your own hand (mobile)' },
+      { name: 'eye-off', use: 'Hand hidden / face-down state' },
+      { name: 'hand', use: 'Call bluff — the dudo action' },
+      { name: 'arrow-up', use: 'Raise the wager count' },
+      { name: 'arrow-down', use: 'Lower the wager count' },
+      { name: 'chevron-up / chevron-down', use: 'Stepper on the bid sheet' },
+      { name: 'check', use: 'Wager locked in, ready state' },
+      { name: 'x', use: 'Leave table, dismiss sheet' },
+      { name: 'wifi-off', use: 'Connection lost banner' },
+      { name: 'rotate-ccw', use: 'Play again on outcome cards' },
+      { name: 'log-out', use: 'Back to lobby' },
+      { name: 'message-circle', use: 'Table chat entry point' },
+      { name: 'volume-2 / volume-x', use: 'Sound toggle in table settings' },
+      { name: 'settings', use: 'Table settings menu' },
+      { name: 'filter', use: 'Lobby filter row' },
+      { name: 'trending-up', use: 'Win-rate standing card' },
+      { name: 'user-plus', use: 'Invite a friend to the table' }
+    ];
+    const generated = [bg, dice, cups, people, decor, brand].reduce((n, l) => n + l.length, 0);
+    return { groups, icons, countTotal: generated + ' asset entries · 36 files', countIcons: icons.length };
+  }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><link rel="stylesheet" href="_ds/organic-9224328c-04f1-452d-a816-2af010030574/styles.css"><script src="_ds/organic-9224328c-04f1-452d-a816-2af010030574/_ds_bundle.js"></script><style>
+body{margin:0;background:#e7e0d3;font-family:var(--font-body);color:#2e2b25}
+a{color:var(--color-accent)}a:hover{color:var(--color-accent-700)}
+@keyframes mlantern{0%,100%{opacity:1}70%{opacity:.62}}
+@keyframes mrise{0%{transform:translateY(14px);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes mspin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes mcrack{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(26px) rotate(22deg);opacity:.15}}
+</style></helmet>
+
+<div style="padding:48px 56px 80px;display:flex;flex-direction:column;gap:40px">
+
+  <div style="max-width:820px;display:flex;flex-direction:column;gap:10px">
+    <div style="font-family:var(--font-heading);font-size:40px;line-height:1.05">Perudo &mdash; mobile, the missing screens</div>
+    <div style="font-size:14.5px;line-height:1.6;color:#474238">Everything the priority board skipped: lobby, table entrance, the two end cards, plus the three states nobody designs and everybody hits &mdash; waiting for another player's bid, palifico, and a dropped connection. 390&times;844, Ionic-shaped, one primary action per screen.</div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:baseline;gap:10px"><div style="font-family:var(--font-heading);font-size:22px">1 &middot; Arrival</div><div style="font-size:12.5px;color:#645c50">lobby, then the table entrance</div></div>
+    <div style="display:flex;gap:26px;flex-wrap:wrap">
+
+      <div data-screen-label="M Lobby" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:#f5ead8">
+        <div style="height:100%;display:flex;flex-direction:column">
+          <div style="flex:none;background:radial-gradient(90% 150% at 20% 0%,#5a462d,#2a2118 75%);padding:52px 20px 22px;display:flex;flex-direction:column;gap:14px;position:relative">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.03) 0 2px,transparent 2px 7px)"></div>
+            <div style="position:relative;display:flex;align-items:center;justify-content:space-between">
+              <div style="font-family:var(--font-heading);font-size:19px;color:#fffaf0">Perudo</div>
+              <div style="display:flex;align-items:center;gap:8px"><div style="width:30px;height:30px;border-radius:10px;background:linear-gradient(160deg,#c99657,#6b4526)"></div></div>
+            </div>
+            <div style="position:relative;display:flex;flex-direction:column;gap:7px">
+              <div style="font-family:var(--font-heading);font-size:30px;line-height:1.06;color:#fffaf0">Six tables are lit</div>
+              <div style="font-size:13px;color:#c0b6a5">Join one mid-round, or open your own room.</div>
+            </div>
+          </div>
+
+          <div style="flex:1;padding:18px 20px 0;display:flex;flex-direction:column;gap:14px;min-height:0">
+            <div style="display:flex;gap:7px;overflow:hidden">
+              <div style="flex:none;padding:9px 15px;border-radius:999px;background:#c67139;color:#fff;font-size:12.5px;font-weight:600">All</div>
+              <div style="flex:none;padding:9px 15px;border-radius:999px;background:#fffdf7;border:1px solid rgba(46,43,37,.16);font-size:12.5px;font-weight:600">Friends</div>
+              <div style="flex:none;padding:9px 15px;border-radius:999px;background:#fffdf7;border:1px solid rgba(46,43,37,.16);font-size:12.5px;font-weight:600">Seats free</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{ mtables }}" as="t" hint-placeholder-count="4">
+                <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:15px 17px;display:flex;flex-direction:column;gap:11px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                    <div style="font-family:var(--font-heading);font-size:18px;line-height:1.15">{{ t.name }}</div>
+                    <div style="flex:none;padding:5px 11px;border-radius:999px;background:{{ t.pillBg }};color:{{ t.pillInk }};font-size:11px;font-weight:700">{{ t.status }}</div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                    <sc-for list="{{ t.seats }}" as="s" hint-placeholder-count="5">
+                      <div style="flex:none;width:{{ s.size }};height:{{ s.size }};border-radius:8px;background:{{ s.bg }};border:1px dashed {{ s.border }}"></div>
+                    </sc-for>
+                    <div style="flex:none;white-space:nowrap;font-size:11.5px;color:#645c50;font-weight:600;margin-left:2px">{{ t.seatText }}</div>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <div style="font-size:12px;color:#645c50">{{ t.meta }}</div>
+                    <div style="font-size:12px;color:#8c491a;font-weight:700">{{ t.cta }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="flex:none;padding:14px 20px 10px;background:linear-gradient(180deg,rgba(245,234,216,0),#f5ead8 32%)">
+            <div style="height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(198,113,57,.4)">Open a table</div>
+            <div style="height:30px;display:flex;align-items:center;justify-content:center"><div style="width:132px;height:5px;border-radius:999px;background:rgba(46,43,37,.28)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div data-screen-label="M Entrance" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:#241d16">
+        <div style="position:absolute;inset:0;background:radial-gradient(96% 62% at 50% 18%,#5a462d,#33281c 54%,#1e1811)"></div>
+        <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.03) 0 2px,transparent 2px 7px)"></div>
+        <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:56px 20px 10px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px;animation:mrise .5s ease-out">
+            <div style="width:66px;height:66px;border-radius:20px;background:linear-gradient(160deg,#c99657,#6b4526);border:1.5px solid #d69a52;box-shadow:0 0 0 3px rgba(214,154,82,.32),0 6px 14px rgba(0,0,0,.45);animation:mlantern 8s ease-in-out infinite;position:relative"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:18px;height:18px;border-radius:50% 50% 4px 4px;border:1.5px solid rgba(255,235,205,.8)"></span></div>
+            <div style="font-family:var(--font-heading);font-size:30px;line-height:1.05;color:#fffaf0;text-align:center">The Lantern Room</div>
+            <div style="font-size:12.5px;color:#c0b6a5;text-align:center;max-width:280px;text-wrap:pretty">Isabel's table &middot; five dice each &middot; ones are wild</div>
+          </div>
+
+          <div style="margin-top:26px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <sc-for list="{{ entrants }}" as="e" hint-placeholder-count="5">
+              <div style="padding:15px 12px;border-radius:20px;background:{{ e.cardBg }};border:1px {{ e.cardBorder }};display:flex;align-items:center;gap:11px">
+                <div style="flex:none;width:40px;height:40px;border-radius:13px;background:{{ e.avatarBg }};border:1px {{ e.avatarBorder }}"></div>
+                <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                  <div style="color:{{ e.nameInk }};font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ e.name }}</div>
+                  <div style="font-size:11px;color:{{ e.stateInk }};font-weight:600">{{ e.state }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top:22px;padding:15px 17px;border-radius:20px;background:rgba(242,231,211,.06);border:1px solid rgba(242,231,211,.14);display:flex;flex-direction:column;gap:9px">
+            <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#a19786;font-weight:700">House rules</div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap">
+              <div style="padding:7px 12px;border-radius:999px;border:1px solid rgba(242,231,211,.2);color:#f2e7d3;font-size:11.5px;font-weight:600">Wild ones</div>
+              <div style="padding:7px 12px;border-radius:999px;border:1px solid rgba(242,231,211,.2);color:#f2e7d3;font-size:11.5px;font-weight:600">Palifico on</div>
+              <div style="padding:7px 12px;border-radius:999px;border:1px solid rgba(242,231,211,.2);color:#f2e7d3;font-size:11.5px;font-weight:600">30s clock</div>
+            </div>
+          </div>
+
+          <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:center;justify-content:center;gap:10px">
+              <div style="width:20px;height:20px;border-radius:50%;border:2px solid rgba(242,231,211,.28);border-top-color:#d69a52;animation:mspin 1.1s linear infinite"></div>
+              <div style="font-size:12.5px;color:#c0b6a5">Waiting on one more seat &middot; 4 of 5</div>
+            </div>
+            <div style="height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(198,113,57,.42)">Take a seat</div>
+            <div style="height:50px;border-radius:999px;border:1.5px solid rgba(242,231,211,.26);color:#f2e7d3;font-family:var(--font-heading);font-size:17px;display:flex;align-items:center;justify-content:center">Watch instead</div>
+            <div style="height:30px;display:flex;align-items:center;justify-content:center"><div style="width:132px;height:5px;border-radius:999px;background:rgba(242,231,211,.3)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:baseline;gap:10px"><div style="font-family:var(--font-heading);font-size:22px">2 &middot; End cards</div><div style="font-size:12.5px;color:#645c50">bottom sheets over the dimmed table &mdash; thumb-reachable actions</div></div>
+    <div style="display:flex;gap:26px;flex-wrap:wrap">
+
+      <div data-screen-label="M Win card" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:#241d16">
+        <div style="position:absolute;inset:0;background:radial-gradient(96% 62% at 50% 18%,#5a462d,#241d16 70%)"></div>
+        <div style="position:absolute;inset:0;background:rgba(20,15,10,.74)"></div>
+        <div style="position:absolute;left:50%;top:150px;transform:translateX(-50%);width:78px;height:78px;border-radius:24px;background:linear-gradient(160deg,#e0ab63,#b2622d);border:1.5px solid #d69a52;box-shadow:0 0 0 4px rgba(214,154,82,.24),0 8px 20px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;animation:mlantern 6s ease-in-out infinite">
+          <div style="width:32px;height:32px;border-radius:9px;background:#fffaf0;position:relative"><span style="position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:#2e2b25;transform:translate(-50%,-50%)"></span></div>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;padding:0 12px 12px;animation:mrise .5s ease-out">
+          <div style="background:linear-gradient(180deg,#f6ecd8,#e8d9bc);border:1.5px solid #d69a52;border-radius:28px;padding:24px 22px;display:flex;flex-direction:column;gap:15px;box-shadow:0 -14px 44px rgba(0,0,0,.5)">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#8c491a;font-weight:700">The table is yours</div>
+              <div style="font-family:var(--font-heading);font-size:28px;line-height:1.08;color:#2e2b25">You win the Lantern Room</div>
+            </div>
+            <div style="font-size:13px;line-height:1.6;color:#474238;text-wrap:pretty">Isabel's last die fell on a three where you claimed two ones. Nine rounds, never down a die.</div>
+            <div style="display:flex;gap:9px">
+              <div style="flex:1;background:rgba(255,250,240,.75);border-radius:15px;padding:10px 12px"><div style="font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#645c50;font-weight:700">Rounds</div><div style="font-family:var(--font-heading);font-size:21px">9</div></div>
+              <div style="flex:1;background:rgba(255,250,240,.75);border-radius:15px;padding:10px 12px"><div style="font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#645c50;font-weight:700">Calls won</div><div style="font-family:var(--font-heading);font-size:21px">5</div></div>
+              <div style="flex:1;background:rgba(255,250,240,.75);border-radius:15px;padding:10px 12px"><div style="font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#645c50;font-weight:700">Dice kept</div><div style="font-family:var(--font-heading);font-size:21px">5/5</div></div>
+            </div>
+            <div style="height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center">Play again</div>
+            <div style="height:50px;border-radius:999px;border:1.5px solid rgba(46,43,37,.26);color:#2e2b25;font-family:var(--font-heading);font-size:17px;display:flex;align-items:center;justify-content:center">Back to lobby</div>
+            <div style="height:24px;display:flex;align-items:center;justify-content:center"><div style="width:132px;height:5px;border-radius:999px;background:rgba(46,43,37,.26)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div data-screen-label="M Die lost card" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:#241d16">
+        <div style="position:absolute;inset:0;background:radial-gradient(96% 62% at 50% 18%,#4a3826,#211a13 70%)"></div>
+        <div style="position:absolute;inset:0;background:rgba(20,15,10,.78)"></div>
+        <div style="position:absolute;left:50%;top:170px;margin-left:-21px;width:42px;height:42px;border-radius:10px;background:#fffaf0;box-shadow:0 6px 14px rgba(0,0,0,.5);animation:mcrack 1.3s ease-in forwards"><span style="position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:#2e2b25;transform:translate(-50%,-50%);box-shadow:-10px -10px 0 #2e2b25,10px 10px 0 #2e2b25"></span></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;padding:0 12px 12px;animation:mrise .5s ease-out .35s backwards">
+          <div style="background:#ebddc5;border:1.5px solid #b2622d;border-radius:28px;padding:24px 22px;display:flex;flex-direction:column;gap:15px;box-shadow:0 -14px 44px rgba(0,0,0,.5)">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#8c2f24;font-weight:700">A die leaves the cup</div>
+              <div style="font-family:var(--font-heading);font-size:28px;line-height:1.08;color:#2e2b25">The count fell short</div>
+            </div>
+            <div style="font-size:13px;line-height:1.6;color:#474238;text-wrap:pretty">Four fives claimed &mdash; three lay among nineteen. You play the next round with four dice.</div>
+            <div style="display:flex;gap:9px">
+              <div style="flex:1;background:rgba(255,250,240,.72);border-radius:15px;padding:10px 12px"><div style="font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#645c50;font-weight:700">Claimed</div><div style="font-family:var(--font-heading);font-size:21px">4 &times; 5</div></div>
+              <div style="flex:1;background:rgba(255,250,240,.72);border-radius:15px;padding:10px 12px"><div style="font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#645c50;font-weight:700">At table</div><div style="font-family:var(--font-heading);font-size:21px;color:#8c2f24">3</div></div>
+              <div style="flex:1;background:rgba(255,250,240,.72);border-radius:15px;padding:10px 12px"><div style="font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#645c50;font-weight:700">Your dice</div><div style="font-family:var(--font-heading);font-size:21px">5 &rarr; 4</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:9px;font-size:12.5px;color:#474238"><span style="flex:none;width:26px;height:26px;border-radius:7px;border:1.5px dashed #8c2f24"></span>Isabel opens the next round &mdash; she called you.</div>
+            <div style="height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center">Next round</div>
+            <div style="height:24px;display:flex;align-items:center;justify-content:center"><div style="width:132px;height:5px;border-radius:999px;background:rgba(46,43,37,.26)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:baseline;gap:10px"><div style="font-family:var(--font-heading);font-size:22px">3 &middot; The unglamorous three</div><div style="font-size:12.5px;color:#645c50">waiting, palifico, connection lost</div></div>
+    <div style="display:flex;gap:26px;flex-wrap:wrap">
+
+      <div data-screen-label="M Waiting on bid" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:#241d16">
+        <div style="position:absolute;inset:0;background:radial-gradient(96% 62% at 50% 20%,#5a462d,#33281c 54%,#1e1811)"></div>
+        <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.03) 0 2px,transparent 2px 7px)"></div>
+        <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:52px 20px 10px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="padding:7px 13px;border-radius:999px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.16);color:#f2e7d3;font-size:12px;font-weight:600">Round 5 &middot; 19 dice</div>
+            <div style="width:32px;height:32px;border-radius:11px;border:1px solid rgba(242,231,211,.18)"></div>
+          </div>
+
+          <div style="margin-top:30px;display:flex;flex-direction:column;align-items:center;gap:14px">
+            <div style="width:72px;height:72px;border-radius:22px;background:linear-gradient(160deg,#c99657,#6b4526);border:1.5px solid #d69a52;box-shadow:0 0 0 3px #d69a52;animation:mlantern 3.4s ease-in-out infinite"></div>
+            <div style="font-family:var(--font-heading);font-size:24px;color:#fffaf0">Tobias is thinking</div>
+            <div style="width:220px;height:6px;border-radius:999px;background:rgba(242,231,211,.12);overflow:hidden"><div style="width:62%;height:100%;border-radius:999px;background:#d69a52"></div></div>
+            <div style="font-size:12px;color:#a19786">18s left on the clock</div>
+          </div>
+
+          <div style="margin-top:26px;display:flex;flex-direction:column;align-items:center;gap:8px">
+            <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#a19786;font-weight:700">Standing wager</div>
+            <div style="display:flex;align-items:center;gap:12px;padding:11px 18px;border-radius:18px;background:linear-gradient(180deg,#f6ecd8,#e4d5b8);border:1.5px solid #d69a52;box-shadow:0 9px 20px rgba(0,0,0,.42)">
+              <div style="font-family:var(--font-heading);font-size:38px;line-height:.9;color:#2e2b25">4</div>
+              <div style="font-size:18px;color:#8c491a">&times;</div>
+              <div style="width:50px;height:50px;border-radius:11px;background:#fffaf0;border:1px solid #c0b6a5;position:relative"><span style="position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:50%;background:#2e2b25;transform:translate(-50%,-50%);box-shadow:-11px -11px 0 #2e2b25,11px -11px 0 #2e2b25,-11px 11px 0 #2e2b25,11px 11px 0 #2e2b25"></span></div>
+            </div>
+            <div style="font-size:12px;color:#c0b6a5">Anne claimed it &middot; you are two seats away</div>
+          </div>
+
+          <div style="margin-top:24px;padding:15px 17px;border-radius:20px;background:rgba(242,231,211,.05);border:1px solid rgba(242,231,211,.12);display:flex;flex-direction:column;gap:9px">
+            <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#a19786;font-weight:700">This round</div>
+            <sc-for list="{{ ledger }}" as="r" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div style="font-size:12.5px;color:#f2e7d3">{{ r.who }}</div>
+                <div style="font-size:12.5px;color:#e2cfa8;font-weight:700">{{ r.bid }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px;align-items:center">
+            <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#a19786;font-weight:700">Your hand</div>
+            <div style="display:flex;gap:8px;padding:12px 14px;border-radius:20px;background:rgba(242,231,211,.06);border:1px solid rgba(242,231,211,.12)">
+              <sc-for list="{{ hand }}" as="d" hint-placeholder-count="5">
+                <div style="width:46px;height:46px;border-radius:11px;background:#fffaf0;position:relative"><span style="position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:50%;background:{{ d.centerBg }};transform:translate(-50%,-50%);box-shadow:{{ d.pipShadow }}"></span></div>
+              </sc-for>
+            </div>
+            <div style="height:30px;display:flex;align-items:center;justify-content:center"><div style="width:132px;height:5px;border-radius:999px;background:rgba(242,231,211,.3)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div data-screen-label="M Palifico" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:#241d16">
+        <div style="position:absolute;inset:0;background:radial-gradient(96% 62% at 50% 20%,#5a462d,#33281c 54%,#1e1811)"></div>
+        <div style="position:absolute;inset:0;background:rgba(20,15,10,.7)"></div>
+        <div style="position:absolute;left:0;right:0;top:180px;padding:0 18px;animation:mrise .5s ease-out">
+          <div style="background:#2e2419;border:1.5px solid #d69a52;border-radius:28px;padding:24px 22px;display:flex;flex-direction:column;gap:15px;box-shadow:0 20px 48px rgba(0,0,0,.55)">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#e2cfa8;font-weight:700">Palifico</div>
+              <div style="font-family:var(--font-heading);font-size:28px;line-height:1.08;color:#fffaf0">Tobias has one die left</div>
+            </div>
+            <div style="font-size:13px;line-height:1.6;color:#c0b6a5;text-wrap:pretty">This round the face is fixed and ones are not wild. Only the quantity can rise &mdash; the face Tobias opens with stands for everyone.</div>
+            <div style="display:flex;gap:9px">
+              <div style="flex:1;background:rgba(242,231,211,.07);border-radius:15px;padding:11px 12px"><div style="font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#a19786;font-weight:700">Face locked</div><div style="display:flex;align-items:center;gap:8px;margin-top:5px"><div style="width:30px;height:30px;border-radius:8px;background:#fffaf0;position:relative"><span style="position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:#2e2b25;transform:translate(-50%,-50%);box-shadow:-7px -7px 0 #2e2b25,7px 7px 0 #2e2b25"></span></div><div style="font-family:var(--font-heading);font-size:19px;color:#f6d9a8">threes</div></div></div>
+              <div style="flex:1;background:rgba(242,231,211,.07);border-radius:15px;padding:11px 12px"><div style="font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#a19786;font-weight:700">Ones</div><div style="font-family:var(--font-heading);font-size:19px;color:#e08a78;margin-top:5px">not wild</div></div>
+            </div>
+            <div style="height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center">Understood</div>
+          </div>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:14px;display:flex;justify-content:center"><div style="width:132px;height:5px;border-radius:999px;background:rgba(242,231,211,.3)"></div></div>
+      </div>
+
+      <div data-screen-label="M Connection lost" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:#241d16">
+        <div style="position:absolute;inset:0;background:radial-gradient(96% 62% at 50% 20%,#4a3826,#211a13 72%)"></div>
+        <div style="position:absolute;inset:0;background:rgba(20,15,10,.8)"></div>
+        <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:52px 20px 10px">
+          <div style="margin-top:120px;display:flex;flex-direction:column;align-items:center;gap:16px">
+            <div style="width:72px;height:72px;border-radius:22px;border:1.5px dashed rgba(242,231,211,.42);display:flex;align-items:center;justify-content:center">
+              <div style="width:22px;height:22px;border-radius:50%;border:2px solid rgba(242,231,211,.25);border-top-color:#d69a52;animation:mspin 1.1s linear infinite"></div>
+            </div>
+            <div style="font-family:var(--font-heading);font-size:26px;color:#fffaf0;text-align:center">The room went quiet</div>
+            <div style="font-size:13px;line-height:1.6;color:#c0b6a5;text-align:center;max-width:290px;text-wrap:pretty">You dropped out mid-round. Your hand is held and the clock is paused for 45 seconds &mdash; rejoin and nothing is lost.</div>
+            <div style="padding:9px 15px;border-radius:999px;background:rgba(242,231,211,.07);border:1px solid rgba(242,231,211,.16);color:#e2cfa8;font-size:12.5px;font-weight:600">Reconnecting &middot; attempt 2 of 5</div>
+          </div>
+
+          <div style="margin-top:30px;padding:15px 17px;border-radius:20px;background:rgba(242,231,211,.05);border:1px solid rgba(242,231,211,.12);display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#a19786;font-weight:700">Held for you</div>
+            <div style="display:flex;gap:7px">
+              <sc-for list="{{ hand }}" as="d" hint-placeholder-count="5">
+                <div style="width:40px;height:40px;border-radius:10px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2)"></div>
+              </sc-for>
+            </div>
+            <div style="font-size:12px;color:#c0b6a5">Five dice &middot; your turn is next after Tobias</div>
+          </div>
+
+          <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px">
+            <div style="height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(198,113,57,.42)">Rejoin now</div>
+            <div style="height:50px;border-radius:999px;border:1.5px solid rgba(242,231,211,.26);color:#f2e7d3;font-family:var(--font-heading);font-size:17px;display:flex;align-items:center;justify-content:center">Leave the table</div>
+            <div style="height:30px;display:flex;align-items:center;justify-content:center"><div style="width:132px;height:5px;border-radius:999px;background:rgba(242,231,211,.3)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1240px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:22px 24px">
+    <div style="font-family:var(--font-heading);font-size:20px;margin-bottom:12px">Notes</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 28px;font-size:12.5px;line-height:1.55;color:#474238">
+      <div>&mdash; Lobby is the only light screen on mobile; its dark header keeps the table's voice at the top.</div>
+      <div>&mdash; End cards are bottom sheets, not centred dialogs &mdash; both actions sit inside thumb reach.</div>
+      <div>&mdash; Waiting screen is a real screen, not a spinner: the standing wager and ledger stay readable.</div>
+      <div>&mdash; Palifico appears once per triggering round, dismissed with one tap, then the normal bid sheet returns.</div>
+      <div>&mdash; Reconnect keeps your dice face-down: the held hand is shown as blanks, never revealed on a drop.</div>
+      <div>&mdash; Still missing: rules/tutorial, invite sheet, profile and history. Say the word and I'll add them.</div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:2900}}">
+class Component extends DCLogic {
+  pips(face, off, ink) {
+    const c = { tl:`${-off}px ${-off}px 0 ${ink}`, tr:`${off}px ${-off}px 0 ${ink}`, bl:`${-off}px ${off}px 0 ${ink}`,
+      br:`${off}px ${off}px 0 ${ink}`, ml:`${-off}px 0 0 ${ink}`, mr:`${off}px 0 0 ${ink}` };
+    const four = [c.tl, c.tr, c.bl, c.br];
+    switch (face) {
+      case 1: return { centerBg: ink, pipShadow: 'none' };
+      case 2: return { centerBg: 'transparent', pipShadow: [c.tl, c.br].join(',') };
+      case 3: return { centerBg: ink, pipShadow: [c.tl, c.br].join(',') };
+      case 4: return { centerBg: 'transparent', pipShadow: four.join(',') };
+      case 5: return { centerBg: ink, pipShadow: four.join(',') };
+      default: return { centerBg: 'transparent', pipShadow: [c.tl,c.tr,c.ml,c.mr,c.bl,c.br].join(',') };
+    }
+  }
+  renderVals() {
+    const seats = (filled, total) => {
+      const size = total > 8 ? '20px' : '26px';
+      return Array.from({ length: total }, (_, i) => i < filled
+        ? { size, bg: 'linear-gradient(160deg,#c99657,#6b4526)', border: 'rgba(46,43,37,.2)' }
+        : { size, bg: 'rgba(46,43,37,.05)', border: 'rgba(46,43,37,.3)' });
+    };
+    const live = { pillBg: '#f6dcc4', pillInk: '#8c491a', status: 'Round 5' };
+    const open = { pillBg: '#e2e8d5', pillInk: '#4a5735', status: 'Filling' };
+    return {
+      hand: [2,3,4,5,6].map(n => this.pips(n, 11, '#2e2b25')),
+      ledger: [
+        { who: 'Isabel opened', bid: '2 \u00d7 3' },
+        { who: 'You raised', bid: '4 \u00d7 4' },
+        { who: 'Anne raised', bid: '4 \u00d7 5' },
+        { who: 'Tobias', bid: 'thinking\u2026' }
+      ],
+      mtables: [
+        { name: 'The Lantern Room', ...open, seats: seats(4, 5), seatText: '4 / 5', meta: 'Isabel \u00b7 wild ones', cta: 'Take a seat' },
+        { name: 'Harbour Nine', ...live, seats: seats(5, 6), seatText: '5 / 6', meta: 'Mid-round \u00b7 21 dice', cta: 'Join next' },
+        { name: 'Twelve Hands', ...live, seats: seats(11, 12), seatText: '11 / 12', meta: 'Big table \u00b7 palifico', cta: 'Watch' },
+        { name: 'The Quiet Table', ...open, seats: seats(1, 4), seatText: '1 / 4', meta: 'Learning \u00b7 hints on', cta: 'Take a seat' }
+      ],
+      entrants: [
+        { name: 'Isabel', state: 'Host', cardBg: 'rgba(242,231,211,.08)', cardBorder: 'solid rgba(242,231,211,.18)', avatarBg: 'linear-gradient(160deg,#c99657,#6b4526)', avatarBorder: 'solid rgba(255,224,176,.28)', nameInk: '#fffaf0', stateInk: '#e2cfa8' },
+        { name: 'Mateo', state: 'Ready', cardBg: 'rgba(242,231,211,.08)', cardBorder: 'solid rgba(242,231,211,.18)', avatarBg: 'linear-gradient(160deg,#c99657,#6b4526)', avatarBorder: 'solid rgba(255,224,176,.28)', nameInk: '#fffaf0', stateInk: '#a3b083' },
+        { name: 'Tobias', state: 'Ready', cardBg: 'rgba(242,231,211,.08)', cardBorder: 'solid rgba(242,231,211,.18)', avatarBg: 'linear-gradient(160deg,#c99657,#6b4526)', avatarBorder: 'solid rgba(255,224,176,.28)', nameInk: '#fffaf0', stateInk: '#a3b083' },
+        { name: 'You', state: 'Seated', cardBg: 'rgba(214,154,82,.16)', cardBorder: 'solid #d69a52', avatarBg: 'linear-gradient(160deg,#e0ab63,#b2622d)', avatarBorder: 'solid #d69a52', nameInk: '#fffaf0', stateInk: '#f6d9a8' },
+        { name: 'Open seat', state: 'Waiting', cardBg: 'rgba(242,231,211,.03)', cardBorder: 'dashed rgba(242,231,211,.32)', avatarBg: 'rgba(242,231,211,.04)', avatarBorder: 'dashed rgba(242,231,211,.38)', nameInk: '#c0b6a5', stateInk: '#7d7466' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

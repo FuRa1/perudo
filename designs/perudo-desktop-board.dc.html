@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><link rel="stylesheet" href="_ds/organic-9224328c-04f1-452d-a816-2af010030574/styles.css"><script src="_ds/organic-9224328c-04f1-452d-a816-2af010030574/_ds_bundle.js"></script><style>
+body{margin:0;background:#e7e0d3;font-family:var(--font-body);color:#2e2b25}
+a{color:var(--color-accent)}a:hover{color:var(--color-accent-700)}
+@keyframes dsweep{0%{transform:translateX(-40%) scale(.9);opacity:0}25%{opacity:.7}100%{transform:translateX(40%) scale(1.06);opacity:0}}
+@keyframes dlantern{0%,100%{opacity:1}70%{opacity:.6}}
+</style></helmet>
+
+<div style="padding:48px 56px 72px;display:flex;flex-direction:column;gap:28px">
+  <div style="max-width:820px;display:flex;flex-direction:column;gap:10px">
+    <div style="font-family:var(--font-heading);font-size:40px;line-height:1.05">Perudo &mdash; desktop board</div>
+    <div style="font-size:14.5px;line-height:1.6;color:#474238">A quick desktop counterpart to the mobile priority screens: same lantern cabin, same brass turn ring, laid out for a 1440&times;900 window. Bidding lives in a right-hand rail instead of a sheet; the ledger becomes a persistent left column. Click the wager buttons to step bidding &rarr; reveal.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+      <div style="padding:6px 12px;border-radius:999px;background:#ebddc5;font-size:12px;font-weight:600">1440 &times; 900 &middot; min 1180</div>
+      <div style="padding:6px 12px;border-radius:999px;background:#ebddc5;font-size:12px;font-weight:600">Three columns: ledger &middot; table &middot; wager rail</div>
+      <div style="padding:6px 12px;border-radius:999px;background:#ebddc5;font-size:12px;font-weight:600">Hover states replace haptics</div>
+    </div>
+  </div>
+
+  <div data-screen-label="Desktop table" style="width:1440px;height:900px;border-radius:18px;overflow:hidden;position:relative;box-shadow:0 30px 70px rgba(46,43,37,.34);background:#241d16">
+    <div style="position:absolute;inset:0;background:radial-gradient(96% 62% at 46% 22%,#5a462d 0%,#33281c 54%,#1e1811 100%)"></div>
+    <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.03) 0 2px,transparent 2px 7px)"></div>
+
+    <div style="position:relative;height:100%;display:flex;flex-direction:column">
+      <div style="flex:none;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;border-bottom:1px solid rgba(255,224,176,.12)">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="font-family:var(--font-heading);font-size:20px;color:#fffaf0">Perudo</div>
+          <div style="padding:7px 13px;border-radius:999px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.16);color:#f2e7d3;font-size:12.5px;font-weight:600">Round 5 &middot; 19 dice</div>
+          <div style="padding:7px 13px;border-radius:999px;border:1px solid rgba(242,231,211,.14);color:#c0b6a5;font-size:12.5px;font-weight:600">The Lantern Room</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="padding:8px 14px;border-radius:999px;border:1px solid rgba(242,231,211,.18);color:#f2e7d3;font-size:12.5px;font-weight:600;cursor:pointer" style-hover="background:rgba(242,231,211,.09)">Rules</div>
+          <div style="padding:8px 14px;border-radius:999px;border:1px solid rgba(242,231,211,.18);color:#f2e7d3;font-size:12.5px;font-weight:600;cursor:pointer" style-hover="background:rgba(242,231,211,.09)">Leave table</div>
+          <div style="width:34px;height:34px;border-radius:11px;background:linear-gradient(160deg,#c99657,#6b4526);border:1px solid rgba(255,224,176,.3)"></div>
+        </div>
+      </div>
+
+      <div style="flex:1;display:grid;grid-template-columns:264px 1fr 340px;min-height:0">
+
+        <div style="border-right:1px solid rgba(255,224,176,.1);padding:20px 18px;display:flex;flex-direction:column;gap:16px;min-height:0">
+          <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#a19786;font-weight:700">Ledger &mdash; this round</div>
+          <div style="display:flex;flex-direction:column;gap:8px;overflow:hidden">
+            <sc-for list="{{ ledger }}" as="row" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:13px;background:{{ row.bg }};border:1px solid rgba(242,231,211,.1)">
+                <div style="flex:1;font-size:12.5px;color:#f2e7d3;font-weight:600">{{ row.who }}</div>
+                <div style="font-size:12.5px;color:#e2cfa8;font-weight:700">{{ row.bid }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+            <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#a19786;font-weight:700">Dice remaining</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <sc-for list="{{ counts }}" as="c" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;gap:9px">
+                  <div style="width:64px;font-size:12px;color:{{ c.color }};font-weight:600">{{ c.who }}</div>
+                  <div style="flex:1;height:8px;border-radius:999px;background:rgba(242,231,211,.09);overflow:hidden"><div style="height:100%;width:{{ c.pct }};border-radius:999px;background:#c67139"></div></div>
+                  <div style="width:14px;text-align:right;font-size:12px;color:#c0b6a5;font-weight:700">{{ c.n }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="position:relative;min-height:0">
+          <div style="position:absolute;left:6%;right:6%;top:150px;bottom:96px;border-radius:50%;background:radial-gradient(64% 58% at 50% 26%,rgba(255,214,150,.2),rgba(255,214,150,0) 74%);border-top:1px solid rgba(255,224,176,.15);overflow:hidden">
+            <div style="position:absolute;left:50%;top:40px;width:280px;height:120px;margin-left:-140px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,225,168,.42),rgba(255,225,168,0));animation:dsweep 3.8s ease-in-out infinite"></div>
+          </div>
+
+          <div style="position:absolute;left:10%;top:330px;transform:translateX(-50%);width:104px;display:flex;flex-direction:column;align-items:center;gap:7px">
+            <div style="width:62px;height:62px;border-radius:19px;background:linear-gradient(160deg,#a97c4c,#5b3f23);border:1px solid rgba(255,224,176,.28);box-shadow:0 4px 9px rgba(0,0,0,.34);position:relative"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:50%;border:1.5px solid rgba(255,224,176,.5)"></span></div>
+            <div style="color:#f2e7d3;font-size:13.5px;font-weight:600">Mateo</div>
+            <div style="display:flex;gap:4px"><span style="width:12px;height:12px;border-radius:3px;background:#e2cfa8"></span><span style="width:12px;height:12px;border-radius:3px;background:#e2cfa8"></span><span style="width:12px;height:12px;border-radius:3px;background:#e2cfa8"></span></div>
+          </div>
+
+          <div style="position:absolute;left:27%;top:126px;transform:translateX(-50%);width:104px;display:flex;flex-direction:column;align-items:center;gap:7px">
+            <div style="width:62px;height:62px;border-radius:19px;background:linear-gradient(160deg,#a97c4c,#5b3f23);border:1px solid rgba(255,224,176,.28);box-shadow:0 4px 9px rgba(0,0,0,.34);position:relative"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:15px;height:15px;border-radius:3px;border:1.5px solid rgba(255,224,176,.5)"></span></div>
+            <div style="color:#f2e7d3;font-size:13.5px;font-weight:600">Isabel</div>
+            <div style="display:flex;gap:4px"><span style="width:12px;height:12px;border-radius:3px;background:#e2cfa8"></span><span style="width:12px;height:12px;border-radius:3px;background:#e2cfa8"></span><span style="width:12px;height:12px;border-radius:3px;background:#e2cfa8"></span><span style="width:12px;height:12px;border-radius:3px;background:#e2cfa8"></span><span style="width:12px;height:12px;border-radius:3px;background:#e2cfa8"></span></div>
+          </div>
+
+          <div style="position:absolute;left:50%;top:78px;transform:translateX(-50%);width:132px;display:flex;flex-direction:column;align-items:center;gap:8px">
+            <div style="width:72px;height:72px;border-radius:22px;background:linear-gradient(160deg,#c99657,#6b4526);border:1.5px solid #d69a52;box-shadow:0 0 0 3px #d69a52,0 5px 12px rgba(0,0,0,.42);animation:dlantern 9s ease-in-out infinite;position:relative"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:17px;height:17px;border-radius:50% 50% 3px 3px;border:1.5px solid rgba(255,235,205,.78)"></span></div>
+            <div style="color:#fffaf0;font-size:15px;font-weight:700">Anne</div>
+            <div style="display:flex;gap:4px"><span style="width:12px;height:12px;border-radius:3px;background:#f6d9a8"></span><span style="width:12px;height:12px;border-radius:3px;background:#f6d9a8"></span><span style="width:12px;height:12px;border-radius:3px;background:#f6d9a8"></span><span style="width:12px;height:12px;border-radius:3px;background:#f6d9a8"></span></div>
+          </div>
+
+          <div style="position:absolute;left:73%;top:126px;transform:translateX(-50%);width:104px;display:flex;flex-direction:column;align-items:center;gap:7px">
+            <div style="width:62px;height:62px;border-radius:19px;background:linear-gradient(160deg,#a97c4c,#5b3f23);border:1px solid rgba(255,224,176,.28);box-shadow:0 4px 9px rgba(0,0,0,.34);position:relative"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:16px;height:8px;border-radius:7px 7px 0 0;border:1.5px solid rgba(255,224,176,.5);border-bottom:none"></span></div>
+            <div style="color:#f2e7d3;font-size:13.5px;font-weight:600">Tobias</div>
+            <div style="display:flex;gap:4px"><span style="width:12px;height:12px;border-radius:3px;background:#e2cfa8"></span><span style="width:12px;height:12px;border-radius:3px;background:#e2cfa8"></span></div>
+          </div>
+
+          <div style="position:absolute;left:90%;top:330px;transform:translateX(-50%);width:104px;display:flex;flex-direction:column;align-items:center;gap:7px;opacity:.42">
+            <div style="width:62px;height:62px;border-radius:19px;background:rgba(242,231,211,.05);border:1px dashed rgba(242,231,211,.4)"></div>
+            <div style="color:#c0b6a5;font-size:13.5px;font-weight:600;text-decoration:line-through">Grace</div>
+            <div style="font-size:11px;color:#c0b6a5;font-weight:600">out</div>
+          </div>
+
+          <div style="position:absolute;left:50%;top:300px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:9px">
+            <div style="display:flex;align-items:center;gap:14px;padding:13px 22px;border-radius:20px;background:linear-gradient(180deg,#f6ecd8,#e4d5b8);border:1.5px solid #d69a52;box-shadow:0 12px 26px rgba(0,0,0,.45)">
+              <div style="font-family:var(--font-heading);font-size:46px;line-height:.9;color:#2e2b25">4</div>
+              <div style="font-size:20px;color:#8c491a">&times;</div>
+              <div style="width:58px;height:58px;border-radius:13px;background:#fffaf0;border:1px solid #c0b6a5;position:relative"><span style="position:absolute;left:50%;top:50%;width:10px;height:10px;border-radius:50%;background:#2e2b25;transform:translate(-50%,-50%);box-shadow:-12px -12px 0 #2e2b25,12px -12px 0 #2e2b25,-12px 12px 0 #2e2b25,12px 12px 0 #2e2b25"></span></div>
+            </div>
+            <div style="font-size:12px;color:#c0b6a5;letter-spacing:.05em;text-transform:uppercase;font-weight:700">{{ tokenCaption }}</div>
+          </div>
+
+          <div style="position:absolute;left:0;right:0;bottom:26px;display:flex;flex-direction:column;align-items:center;gap:10px">
+            <div style="font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#a19786;font-weight:700">Your hand</div>
+            <div style="display:flex;gap:10px;padding:14px 16px;border-radius:20px;background:rgba(242,231,211,.06);border:1px solid rgba(242,231,211,.12)">
+              <sc-for list="{{ hand }}" as="d" hint-placeholder-count="5">
+                <div style="width:52px;height:52px;border-radius:12px;background:#fffaf0;position:relative;box-shadow:{{ d.ring }}">
+                  <span style="position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:50%;background:{{ d.centerBg }};transform:translate(-50%,-50%);box-shadow:{{ d.pipShadow }}"></span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="border-left:1px solid rgba(255,224,176,.1);background:rgba(20,15,10,.32);padding:22px 20px;display:flex;flex-direction:column;min-height:0">
+          <sc-if value="{{ isBid }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:18px;height:100%">
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div style="font-family:var(--font-heading);font-size:22px;color:#fffaf0">Your wager</div>
+                <div style="font-size:12.5px;color:#a19786">Anne claimed four fives. Raise or call.</div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:18px 0;border-radius:20px;background:rgba(242,231,211,.05);border:1px solid rgba(242,231,211,.12)">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+                  <div onClick="{{ qtyUp }}" style="width:64px;height:40px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer" style-hover="background:rgba(242,231,211,.2)">&#9650;</div>
+                  <div style="font-family:var(--font-heading);font-size:44px;line-height:1;color:#fffaf0;width:64px;text-align:center">{{ qty }}</div>
+                  <div onClick="{{ qtyDown }}" style="width:64px;height:40px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer" style-hover="background:rgba(242,231,211,.2)">&#9660;</div>
+                </div>
+                <div style="font-size:22px;color:#82796a">&times;</div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+                  <div onClick="{{ faceUp }}" style="width:64px;height:40px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer" style-hover="background:rgba(242,231,211,.2)">&#9650;</div>
+                  <div style="width:66px;height:66px;border-radius:14px;background:#fffaf0;border:1px solid #c0b6a5;position:relative"><span style="position:absolute;left:50%;top:50%;width:11px;height:11px;border-radius:50%;background:{{ faceCenter }};transform:translate(-50%,-50%);box-shadow:{{ faceShadow }}"></span></div>
+                  <div onClick="{{ faceDown }}" style="width:64px;height:40px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer" style-hover="background:rgba(242,231,211,.2)">&#9660;</div>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:#a19786;font-weight:700">Shortcuts</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <div style="padding:11px 15px;border-radius:999px;border:1px solid rgba(242,231,211,.22);color:#f2e7d3;font-size:12.5px;font-weight:600;cursor:pointer" style-hover="background:rgba(242,231,211,.1)">Least raise 5&times;5</div>
+                  <div style="padding:11px 15px;border-radius:999px;border:1px solid rgba(242,231,211,.22);color:#f2e7d3;font-size:12.5px;font-weight:600;cursor:pointer" style-hover="background:rgba(242,231,211,.1)">To ones 2&times;1</div>
+                  <div style="padding:11px 15px;border-radius:999px;border:1px solid rgba(242,231,211,.14);color:#7d7466;font-size:12.5px;font-weight:600">5&times;6</div>
+                </div>
+              </div>
+              <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px">
+                <div onClick="{{ next }}" style="height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(198,113,57,.42);cursor:pointer" style-hover="background:#b2622d">Place wager</div>
+                <div onClick="{{ next }}" style="height:56px;border-radius:999px;border:1.5px solid #b3503f;color:#e08a78;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:rgba(179,80,63,.16)">Call liar</div>
+                <div style="font-size:11.5px;color:#7d7466;text-align:center">Enter to wager &middot; L to call</div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isReveal }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:16px;height:100%">
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div style="font-family:var(--font-heading);font-size:22px;color:#fffaf0">The count is called</div>
+                <div style="font-size:12.5px;color:#a19786">Four fives claimed &mdash; three at the table.</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ reveal }}" as="r" hint-placeholder-count="5">
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <div style="width:58px;font-size:12.5px;color:#f2e7d3;font-weight:600">{{ r.who }}</div>
+                    <div style="flex:1;display:flex;gap:5px">
+                      <sc-for list="{{ r.dice }}" as="d" hint-placeholder-count="4">
+                        <div style="width:30px;height:30px;border-radius:8px;background:#fffaf0;position:relative;box-shadow:{{ d.ring }}"><span style="position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:{{ d.centerBg }};transform:translate(-50%,-50%);box-shadow:{{ d.pipShadow }}"></span></div>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="padding:13px 15px;border-radius:16px;background:rgba(242,231,211,.07);border:1px solid rgba(242,231,211,.16);font-size:12.5px;line-height:1.55;color:#f2e7d3">Ringed dice are fives. Three where four were claimed &mdash; the count fell short, and Anne loses a die.</div>
+              <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px">
+                <div onClick="{{ next }}" style="height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#b2622d">Next round</div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:36px;flex-wrap:wrap;max-width:1440px">
+    <div style="flex:1;min-width:420px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:22px 24px">
+      <div style="font-family:var(--font-heading);font-size:20px;margin-bottom:12px">What changes from mobile</div>
+      <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:9px 14px;font-size:12.5px">
+        <div style="font-weight:700;color:#645c50">Element</div><div style="font-weight:700;color:#645c50">Desktop treatment</div>
+        <div>Bid sheet</div><div>Becomes a permanent 340px right rail &mdash; no rise/fall; when it isn't your turn the rail shows the status card instead of controls</div>
+        <div>Ledger chip</div><div>Expands into a persistent left column with live bid history and a dice-remaining bar per seat</div>
+        <div>Arc</div><div>Widens to a full ellipse; seats grow to 62px (72px active) and carry pip counts under the name</div>
+        <div>Haptics</div><div>Replaced by hover tints from the accent ramp plus keyboard shortcuts (Enter / L)</div>
+        <div>Your hand</div><div>Always sharp at the table foot &mdash; no blur, since a desktop screen isn't shoulder-surfed the same way</div>
+      </div>
+    </div>
+    <div style="flex:1;min-width:380px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:22px 24px">
+      <div style="font-family:var(--font-heading);font-size:20px;margin-bottom:12px">Open questions</div>
+      <div style="display:flex;flex-direction:column;gap:9px;font-size:12.5px;line-height:1.55;color:#474238">
+        <div>&mdash; Does the reveal belong in the rail, or should it take the whole table as an overlay the way mobile does?</div>
+        <div>&mdash; Twelve seats on desktop: one wide ellipse, or the same two stacked arcs?</div>
+        <div>&mdash; Is a chat column needed, and if so does it displace the ledger or split it?</div>
+        <div>&mdash; Breakpoint below 1180px: collapse to the mobile layout, or drop the ledger column first?</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1560,&quot;height&quot;:1200}}">
+class Component extends DCLogic {
+  state = { step: 0, qty: 5, face: 5 };
+
+  pips(face, off, ink) {
+    const c = { tl:`${-off}px ${-off}px 0 ${ink}`, tr:`${off}px ${-off}px 0 ${ink}`,
+      bl:`${-off}px ${off}px 0 ${ink}`, br:`${off}px ${off}px 0 ${ink}`,
+      ml:`${-off}px 0 0 ${ink}`, mr:`${off}px 0 0 ${ink}` };
+    const four = [c.tl, c.tr, c.bl, c.br];
+    switch (face) {
+      case 1: return { centerBg: ink, pipShadow: 'none' };
+      case 2: return { centerBg: 'transparent', pipShadow: [c.tl, c.br].join(',') };
+      case 3: return { centerBg: ink, pipShadow: [c.tl, c.br].join(',') };
+      case 4: return { centerBg: 'transparent', pipShadow: four.join(',') };
+      case 5: return { centerBg: ink, pipShadow: four.join(',') };
+      default: return { centerBg: 'transparent', pipShadow: [c.tl,c.tr,c.ml,c.mr,c.bl,c.br].join(',') };
+    }
+  }
+
+  die(face, off, ringed) {
+    return Object.assign({ ring: ringed ? '0 0 0 2px #d69a52' : 'none' }, this.pips(face, off, '#2e2b25'));
+  }
+
+  renderVals() {
+    const step = this.state.step;
+    const bump = (k, d, lo, hi) => () => this.setState(s => ({ [k]: Math.min(hi, Math.max(lo, s[k] + d)) }));
+    const f = this.pips(this.state.face, 15, '#2e2b25');
+    const rows = [
+      { who: 'Isabel', dice: [3,5,2,6,4] },
+      { who: 'Mateo', dice: [4,6,2] },
+      { who: 'Tobias', dice: [2,3] },
+      { who: 'Anne', dice: [5,2,3,6] },
+      { who: 'You', dice: [2,3,4,5,6] }
+    ];
+    return {
+      qty: this.state.qty,
+      faceCenter: f.centerBg,
+      faceShadow: f.pipShadow,
+      qtyUp: bump('qty', 1, 1, 19),
+      qtyDown: bump('qty', -1, 1, 19),
+      faceUp: bump('face', 1, 1, 6),
+      faceDown: bump('face', -1, 1, 6),
+      isBid: step === 0,
+      isReveal: step === 1,
+      tokenCaption: step === 0 ? "Anne's wager stands" : 'Counting the table',
+      next: () => this.setState(s => ({ step: (s.step + 1) % 2 })),
+      hand: [2,3,4,5,6].map(n => this.die(n, 13, false)),
+      reveal: rows.map(r => ({ who: r.who, dice: r.dice.map(n => this.die(n, 7, n === 5)) })),
+      ledger: [
+        { who: 'Isabel opened', bid: '2 \u00d7 3', bg: 'rgba(242,231,211,.04)' },
+        { who: 'Mateo raised', bid: '3 \u00d7 3', bg: 'rgba(242,231,211,.04)' },
+        { who: 'Tobias raised', bid: '3 \u00d7 5', bg: 'rgba(242,231,211,.04)' },
+        { who: 'You raised', bid: '4 \u00d7 4', bg: 'rgba(242,231,211,.04)' },
+        { who: 'Anne raised', bid: '4 \u00d7 5', bg: 'rgba(214,154,82,.16)' }
+      ],
+      counts: [
+        { who: 'Isabel', n: 5, pct: '100%', color: '#f2e7d3' },
+        { who: 'Anne', n: 4, pct: '80%', color: '#fffaf0' },
+        { who: 'You', n: 5, pct: '100%', color: '#f6d9a8' },
+        { who: 'Mateo', n: 3, pct: '60%', color: '#f2e7d3' },
+        { who: 'Tobias', n: 2, pct: '40%', color: '#f2e7d3' },
+        { who: 'Grace', n: 0, pct: '0%', color: '#7d7466' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
