@@ -1,9 +1,11 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { IonButton, IonContent, IonModal } from '@ionic/angular/standalone';
 import { LucideDice5 } from '@lucide/angular';
-import { GamePhase, type Bid, type BidRecord, type Player } from '@shared';
+import { GamePhase, type Bid, type BidRecord, type DiceValue, type Player } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
+import type { ArcSeatOpeningRoll } from '../../ui/arc-seat/arc-seat';
+import { ARC_SEAT_ACTIVE_WIDTH_PX, ARC_SEAT_WIDTH_PX, ArcSeat } from '../../ui/arc-seat/arc-seat';
 import { OpeningRollPanel } from '../../ui/opening-roll-panel/opening-roll-panel';
 import type { HandRollStatus, SeatSize } from '../../ui/seat-card/seat-card';
 import { CARD_WIDTH_PX, SeatCard } from '../../ui/seat-card/seat-card';
@@ -62,6 +64,11 @@ const CARD_GAP_PX = 12;
  * amount of extra headroom at smaller tiers matches the arc's own generous space in the design. */
 const ARC_TOP_PADDING_PX = 140;
 
+/** The compact mobile arc-seat is far shorter than a full SeatCard (no dice-cup/bid-marker), so
+ * it needs much less of the same vertical-clipping headroom as ARC_TOP_PADDING_PX above. */
+const MOBILE_ARC_TOP_PADDING_PX = 64;
+const MOBILE_ARC_GAP_PX = 10;
+
 function describeBid(bid: Bid): string {
   return bid.kind === 'ACE' ? `${bid.quantity} aces` : `${bid.quantity} × face ${bid.face}`;
 }
@@ -83,6 +90,15 @@ function describeMobilePhase(
   return `Round ${state.round.roundNumber} · ${totalDiceCount} dice`;
 }
 
+/** "Anne", "Anne and Mateo", "Anne, Mateo and Tobias" — the opening-roll tie caption (Increment
+ * 2) never needs an Oxford comma debate beyond this: at most a small handful of seats ever tie. */
+function joinWithAnd(names: readonly string[]): string {
+  if (names.length <= 1) {
+    return names[0] ?? '';
+  }
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+}
+
 @Component({
   selector: 'app-table',
   standalone: true,
@@ -92,6 +108,7 @@ function describeMobilePhase(
     IonModal,
     LucideDice5,
     SeatCard,
+    ArcSeat,
     OpeningRollPanel,
     BidControls,
     RoundLossModal,
@@ -148,6 +165,22 @@ export class Table {
     return this.opponents().length * (width + CARD_GAP_PX);
   });
 
+  /** Mobile arc sizing (Increment 2) — fixed 84px seats rather than the desktop tiers above; the
+   * one active (current-bidder) seat is wider (104px), same data `currentBidderId` already
+   * tracks. Reuses `opponentPositions` as-is: it's percentage-based and doesn't care about the
+   * pixel width of any one seat. */
+  protected readonly mobileArcTopPaddingPx = MOBILE_ARC_TOP_PADDING_PX;
+  protected readonly mobileArcMinWidthPx = computed(() => {
+    const bidderId = this.currentBidderId();
+    const widths = this.opponents().map((o) =>
+      o.id === bidderId ? ARC_SEAT_ACTIVE_WIDTH_PX : ARC_SEAT_WIDTH_PX,
+    );
+    if (widths.length === 0) {
+      return 0;
+    }
+    return widths.reduce((sum, w) => sum + w, 0) + (widths.length - 1) * MOBILE_ARC_GAP_PX;
+  });
+
   /** The turn order/index exist as soon as a round starts (well before bidding), so this must
    * also gate on phase — otherwise the eventual first bidder shows a "Bidding" badge all through
    * ROUND_ROLLING, before anyone has actually bid (Design QA Task 6, finding 1). Turn-order
@@ -178,11 +211,51 @@ export class Table {
   }
 
   /** Public opening-roll data is shown whenever either the live roll or its resolved, still
-   * temporarily-retained result exists (2., "keep results visible through round 1 hand-rolling"). */
+   * temporarily-retained result exists (2., "keep results visible through round 1 hand-rolling").
+   * Desktop's separate OpeningRollPanel deliberately keeps using this broader flag. */
   protected readonly showOpeningRoll = computed(() => {
     const state = this.store.matchState();
     return !!state?.startRoll || !!state?.completedStartRoll;
   });
+
+  /** Unlike showOpeningRoll above, the mobile arc's per-seat die slot (Increment 2) must NOT
+   * linger once round 1 starts rolling hands — the reference's hand-roll frame shows compact
+   * roll status there instead, never a stale opening die (each seat has only one state slot). */
+  protected readonly isOpeningRollPhase = computed(
+    () => this.store.matchState()?.phase === GamePhase.START_ROLL,
+  );
+
+  /** Tie caption for the mobile arc's mat status slot (Increment 2) — inferred from
+   * `pendingPlayerIds` being a strict subset of the roster, the same signal `START_ROLL_TIED`
+   * carries, without adding new store plumbing for one caption line. Ambiguous only for a
+   * 2-player tie (subset === roster there too) — the same known, accepted limit as
+   * OpeningRollPanel's own doc comment; harmless since a 2-player START_ROLL is a re-roll of
+   * everyone either way. */
+  protected readonly openingTieCaption = computed<string | null>(() => {
+    const state = this.store.matchState();
+    if (state?.phase !== GamePhase.START_ROLL || !state.startRoll) {
+      return null;
+    }
+    const tiedIds = state.startRoll.pendingPlayerIds;
+    if (tiedIds.length === 0 || tiedIds.length >= this.allPlayers().length) {
+      return null;
+    }
+    const names = tiedIds.map((id) => this.nicknameFor(id));
+    return `${joinWithAnd(names)} tied, casting again`;
+  });
+
+  /** Per-seat public opening-roll data for the mobile arc (Increment 2) — null outside the
+   * opening-roll window entirely, so ArcSeat never reserves a die-slot's worth of space once
+   * hand-rolling starts. */
+  protected openingRollFor(playerId: string): ArcSeatOpeningRoll | null {
+    if (!this.isOpeningRollPhase()) {
+      return null;
+    }
+    const state = this.store.matchState();
+    const value: DiceValue | null =
+      state?.startRoll?.rolls[playerId] ?? state?.completedStartRoll?.rolls[playerId] ?? null;
+    return { value, isWinner: state?.completedStartRoll?.firstPlayerId === playerId };
+  }
 
   /** Per-player "rolled their hand / still waiting" status, only meaningful during ROUND_ROLLING. */
   protected readonly handRollStatusByPlayerId = computed<Readonly<

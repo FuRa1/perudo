@@ -157,6 +157,33 @@ $table-photo-overlay: linear-gradient(
   border-radius: 9999px;
 }
 
+// Mobile mat glow (Increment 2) — a soft radial highlight behind the compact arc seats rather
+// than the desktop's solid pill panel (.table__arc above); matches the reference's "lamplit"
+// treatment for the one board region every mobile screen shares.
+.mobile-arc-wrap {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -20px -30px auto -30px;
+    top: 45%;
+    height: 70%;
+    border-radius: 50%;
+    background: radial-gradient(70% 60% at 50% 24%, rgba(255, 214, 150, 0.16), transparent 72%);
+    border-top: 1px solid rgba(255, 224, 176, 0.16);
+    pointer-events: none;
+  }
+}
+
+.mobile-arc {
+  z-index: 1;
+}
+
+.mobile-arc__caption {
+  color: var(--color-cream-faint);
+}
+
 // The local player's "Roll your hand" button (ROUND_ROLLING) must never be wider than their own
 // open cup — same width formula as dice-cup's .dice-cup-owner-shell (theme/_variables.scss) so
 // it lines up beneath it.

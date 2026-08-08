@@ -1,0 +1,27 @@
+<div
+  class="arc-seat flex flex-col items-center gap-1.5"
+  [class.arc-seat--active]="isCurrentBidder()"
+  [class.arc-seat--eliminated]="isEliminated()"
+>
+  <div class="arc-seat__tile relative flex items-center justify-center">
+    <span class="arc-seat__initial">{{ initial() }}</span>
+  </div>
+
+  <span class="arc-seat__name truncate">{{ player().nickname }}</span>
+
+  <div class="flex h-5 items-center justify-center">
+    @if (openingRoll(); as roll) {
+      <div class="arc-seat__die-slot relative" [class.arc-seat__die-slot--winner]="roll.isWinner">
+        @if (roll.value; as v) {
+          <app-die [value]="v" class="block h-full w-full" />
+        }
+      </div>
+    } @else if (isEliminated()) {
+      <span class="arc-seat__status arc-seat__status--out">out</span>
+    } @else if (handRollStatus() === 'rolled') {
+      <span class="arc-seat__status arc-seat__status--rolled">&#10003; rolled</span>
+    } @else if (handRollStatus() === 'waiting') {
+      <span class="arc-seat__status">waiting</span>
+    }
+  </div>
+</div>

@@ -27,31 +27,66 @@
          <app-bid-controls> exists either way. -->
     <div class="table-layout grid grid-cols-1 gap-3 lg:grid-cols-[1fr_340px] lg:gap-5">
       <div class="table-layout__main flex flex-col gap-3">
-        @if (showOpeningRoll()) {
-          <app-opening-roll-panel
-            [players]="allPlayers()"
-            [startRoll]="store.matchState()?.startRoll ?? null"
-            [completedStartRoll]="store.matchState()?.completedStartRoll ?? null"
-          />
-        }
-
-        <div class="overflow-x-auto overflow-y-hidden" [style.padding-top.px]="arcTopPaddingPx">
-          <div class="table__arc relative h-56 w-full" [style.min-width.px]="arcMinWidthPx()">
+        <!-- Mobile-only compact arc (Increment 2): opponents only (never the local player, 8.3 —
+             their private dice/cup live in the bottom region), fixed-size identity tiles instead
+             of the desktop's shrink-and-scroll tiers, and the public opening die embedded in each
+             seat instead of a separate panel above it. -->
+        <div
+          class="mobile-arc-wrap overflow-x-auto overflow-y-hidden md:hidden"
+          [style.padding-top.px]="mobileArcTopPaddingPx"
+        >
+          <div class="mobile-arc relative h-44 w-full" [style.min-width.px]="mobileArcMinWidthPx()">
             @for (opponent of opponents(); track opponent.id; let i = $index) {
               <div
                 class="absolute -translate-x-1/2 -translate-y-1/2"
                 [style.left]="opponentPositions()[i].left"
                 [style.top]="opponentPositions()[i].top"
               >
-                <app-seat-card
+                <app-arc-seat
                   [player]="opponent"
                   [isCurrentBidder]="opponent.id === currentBidderId()"
-                  [size]="seatSize()"
                   [handRollStatus]="handRollStatusFor(opponent.id)"
-                  [currentBid]="currentBidFor(opponent.id)"
+                  [openingRoll]="openingRollFor(opponent.id)"
                 />
               </div>
             }
+          </div>
+        </div>
+        @if (isOpeningRollPhase()) {
+          <p class="mobile-arc__caption text-center text-xs md:hidden">
+            {{ openingTieCaption() ?? 'Highest cast opens the round' }}
+          </p>
+        }
+
+        <!-- Desktop/tablet: unchanged from before Increment 2 (separate opening-roll panel, full
+             SeatCard arc with the shrink-and-scroll size tiers). -->
+        <div class="hidden md:block">
+          @if (showOpeningRoll()) {
+            <app-opening-roll-panel
+              [players]="allPlayers()"
+              [startRoll]="store.matchState()?.startRoll ?? null"
+              [completedStartRoll]="store.matchState()?.completedStartRoll ?? null"
+            />
+          }
+
+          <div class="overflow-x-auto overflow-y-hidden" [style.padding-top.px]="arcTopPaddingPx">
+            <div class="table__arc relative h-56 w-full" [style.min-width.px]="arcMinWidthPx()">
+              @for (opponent of opponents(); track opponent.id; let i = $index) {
+                <div
+                  class="absolute -translate-x-1/2 -translate-y-1/2"
+                  [style.left]="opponentPositions()[i].left"
+                  [style.top]="opponentPositions()[i].top"
+                >
+                  <app-seat-card
+                    [player]="opponent"
+                    [isCurrentBidder]="opponent.id === currentBidderId()"
+                    [size]="seatSize()"
+                    [handRollStatus]="handRollStatusFor(opponent.id)"
+                    [currentBid]="currentBidFor(opponent.id)"
+                  />
+                </div>
+              }
+            </div>
           </div>
         </div>
 
