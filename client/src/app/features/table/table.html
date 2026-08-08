@@ -1,6 +1,23 @@
 <ion-content>
   <div class="table-surface flex flex-col gap-3 p-3 md:p-5">
-    <h2 class="table__heading font-heading text-lg">
+    <!-- Mobile-only header (Increment 1): two 36px chips replace the raw "Round N — PHASE"
+         heading below 768px. The Ledger chip is the sole route to bid history on mobile; the
+         desktop rail keeps its always-visible history panel unchanged (hidden below md instead
+         of duplicated markup). -->
+    <div class="table-mobile-header flex items-center justify-between gap-2 md:hidden">
+      <div class="table-mobile-header__chip table-mobile-header__chip--phase">
+        {{ mobilePhaseLabel() }}
+      </div>
+      <button
+        type="button"
+        class="table-mobile-header__chip table-mobile-header__chip--ledger"
+        (click)="openLedger()"
+      >
+        Ledger
+      </button>
+    </div>
+
+    <h2 class="table__heading hidden font-heading text-lg md:block">
       Round {{ store.matchState()?.round?.roundNumber ?? '-' }} — {{ store.matchState()?.phase }}
     </h2>
 
@@ -104,7 +121,7 @@
         }
 
         @if (store.matchState()?.round?.bidHistory; as history) {
-          <div class="table__bid-history p-2">
+          <div class="table__bid-history hidden p-2 md:block">
             <h3 class="table__bid-history-title mb-1 font-semibold">Bid history</h3>
             <ul class="table__bid-history-list flex flex-col gap-0.5">
               @for (record of history; track $index) {
@@ -116,6 +133,35 @@
       </div>
     </div>
   </div>
+
+  <!-- Ledger (Increment 1, mobile only) — same bid-history data as the desktop rail panel above,
+       reached on demand instead of permanently occupying board space. Closed by default. -->
+  <ion-modal
+    class="table-ledger-modal md:hidden"
+    [isOpen]="isLedgerOpen()"
+    (didDismiss)="closeLedger()"
+    [initialBreakpoint]="0.6"
+    [breakpoints]="[0, 0.6, 0.9]"
+  >
+    <ng-template>
+      <div class="table-ledger flex h-full flex-col gap-2 p-4">
+        <h3 class="table-ledger__title font-heading text-base">Ledger</h3>
+        @if (store.matchState()?.round?.bidHistory; as history) {
+          @if (history.length > 0) {
+            <ul class="table-ledger__list flex flex-col gap-1 overflow-y-auto">
+              @for (record of history; track $index) {
+                <li>{{ nicknameFor(record.playerId) }}: {{ describeBid(record.bid) }}</li>
+              }
+            </ul>
+          } @else {
+            <p class="table-ledger__empty text-sm">No bids yet this round.</p>
+          }
+        } @else {
+          <p class="table-ledger__empty text-sm">No bids yet.</p>
+        }
+      </div>
+    </ng-template>
+  </ion-modal>
 
   <app-round-loss-modal />
 </ion-content>

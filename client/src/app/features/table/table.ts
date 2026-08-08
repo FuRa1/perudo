@@ -1,5 +1,5 @@
-import { Component, computed, inject } from '@angular/core';
-import { IonButton, IonContent } from '@ionic/angular/standalone';
+import { Component, computed, inject, signal } from '@angular/core';
+import { IonButton, IonContent, IonModal } from '@ionic/angular/standalone';
 import { LucideDice5 } from '@lucide/angular';
 import { GamePhase, type Bid, type BidRecord, type Player } from '@shared';
 import { GameStore } from '../../core/game-store';
@@ -66,12 +66,30 @@ function describeBid(bid: Bid): string {
   return bid.kind === 'ACE' ? `${bid.quantity} aces` : `${bid.quantity} × face ${bid.face}`;
 }
 
+/** Plain-language stand-in for the mobile header's phase chip (Increment 1) — never surfaces a
+ * raw GamePhase enum value to players. `round` is null only pre-round-1 (LOBBY/START_ROLL, per
+ * game-engine.ts), so that's the one case with no round number or dice count to report yet. */
+function describeMobilePhase(
+  state: { readonly phase: GamePhase; readonly round: { readonly roundNumber: number } | null },
+  totalDiceCount: number,
+  isMyTurn: boolean,
+): string {
+  if (!state.round) {
+    return 'Before round 1';
+  }
+  if (state.phase === GamePhase.BIDDING && isMyTurn) {
+    return 'Your turn';
+  }
+  return `Round ${state.round.roundNumber} · ${totalDiceCount} dice`;
+}
+
 @Component({
   selector: 'app-table',
   standalone: true,
   imports: [
     IonContent,
     IonButton,
+    IonModal,
     LucideDice5,
     SeatCard,
     OpeningRollPanel,
@@ -93,6 +111,29 @@ export class Table {
     () => this.store.matchState()?.players ?? [],
   );
   protected readonly me = this.store.me;
+
+  /** Mobile-only header chip (Increment 1) — plain-language phase context, never a raw enum. */
+  protected readonly mobilePhaseLabel = computed<string>(() => {
+    const state = this.store.matchState();
+    if (!state) {
+      return '';
+    }
+    const totalDiceCount = this.allPlayers().reduce((sum, p) => sum + p.diceCount, 0);
+    return describeMobilePhase(state, totalDiceCount, this.store.isMyTurn());
+  });
+
+  /** Ledger trigger (Increment 1) — closed by default, holds the same bid-history data the
+   * desktop rail shows inline; mobile hides that inline panel and reaches it from here instead. */
+  protected readonly isLedgerOpen = signal(false);
+
+  protected openLedger(): void {
+    this.isLedgerOpen.set(true);
+  }
+
+  protected closeLedger(): void {
+    this.isLedgerOpen.set(false);
+  }
+
   protected readonly opponents = computed<readonly Player[]>(() => {
     const myId = this.store.playerId();
     return this.allPlayers().filter((p) => p.id !== myId);
