@@ -184,6 +184,69 @@ $table-photo-overlay: linear-gradient(
   color: var(--color-cream-faint);
 }
 
+// Mobile private local zone (Increment 3) — the one place per phase where the local player's own
+// action/status lives; exactly one of the three states inside it is ever visible at once.
+.mobile-hand-zone {
+  width: 100%;
+}
+
+.mobile-hand-zone__label {
+  color: var(--color-cream-muted);
+  letter-spacing: 0.06em;
+}
+
+.mobile-hand-zone__hint {
+  color: var(--color-cream-faint);
+  text-align: center;
+}
+
+// The public opening die (5.2) sits bare on the mat, not inside a cup — 66px per the reference,
+// the largest die on the opening-roll screen.
+.mobile-opening-die {
+  @include mixins.clamp-square(66px, 66px, 66px);
+}
+
+// Both mobile primary roll buttons are 56px tall via Ionic's `native` shadow part — Ionic's own
+// height defaults are padding-derived and don't hit an exact pixel target on their own.
+.mobile-primary-btn {
+  width: 100%;
+
+  &::part(native) {
+    height: 56px;
+  }
+}
+
+// Hand-roll button (Increment 3) — never wider than the 236px cup it sits directly beneath.
+.mobile-hand-roll-btn {
+  width: 236px;
+
+  &::part(native) {
+    height: 56px;
+  }
+}
+
+// Private hand strip (Increment 3) — the only place a mobile player's own dice render once
+// they've rolled. Blurred while it's not their turn (nothing to act on yet), sharp once it is;
+// purely cosmetic since the dice themselves are already private at the data layer (4.5/6.6) —
+// nobody else's dice are ever in this DOM to begin with.
+.mobile-hand-strip {
+  filter: blur(3px);
+  opacity: 0.7;
+  transition:
+    filter 0.2s ease,
+    opacity 0.2s ease;
+
+  &--sharp {
+    filter: none;
+    opacity: 1;
+  }
+}
+
+.mobile-hand-strip__die {
+  width: 36px;
+  height: 36px;
+}
+
 // The local player's "Roll your hand" button (ROUND_ROLLING) must never be wider than their own
 // open cup — same width formula as dice-cup's .dice-cup-owner-shell (theme/_variables.scss) so
 // it lines up beneath it.

@@ -6,6 +6,8 @@ import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
 import type { ArcSeatOpeningRoll } from '../../ui/arc-seat/arc-seat';
 import { ARC_SEAT_ACTIVE_WIDTH_PX, ARC_SEAT_WIDTH_PX, ArcSeat } from '../../ui/arc-seat/arc-seat';
+import { DiceCup } from '../../ui/dice-cup/dice-cup';
+import { Die } from '../../ui/die/die';
 import { OpeningRollPanel } from '../../ui/opening-roll-panel/opening-roll-panel';
 import type { HandRollStatus, SeatSize } from '../../ui/seat-card/seat-card';
 import { CARD_WIDTH_PX, SeatCard } from '../../ui/seat-card/seat-card';
@@ -109,6 +111,8 @@ function joinWithAnd(names: readonly string[]): string {
     LucideDice5,
     SeatCard,
     ArcSeat,
+    DiceCup,
+    Die,
     OpeningRollPanel,
     BidControls,
     RoundLossModal,
@@ -191,6 +195,16 @@ export class Table {
       return null;
     }
     return state.round.turnOrder[state.round.currentTurnIndex];
+  });
+
+  /** Whether it's meaningfully my turn to act (Increment 3/4) — deliberately narrower than
+   * GameStore's own `isMyTurn`, which is already true the instant a round's turn order is
+   * decided (well before BIDDING opens, same reason currentBidderId above gates on phase). The
+   * mobile hand strip's blur/sharp state (and Increment 4's bid sheet) must only react once
+   * there's actually something to act on. */
+  protected readonly isMyBiddingTurn = computed(() => {
+    const bidderId = this.currentBidderId();
+    return bidderId !== null && bidderId === this.store.playerId();
   });
 
   /** The most recently placed bid this round, or null once history is empty (round just ended

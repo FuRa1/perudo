@@ -46,6 +46,10 @@ export class DiceCup {
   readonly diceCount = input.required<number>();
   readonly isOwner = input(false);
   readonly size = input<SeatSize>('medium');
+  /** Explicit pixel override for the owner's open cup, taking priority over the responsive
+   * `--owner-cup-size` clamp — the mobile hand-roll zone (Increment 3) needs it fixed at exactly
+   * 236px regardless of viewport, unlike the desktop seat-card placement. */
+  readonly ownerSizePx = input<number | null>(null);
 
   private readonly ownerCupEl = viewChild<ElementRef<HTMLElement>>('ownerCupEl');
 

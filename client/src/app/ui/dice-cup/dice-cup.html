@@ -1,5 +1,10 @@
 @if (isOwner()) {
-  <div #ownerCupEl class="relative dice-cup-owner-shell">
+  <div
+    #ownerCupEl
+    class="relative dice-cup-owner-shell"
+    [style.width.px]="ownerSizePx()"
+    [style.height.px]="ownerSizePx()"
+  >
     <div class="absolute inset-0 rounded-full" [class]="cssClass.openExterior">
       <div
         class="absolute overflow-hidden rounded-full"

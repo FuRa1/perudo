@@ -90,32 +90,88 @@
           </div>
         </div>
 
+        <!-- Desktop/tablet: unchanged local seat card + roll buttons. -->
+        <div class="hidden md:block">
+          @if (me(); as myPlayer) {
+            <div class="flex flex-col items-center gap-2">
+              <app-seat-card
+                [player]="myPlayer"
+                [isMe]="true"
+                [isCurrentBidder]="myPlayer.id === currentBidderId()"
+                size="large"
+                [handRollStatus]="handRollStatusFor(myPlayer.id)"
+                [currentBid]="currentBidFor(myPlayer.id)"
+              />
+              @if (canRollHand()) {
+                <div class="dice-cup-owner-roll-button">
+                  <ion-button expand="block" (click)="roll()">
+                    <svg lucideDice5 slot="start" aria-hidden="true"></svg>
+                    Roll your hand
+                  </ion-button>
+                </div>
+              }
+            </div>
+          }
+
+          @if (canRollOpeningDie()) {
+            <ion-button expand="block" (click)="roll()">
+              <svg lucideDice5 slot="start" aria-hidden="true"></svg>
+              Roll opening die
+            </ion-button>
+          }
+        </div>
+
+        <!-- Mobile-only private local zone (Increment 3): exactly one of these three states is
+             ever visible, no duplicate local seat/card UI. The opening die sits bare (public by
+             rule), the hand-roll cup is fixed at 236px rather than the desktop's responsive
+             clamp, and the post-roll hand strip is the only place private dice render on mobile
+             from here on — obscured while it's not my turn, sharp once it is (the same signal
+             Increment 4's bid sheet will key off). -->
         @if (me(); as myPlayer) {
-          <div class="flex flex-col items-center gap-2">
-            <app-seat-card
-              [player]="myPlayer"
-              [isMe]="true"
-              [isCurrentBidder]="myPlayer.id === currentBidderId()"
-              size="large"
-              [handRollStatus]="handRollStatusFor(myPlayer.id)"
-              [currentBid]="currentBidFor(myPlayer.id)"
-            />
-            @if (canRollHand()) {
-              <div class="dice-cup-owner-roll-button">
-                <ion-button expand="block" (click)="roll()">
+          <div class="mobile-hand-zone flex flex-col items-center gap-3 md:hidden">
+            @if (isOpeningRollPhase()) {
+              <span class="mobile-hand-zone__label text-xs font-semibold tracking-wide uppercase"
+                >Your cast — public</span
+              >
+              <div class="mobile-opening-die relative">
+                @if (openingRollFor(myPlayer.id)?.value; as v) {
+                  <app-die [value]="v" class="block h-full w-full" />
+                }
+              </div>
+              @if (canRollOpeningDie()) {
+                <ion-button expand="block" class="mobile-primary-btn" (click)="roll()">
                   <svg lucideDice5 slot="start" aria-hidden="true"></svg>
-                  Roll your hand
+                  {{ openingRollFor(myPlayer.id)?.value !== null ? 'Cast again' : 'Cast' }}
                 </ion-button>
+                <p class="mobile-hand-zone__hint text-xs">Shake the phone or tap the die</p>
+              } @else {
+                <p class="mobile-hand-zone__hint text-xs">Waiting for the rest of the table</p>
+              }
+            } @else if (canRollHand()) {
+              <app-dice-cup
+                [dice]="myPlayer.dice"
+                [diceCount]="myPlayer.diceCount"
+                [isOwner]="true"
+                [ownerSizePx]="236"
+              />
+              <ion-button expand="block" class="mobile-hand-roll-btn" (click)="roll()">
+                <svg lucideDice5 slot="start" aria-hidden="true"></svg>
+                Roll your hand
+              </ion-button>
+              <p class="mobile-hand-zone__hint text-center text-xs">
+                Shake to roll, or tap the cup. Five dice, yours alone until the reveal.
+              </p>
+            } @else if (myPlayer.dice.length > 0) {
+              <div
+                class="mobile-hand-strip flex gap-1.5"
+                [class.mobile-hand-strip--sharp]="isMyBiddingTurn()"
+              >
+                @for (value of myPlayer.dice; track $index) {
+                  <app-die [value]="value" class="mobile-hand-strip__die block" />
+                }
               </div>
             }
           </div>
-        }
-
-        @if (canRollOpeningDie()) {
-          <ion-button expand="block" (click)="roll()">
-            <svg lucideDice5 slot="start" aria-hidden="true"></svg>
-            Roll opening die
-          </ion-button>
         }
 
         @if (reveal(); as r) {
