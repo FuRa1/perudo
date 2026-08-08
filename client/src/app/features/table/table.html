@@ -33,28 +33,67 @@
         <!-- Mobile-only compact arc (Increment 2): opponents only (never the local player, 8.3 —
              their private dice/cup live in the bottom region), fixed-size identity tiles instead
              of the desktop's shrink-and-scroll tiers, and the public opening die embedded in each
-             seat instead of a separate panel above it. -->
-        <div
-          class="mobile-arc-wrap overflow-x-auto overflow-y-hidden md:hidden"
-          [style.padding-top.px]="mobileArcTopPaddingPx"
-        >
-          <div class="mobile-arc relative h-44 w-full" [style.min-width.px]="mobileArcMinWidthPx()">
-            @for (opponent of opponents(); track opponent.id; let i = $index) {
-              <div
-                class="absolute -translate-x-1/2 -translate-y-1/2"
-                [style.left]="opponentPositions()[i].left"
-                [style.top]="opponentPositions()[i].top"
-              >
+             seat instead of a separate panel above it. 2-8 players only (Increment 5 replaces
+             this with a two-row layout at 9+ opponents, below). -->
+        @if (!isArcStressCase()) {
+          <div
+            class="mobile-arc-wrap overflow-x-auto overflow-y-hidden md:hidden"
+            [style.padding-top.px]="mobileArcTopPaddingPx"
+          >
+            <div
+              class="mobile-arc relative h-44 w-full"
+              [style.min-width.px]="mobileArcMinWidthPx()"
+            >
+              @for (opponent of opponents(); track opponent.id; let i = $index) {
+                <div
+                  class="absolute -translate-x-1/2 -translate-y-1/2"
+                  [style.left]="opponentPositions()[i].left"
+                  [style.top]="opponentPositions()[i].top"
+                >
+                  <app-arc-seat
+                    [player]="opponent"
+                    [isCurrentBidder]="opponent.id === currentBidderId()"
+                    [handRollStatus]="handRollStatusFor(opponent.id)"
+                    [openingRoll]="openingRollFor(opponent.id)"
+                  />
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- 9-12 player stress case (Increment 5): two flex rows (inset/subdued back, front)
+             instead of the single absolute-positioned arc above — with up to six fixed-width
+             seats per row needing to fit a 320px-wide screen with no horizontal scroll, letting
+             the row shrink the seats via flex is far more robust than percentage-position math. -->
+        @if (isArcStressCase()) {
+          <div class="mobile-arc-stress flex flex-col gap-2 md:hidden">
+            <div class="mobile-arc-stress__row flex justify-center gap-1">
+              @for (opponent of backArcOpponents(); track opponent.id) {
                 <app-arc-seat
                   [player]="opponent"
                   [isCurrentBidder]="opponent.id === currentBidderId()"
                   [handRollStatus]="handRollStatusFor(opponent.id)"
                   [openingRoll]="openingRollFor(opponent.id)"
+                  [compact]="true"
+                  [subdued]="true"
                 />
-              </div>
-            }
+              }
+            </div>
+            <div class="mobile-arc-stress__row flex justify-center gap-1">
+              @for (opponent of frontArcOpponents(); track opponent.id) {
+                <app-arc-seat
+                  [player]="opponent"
+                  [isCurrentBidder]="opponent.id === currentBidderId()"
+                  [handRollStatus]="handRollStatusFor(opponent.id)"
+                  [openingRoll]="openingRollFor(opponent.id)"
+                  [compact]="true"
+                />
+              }
+            </div>
           </div>
-        </div>
+        }
+
         @if (isOpeningRollPhase()) {
           <p class="mobile-arc__caption text-center text-xs md:hidden">
             {{ openingTieCaption() ?? 'Highest cast opens the round' }}
@@ -62,9 +101,13 @@
         }
 
         <!-- Wager token (Increment 4) — the current claim, floating on the mat rather than
-             squeezed into any one 84px seat column; earlier bids stay collapsed into Ledger. -->
+             squeezed into any one 84px seat column; earlier bids stay collapsed into Ledger.
+             Increment 5: one size step smaller at the 9-12 player stress case. -->
         @if (store.matchState()?.phase === GamePhase.BIDDING && latestBidRecord(); as record) {
-          <div class="mobile-wager-token flex flex-col items-center gap-1 md:hidden">
+          <div
+            class="mobile-wager-token flex flex-col items-center gap-1 md:hidden"
+            [class.mobile-wager-token--compact]="isArcStressCase()"
+          >
             <app-bid-marker [bid]="record.bid" />
             <span class="mobile-wager-token__caption text-xs"
               >{{ nicknameFor(record.playerId) }}'s wager stands</span
@@ -188,8 +231,9 @@
           </div>
         }
 
+        <!-- Desktop/tablet: unchanged reveal banner. -->
         @if (reveal(); as r) {
-          <div class="table__reveal p-3">
+          <div class="table__reveal hidden p-3 md:block">
             <p>
               <strong>Reveal:</strong> claimed {{ describeBid(r.claimedBid) }}, actual
               {{ r.actualQuantity }}.
@@ -199,6 +243,42 @@
                 r.outcome === 'CALLER_LOSES'
                   ? 'The caller was wrong and loses a die.'
                   : 'The bidder was lying and loses a die.'
+              }}
+            </p>
+          </div>
+        }
+
+        <!-- Mobile-only reveal panel (Increment 5) — the same ROUND_REVEALED data presented in
+             board context: claimed vs actual, every revealed hand, and who lost. Preserves the
+             desktop banner's own "no phase gate" lingering behavior (state.phase never actually
+             rests at REVEAL/ROUND_END — see game-engine.ts — so `reveal()` truthy is the only
+             usable signal, same as the desktop banner above and RoundLossModal). -->
+        @if (reveal(); as r) {
+          <div class="mobile-reveal p-3 md:hidden">
+            <h3 class="mobile-reveal__title font-heading text-base">The count is called</h3>
+            <p class="mobile-reveal__summary text-sm">
+              {{ nicknameFor(r.bidderId) }} claimed {{ describeBid(r.claimedBid) }} — actual count
+              {{ r.actualQuantity }}.
+            </p>
+            <ul class="mobile-reveal__rows flex flex-col gap-1.5">
+              @for (row of revealRows(); track row.playerId) {
+                <li class="mobile-reveal__row flex items-center gap-2">
+                  <span class="mobile-reveal__name w-16 shrink-0 truncate text-xs">{{
+                    row.nickname
+                  }}</span>
+                  <span class="flex flex-wrap gap-1">
+                    @for (value of row.dice; track $index) {
+                      <app-die [value]="value" class="mobile-reveal__die block" />
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
+            <p class="mobile-reveal__outcome text-sm font-semibold">
+              {{
+                r.outcome === 'CALLER_LOSES'
+                  ? nicknameFor(r.loserId) + ' called liar and was wrong — loses a die.'
+                  : nicknameFor(r.loserId) + "'s wager was false — loses a die."
               }}
             </p>
           </div>

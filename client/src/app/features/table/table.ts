@@ -72,6 +72,12 @@ const ARC_TOP_PADDING_PX = 140;
 const MOBILE_ARC_TOP_PADDING_PX = 64;
 const MOBILE_ARC_GAP_PX = 10;
 
+/** 9-12 total players (Increment 5) means 8-11 opponents — the point past which a single arc
+ * row of even the compact 58px tier can no longer fit six-plus seats without either scrolling
+ * (ruled out for this stress case) or shrinking below legibility. */
+const MOBILE_ARC_STRESS_THRESHOLD = 8;
+const MOBILE_ARC_STRESS_ROW_SIZE = 6;
+
 function describeBid(bid: Bid): string {
   return bid.kind === 'ACE' ? `${bid.quantity} aces` : `${bid.quantity} × face ${bid.face}`;
 }
@@ -186,6 +192,22 @@ export class Table {
     }
     return widths.reduce((sum, w) => sum + w, 0) + (widths.length - 1) * MOBILE_ARC_GAP_PX;
   });
+
+  /** Two-arc stress layout (Increment 5) — an inset "back" row (up to 6, subdued) plus a "front"
+   * row (the rest, up to 6), both at the compact 58px/42px tier. A plain flex row rather than the
+   * single arc's absolute-percentage positions above: with up to 6 fixed-width seats needing to
+   * fit even a 320px-wide screen with no horizontal scroll, letting flex-shrink compress the
+   * columns gracefully is far more robust than trying to keep percentage math overlap-free at
+   * every count and viewport width. */
+  protected readonly isArcStressCase = computed(
+    () => this.opponents().length >= MOBILE_ARC_STRESS_THRESHOLD,
+  );
+  protected readonly frontArcOpponents = computed(() =>
+    this.opponents().slice(0, MOBILE_ARC_STRESS_ROW_SIZE),
+  );
+  protected readonly backArcOpponents = computed(() =>
+    this.opponents().slice(MOBILE_ARC_STRESS_ROW_SIZE),
+  );
 
   /** The turn order/index exist as soon as a round starts (well before bidding), so this must
    * also gate on phase — otherwise the eventual first bidder shows a "Bidding" badge all through
@@ -312,6 +334,23 @@ export class Table {
   });
 
   protected readonly reveal = this.store.lastReveal;
+
+  /** Per-player revealed hands for the mobile reveal panel (Increment 5) — the same
+   * ROUND_REVEALED event already drives the desktop banner and RoundLossModal, just read here
+   * for its full `dice` map (public once revealed, 5.3) instead of only the aggregate outcome. */
+  protected readonly revealRows = computed(() => {
+    const r = this.reveal();
+    if (!r) {
+      return [];
+    }
+    return Object.entries(r.dice).map(([playerId, dice]) => ({
+      playerId,
+      nickname: this.nicknameFor(playerId),
+      dice,
+      isBidder: playerId === r.bidderId,
+      isLoser: playerId === r.loserId,
+    }));
+  });
 
   protected handRollStatusFor(playerId: string): HandRollStatus | null {
     return this.handRollStatusByPlayerId()?.[playerId] ?? null;

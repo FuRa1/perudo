@@ -13,6 +13,9 @@ export interface ArcSeatOpeningRoll {
 
 export const ARC_SEAT_WIDTH_PX = 84;
 export const ARC_SEAT_ACTIVE_WIDTH_PX = 104;
+/** 9-12 player stress case (Increment 5) — both arcs use this narrower width/tile floor instead
+ * of the regular tier above, so two rows of up to six each still fit without horizontal scroll. */
+export const ARC_SEAT_COMPACT_WIDTH_PX = 58;
 
 /**
  * Compact mobile opponent seat (Increment 2, designs/perudo-mobile-board.dc.html) — a 54x54
@@ -32,6 +35,13 @@ export class ArcSeat {
   readonly isCurrentBidder = input(false);
   readonly handRollStatus = input<HandRollStatus | null>(null);
   readonly openingRoll = input<ArcSeatOpeningRoll | null>(null);
+  /** 58px/42px tier for the 9-12 player two-arc layout (Increment 5), instead of the regular
+   * 84px/54px tier used up to 8 players. */
+  readonly compact = input(false);
+  /** The inset "back" arc row in the two-arc layout (Increment 5) — visually subordinate to the
+   * front row, same idea as the desktop tiers' size steps but expressed as opacity here since
+   * both arcs already share the same (compact) size. */
+  readonly subdued = input(false);
 
   protected readonly isEliminated = computed(() => this.player().diceCount === 0);
 

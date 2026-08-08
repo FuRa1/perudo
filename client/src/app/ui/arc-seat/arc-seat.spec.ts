@@ -85,4 +85,25 @@ describe('ArcSeat', () => {
     });
     expect(text).not.toContain('waiting');
   });
+
+  describe('9-12 player stress case (5.)', () => {
+    it('applies the compact class for the two-arc layout', () => {
+      const { nativeElement } = render({ player: player(), compact: true });
+      expect(nativeElement.querySelector('.arc-seat--compact')).not.toBeNull();
+    });
+
+    it('applies the subdued class for the inset back row', () => {
+      const { nativeElement } = render({ player: player(), subdued: true });
+      expect(nativeElement.querySelector('.arc-seat--subdued')).not.toBeNull();
+    });
+
+    it('keeps an eliminated seat looking eliminated even when it is also in the subdued back row', () => {
+      const { nativeElement, text } = render({
+        player: player({ diceCount: 0 }),
+        subdued: true,
+      });
+      expect(nativeElement.querySelector('.arc-seat--eliminated')).not.toBeNull();
+      expect(text).toContain('out');
+    });
+  });
 });

@@ -1,15 +1,47 @@
+// The component host (<app-arc-seat>) is the actual flex item wherever this is used inside a
+// flex row (the 9-12 player stress case's rows) or the absolute-positioned single arc — with no
+// :host rule, a custom element defaults to `display: inline` and never properly shrinks. `flex`
+// here makes it a block-level flex container of exactly one child (.arc-seat below), and
+// `min-width: 0` is what actually lets a tight row compress it below its own content's
+// intrinsic width instead of overflowing a 320px-wide screen (see .arc-seat's own width comment).
+:host {
+  display: flex;
+  min-width: 0;
+}
+
 // Compact mobile opponent seat (Increment 2) — 84px column, 54x54 identity tile. The active
 // (current-bidder) seat grows to 104px/60px rather than relying on color alone (guardrail: "turn
-// = solid ring + heavier name, never hue alone").
+// = solid ring + heavier name, never hue alone"). `width: 100%` (capped by max-width) rather than
+// a flat `width` — it needs to track whatever size the flex-shrunk host above actually settles
+// on, not reassert its own fixed width regardless of the host.
 .arc-seat {
-  width: 84px;
+  width: 100%;
+  max-width: 84px;
+  min-width: 0;
 
   &--active {
-    width: 104px;
+    max-width: 104px;
   }
 
   &--eliminated {
     opacity: 0.42;
+  }
+
+  // 9-12 player two-arc layout (Increment 5) — a narrower cap for both arcs, so up to six seats
+  // per row fit at 390px wide with no horizontal scroll, and shrink further still at 320px.
+  &--compact {
+    max-width: 58px;
+
+    &.arc-seat--active {
+      max-width: 68px;
+    }
+  }
+
+  // The inset "back" row (Increment 5) — visually subordinate to the front row without a second
+  // size step (both rows already share the compact tier); eliminated's own opacity always wins,
+  // an eliminated seat reads as eliminated regardless of which row it's in.
+  &--subdued:not(.arc-seat--eliminated) {
+    opacity: 0.82;
   }
 }
 
@@ -33,6 +65,19 @@
   .arc-seat--eliminated & {
     background: rgba(242, 231, 211, 0.05);
     border: 1px dashed rgba(242, 231, 211, 0.4);
+  }
+
+  // 42px identity tile for the compact tier (Increment 5) — active still grows, just from a
+  // smaller floor.
+  .arc-seat--compact & {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+  }
+
+  .arc-seat--compact.arc-seat--active & {
+    width: 48px;
+    height: 48px;
   }
 }
 

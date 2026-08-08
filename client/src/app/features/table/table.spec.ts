@@ -1,9 +1,24 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-import { GamePhase, type MatchState, type Player } from '@shared';
+import { GamePhase, type MatchState, type Player, type ServerEvent } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
 import { Table } from './table';
+
+type RoundRevealedEvent = Extract<ServerEvent, { type: 'ROUND_REVEALED' }>;
+
+function reveal(overrides: Partial<RoundRevealedEvent> = {}): RoundRevealedEvent {
+  return {
+    type: 'ROUND_REVEALED',
+    dice: {},
+    claimedBid: { kind: 'NORMAL', quantity: 3, face: 4 },
+    bidderId: 'p1',
+    actualQuantity: 2,
+    outcome: 'BIDDER_LOSES',
+    loserId: 'p1',
+    ...overrides,
+  };
+}
 
 function player(id: string, nickname: string, overrides: Partial<Player> = {}): Player {
   return {
@@ -342,6 +357,76 @@ describe('Table', () => {
       const bobCard = seatCards.find((c) => (c.textContent ?? '').includes('Bob'));
       expect(bobCard?.textContent ?? '').toContain('Bidding');
       expect(aliceCard?.textContent ?? '').not.toContain('Bidding');
+    });
+  });
+
+  describe('9-12 player stress case (Increment 5)', () => {
+    function manyPlayersState(totalPlayers: number): MatchState {
+      const players = Array.from({ length: totalPlayers }, (_, i) => player(`p${i}`, `Player${i}`));
+      return biddingState({
+        players,
+        round: {
+          roundNumber: 1,
+          turnOrder: players.map((p) => p.id),
+          currentTurnIndex: 0,
+          bidHistory: [],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+    }
+
+    it('splits 11 opponents (12 players) into a front row of 6 and a back row of 5, both compact', () => {
+      const { nativeElement } = render('p0', manyPlayersState(12));
+      const rows = nativeElement.querySelectorAll('.mobile-arc-stress__row');
+      expect(rows).toHaveLength(2);
+      const seatsInRows = Array.from(rows).map(
+        (row) => row.querySelectorAll('app-arc-seat').length,
+      );
+      expect(seatsInRows.sort()).toEqual([5, 6]);
+      expect(nativeElement.querySelectorAll('.mobile-arc-stress app-arc-seat')).toHaveLength(11);
+    });
+
+    it('keeps the single-row arc for 8 players (7 opponents), below the stress threshold', () => {
+      const { nativeElement } = render('p0', manyPlayersState(8));
+      expect(nativeElement.querySelector('.mobile-arc-stress')).toBeNull();
+      expect(nativeElement.querySelector('.mobile-arc-wrap')).not.toBeNull();
+    });
+  });
+
+  describe('mobile reveal panel (Increment 5)', () => {
+    it('shows claimed vs actual and every revealed hand', () => {
+      const store = TestBed.inject(GameStore);
+      store.playerId.set('p1');
+      store.matchState.set(biddingState());
+      // loserId is p2 (Bob), not the local player (p1) — RoundLossModal only auto-opens its own
+      // ion-modal when the loser is the local player, and this test isn't exercising that modal.
+      store.lastReveal.set(
+        reveal({
+          dice: { p1: [1, 2, 3, 4, 5], p2: [6, 6, 1, 2, 3] },
+          claimedBid: { kind: 'NORMAL', quantity: 4, face: 5 },
+          bidderId: 'p2',
+          actualQuantity: 2,
+          outcome: 'BIDDER_LOSES',
+          loserId: 'p2',
+        }),
+      );
+      const fixture = TestBed.createComponent(Table);
+      fixture.detectChanges();
+      const panel = (fixture.nativeElement as HTMLElement).querySelector('.mobile-reveal');
+      expect(panel).not.toBeNull();
+      const text = panel?.textContent ?? '';
+      expect(text).toContain('4 × face 5');
+      expect(text).toContain('2');
+      expect(text).toContain('You'); // p1 is the local player here
+      expect(text).toContain('Bob');
+      expect(panel?.querySelectorAll('app-die').length).toBe(10);
+      expect(text).toContain('wager was false');
+    });
+
+    it('is absent when there has been no reveal yet', () => {
+      const { nativeElement } = render('p1', biddingState());
+      expect(nativeElement.querySelector('.mobile-reveal')).toBeNull();
     });
   });
 });

@@ -260,6 +260,25 @@ $table-photo-overlay: linear-gradient(
   font-weight: 700;
 }
 
+// One size step down at the 9-12 player stress case (Increment 5) — the token itself has no
+// size variant of its own, so this scales the whole thing down rather than duplicating it.
+.mobile-wager-token--compact {
+  transform: scale(0.85);
+}
+
+// Two-row stress layout (Increment 5) — plain flex rows (not the single arc's absolute-percent
+// positions) so up to six fixed-width compact seats per row shrink gracefully instead of
+// overflowing on the narrowest supported width (320px) rather than ever needing to scroll.
+.mobile-arc-stress {
+  width: 100%;
+  padding-top: 8px;
+}
+
+.mobile-arc-stress__row {
+  width: 100%;
+}
+
+
 // Mobile bid sheet (Increment 4) — turn-specific bottom sheet, fixed to the viewport rather than
 // sitting in the rail's normal document flow (desktop keeps that flow unchanged; this only
 // applies below 768px). One <app-bid-controls> exists either way (table.html) — this repositions
@@ -308,6 +327,35 @@ $table-photo-overlay: linear-gradient(
 
 .table__reveal {
   @include mixins.onboard-panel-strong;
+  color: var(--color-cream);
+}
+
+// Mobile reveal panel (Increment 5) — claimed-vs-actual plus every revealed hand, in the same
+// board context as the rest of the mobile table rather than the desktop's plain text banner.
+.mobile-reveal {
+  @include mixins.onboard-panel-strong;
+  color: var(--color-cream);
+}
+
+.mobile-reveal__title {
+  color: var(--color-cream);
+}
+
+.mobile-reveal__summary {
+  color: var(--color-cream-muted);
+}
+
+.mobile-reveal__name {
+  color: var(--color-cream-muted);
+  font-weight: 600;
+}
+
+.mobile-reveal__die {
+  width: 28px;
+  height: 28px;
+}
+
+.mobile-reveal__outcome {
   color: var(--color-cream);
 }
 
