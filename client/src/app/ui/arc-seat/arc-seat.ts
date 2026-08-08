@@ -17,8 +17,8 @@ export const ARC_SEAT_ACTIVE_WIDTH_PX = 104;
 /**
  * Compact mobile opponent seat (Increment 2, designs/perudo-mobile-board.dc.html) — a 54x54
  * identity tile, nickname, and one small state slot. Deliberately not a re-skinned SeatCard: no
- * Ionic "Bidding" badge, no dice-cup visual, no bid marker — the mat's own wager token (later
- * increments) and the header/status text carry that information on mobile instead.
+ * Ionic "Bidding" badge, no dice-cup visual, no bid marker — the wager token (Increment 4) is a
+ * standalone element floating on the mat itself, not squeezed into an 84px-wide seat column.
  */
 @Component({
   selector: 'app-arc-seat',

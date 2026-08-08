@@ -6,6 +6,7 @@ import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
 import type { ArcSeatOpeningRoll } from '../../ui/arc-seat/arc-seat';
 import { ARC_SEAT_ACTIVE_WIDTH_PX, ARC_SEAT_WIDTH_PX, ArcSeat } from '../../ui/arc-seat/arc-seat';
+import { BidMarker } from '../../ui/bid-marker/bid-marker';
 import { DiceCup } from '../../ui/dice-cup/dice-cup';
 import { Die } from '../../ui/die/die';
 import { OpeningRollPanel } from '../../ui/opening-roll-panel/opening-roll-panel';
@@ -111,6 +112,7 @@ function joinWithAnd(names: readonly string[]): string {
     LucideDice5,
     SeatCard,
     ArcSeat,
+    BidMarker,
     DiceCup,
     Die,
     OpeningRollPanel,

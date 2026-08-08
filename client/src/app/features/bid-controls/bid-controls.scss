@@ -8,3 +8,50 @@
   @include mixins.onboard-panel;
   color: var(--color-cream);
 }
+
+// Mobile bid sheet (Increment 4) — horizontally scrollable suggestions, and Place bid/Call liar
+// as a fixed-height action row (flex:1 primary + a narrower fixed-width danger action) rather
+// than the desktop's centered, wrapping button pair. Desktop is untouched below 768px's boundary.
+@media (max-width: 767px) {
+  .bid-controls__suggestions {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .bid-controls__actions {
+    // The root column above is `items-center`, so a row child defaults to shrink-wrapping its
+    // own content width instead of spanning the column — without an explicit width here,
+    // `flex: 1` on the place-bid button below has no real extra space to grow into and the
+    // whole (shrunk) row just centers instead.
+    width: 100%;
+    align-items: stretch;
+    flex-wrap: nowrap;
+  }
+
+  .bid-controls__place-btn,
+  .bid-controls__liar-btn {
+    &::part(native) {
+      height: 56px;
+    }
+  }
+
+  .bid-controls__place-btn {
+    flex: 1;
+  }
+
+  .bid-controls__liar-btn {
+    flex: none;
+    width: 126px;
+    // Faked outline look via Ionic's own CSS custom properties (set on the host, per Ionic's
+    // documented API — not `::part()`, which is for the few properties Ionic doesn't expose as
+    // vars, like the `height` override above) rather than switching the component's `fill`
+    // input — the desktop button's actual fill mode stays solid/unchanged, this only repaints
+    // the mobile instance of the very same element.
+    --background: transparent;
+    --background-activated: rgba(224, 138, 120, 0.16);
+    --border-width: 1.5px;
+    --border-style: solid;
+    --border-color: var(--color-ember);
+    --color: var(--color-ember-soft);
+    --box-shadow: none;
+  }
+}

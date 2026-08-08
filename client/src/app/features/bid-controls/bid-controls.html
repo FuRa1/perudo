@@ -12,7 +12,9 @@
       <p class="bid-controls__invalid text-sm">Not a legal raise.</p>
     }
 
-    <div class="flex flex-wrap justify-center gap-2">
+    <div
+      class="bid-controls__suggestions flex flex-nowrap gap-2 overflow-x-auto pb-1 md:flex-wrap md:justify-center md:overflow-visible md:pb-0"
+    >
       <app-bid-suggestion
         label="Minimum"
         [bid]="minimumSuggestion()"
@@ -30,11 +32,21 @@
       />
     </div>
 
-    <div class="flex flex-wrap justify-center gap-2">
-      <ion-button color="primary" [disabled]="!isValid()" (click)="placeBid()">
+    <div class="bid-controls__actions flex flex-wrap justify-center gap-2 md:flex-row">
+      <ion-button
+        class="bid-controls__place-btn"
+        color="primary"
+        [disabled]="!isValid()"
+        (click)="placeBid()"
+      >
         Place bid
       </ion-button>
-      <ion-button color="danger" [disabled]="!canCallLiar()" (click)="callLiar()">
+      <ion-button
+        class="bid-controls__liar-btn"
+        color="danger"
+        [disabled]="!canCallLiar()"
+        (click)="callLiar()"
+      >
         <svg lucideHand slot="start" aria-hidden="true"></svg>
         Call liar!
       </ion-button>

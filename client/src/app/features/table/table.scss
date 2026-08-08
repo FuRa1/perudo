@@ -247,6 +247,58 @@ $table-photo-overlay: linear-gradient(
   height: 36px;
 }
 
+// Wager token (Increment 4) — the current claim, floating on the mat itself rather than inside
+// any one 84px arc seat (BidMarker's own die floor alone can exceed that width).
+.mobile-wager-token {
+  width: 100%;
+}
+
+.mobile-wager-token__caption {
+  color: var(--color-cream-faint);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+// Mobile bid sheet (Increment 4) — turn-specific bottom sheet, fixed to the viewport rather than
+// sitting in the rail's normal document flow (desktop keeps that flow unchanged; this only
+// applies below 768px). One <app-bid-controls> exists either way (table.html) — this repositions
+// that same instance, it does not duplicate it.
+@media (max-width: 767px) {
+  .mobile-bid-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    background: var(--color-cabin);
+    border-radius: 28px 28px 0 0;
+    border-top: 1px solid var(--color-border-onboard);
+    box-shadow: 0 -16px 34px rgba(0, 0, 0, 0.42);
+    padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
+  }
+
+  // The compact "waiting" bar (bid-controls' own single status line, no picker/suggestions) —
+  // flatter chrome than the full sheet, since it's meant to read as a status bar, not a sheet.
+  .mobile-bid-sheet--waiting {
+    border-radius: 0;
+    box-shadow: none;
+    padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .mobile-bid-sheet__summary {
+    color: var(--color-cream-muted);
+  }
+
+  // The sheet/bar is `position: fixed`, so it no longer reserves space in .table-surface's own
+  // flow — without this, its taller (full-sheet) state can cover the last of the scrollable
+  // content behind it. Sized to the larger of the two states (the sheet, not the compact bar);
+  // the bar's own leftover slack reads as a bit of breathing room, not a layout bug.
+  .table-surface--bid-sheet-open {
+    padding-bottom: 320px;
+  }
+}
+
 // The local player's "Roll your hand" button (ROUND_ROLLING) must never be wider than their own
 // open cup — same width formula as dice-cup's .dice-cup-owner-shell (theme/_variables.scss) so
 // it lines up beneath it.

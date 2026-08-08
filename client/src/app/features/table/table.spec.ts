@@ -144,7 +144,7 @@ describe('Table', () => {
       expect(nativeElement.querySelector('app-bid-marker')).toBeNull();
     });
 
-    it("renders exactly one marker, attached to the latest bidder's own seat card", () => {
+    it("renders exactly one seat-card marker, attached to the latest bidder's own seat card", () => {
       const state = biddingState({
         round: {
           roundNumber: 1,
@@ -156,8 +156,10 @@ describe('Table', () => {
         },
       });
       const { nativeElement } = render('p1', state);
-      const markers = nativeElement.querySelectorAll('app-bid-marker');
-      expect(markers).toHaveLength(1);
+      // Increment 4 adds a second, mobile-only marker in the standalone wager token (not inside
+      // any seat card) — desktop's seat-card marker stays exactly one, scoped accordingly.
+      const seatCardMarkers = nativeElement.querySelectorAll('app-seat-card app-bid-marker');
+      expect(seatCardMarkers).toHaveLength(1);
 
       const seatCards = Array.from(nativeElement.querySelectorAll('app-seat-card'));
       const aliceCard = seatCards.find((c) => (c.textContent ?? '').includes('Alice'));
@@ -181,8 +183,8 @@ describe('Table', () => {
         },
       });
       const { nativeElement } = render('p1', state);
-      const markers = nativeElement.querySelectorAll('app-bid-marker');
-      expect(markers).toHaveLength(1);
+      const seatCardMarkers = nativeElement.querySelectorAll('app-seat-card app-bid-marker');
+      expect(seatCardMarkers).toHaveLength(1);
 
       const seatCards = Array.from(nativeElement.querySelectorAll('app-seat-card'));
       const aliceCard = seatCards.find((c) => (c.textContent ?? '').includes('Alice'));
@@ -190,7 +192,7 @@ describe('Table', () => {
       expect(bobCard && seatCardHasMarker(bobCard)).toBe(true);
       expect(aliceCard && seatCardHasMarker(aliceCard)).toBe(false);
       // The marker itself reflects the new (4x6) bid, not the superseded 4x5.
-      expect(markers[0]?.textContent ?? '').toContain('4');
+      expect(seatCardMarkers[0]?.textContent ?? '').toContain('4');
     });
 
     it('disappears once the round ends and bid history is empty again', () => {
@@ -207,7 +209,7 @@ describe('Table', () => {
           },
         }),
       );
-      expect(nativeElement.querySelectorAll('app-bid-marker')).toHaveLength(1);
+      expect(nativeElement.querySelectorAll('app-bid-marker').length).toBeGreaterThan(0);
 
       const store = TestBed.inject(GameStore);
       store.matchState.set(
@@ -224,6 +226,31 @@ describe('Table', () => {
       );
       fixture.detectChanges();
       expect(nativeElement.querySelectorAll('app-bid-marker')).toHaveLength(0);
+    });
+  });
+
+  describe('mobile wager token (Increment 4)', () => {
+    it('shows the current bid as a standalone marker on the mat, with whose wager it is', () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 1,
+          bidHistory: [{ playerId: 'p1', bid: { kind: 'NORMAL', quantity: 4, face: 5 } }],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p2', state);
+      const token = nativeElement.querySelector('.mobile-wager-token');
+      expect(token).not.toBeNull();
+      expect(token?.querySelector('app-bid-marker')).not.toBeNull();
+      expect(token?.textContent ?? '').toContain("Alice's wager stands");
+    });
+
+    it('is absent before any bid has been placed this round', () => {
+      const { nativeElement } = render('p1', biddingState());
+      expect(nativeElement.querySelector('.mobile-wager-token')).toBeNull();
     });
   });
 
