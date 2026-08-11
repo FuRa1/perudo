@@ -56,7 +56,9 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
-            "allowedHosts": [".ngrok-free.app", ".ngrok.io", ".ngrok.app"]
+            "allowedHosts": [".ngrok-free.app", ".ngrok.io", ".ngrok.app"],
+            "liveReload": true,
+            "poll": 1000
           },
           "configurations": {
             "production": {

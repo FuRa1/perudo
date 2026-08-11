@@ -53,7 +53,7 @@ Runs the NestJS server (`http://localhost:3000` — Socket.io/API backend, not a
 
 | Script                 | What it does                                                                                                  |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`          | Runs server (`start:dev`) and client (`start`) concurrently, in watch mode.                                   |
+| `npm run dev`          | Builds `shared` first, then runs server (`start:dev`) and client (`start`) concurrently, in watch mode.       |
 | `npm run build`        | Builds `shared`, then `server`, then `client`, in that order (client/server depend on shared's build output). |
 | `npm test`             | Runs each workspace's test suite (`shared` → Jest, `server` → Jest, `client` → Vitest via `ng test`).         |
 | `npm run typecheck`    | Runs `tsc --noEmit` (or the Angular equivalent) in each workspace.                                            |
