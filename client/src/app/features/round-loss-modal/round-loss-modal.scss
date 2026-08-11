@@ -1,4 +1,20 @@
 @use 'theme/mixins' as mixins;
+@use 'theme/variables' as vars;
+
+// See features/table/table.scss's :host comment — no :host rule defaults a custom element to
+// `display: inline`.
+:host {
+  display: block;
+}
+
+// See table.scss's .table-ledger-modal for why this matches width rather than relying on DOM
+// nesting: Ionic portals a presented inline modal to the document root regardless of where it's
+// written in the template, so it can't be confined to DesktopGameBoard's phone frame any other
+// way.
+.round-loss-modal {
+  --width: min(100%, #{vars.$phone-frame-width});
+  --max-width: #{vars.$phone-frame-width};
+}
 
 .round-loss-card {
   @include mixins.outcome-card('loss');
@@ -6,6 +22,10 @@
 
 .round-loss-badge {
   @include mixins.outcome-badge('loss');
+}
+
+.round-loss-badge-image {
+  @include mixins.outcome-badge-image;
 }
 
 .round-loss__title,

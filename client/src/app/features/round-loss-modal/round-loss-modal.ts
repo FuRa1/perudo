@@ -12,6 +12,7 @@ import { IonButton, IonModal } from '@ionic/angular/standalone';
 import type { ServerEvent } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { BidMarker } from '../../ui/bid-marker/bid-marker';
+import { VISUAL_ASSETS_CONFIG } from '../../ui/visual-assets/visual-assets.config';
 
 type RoundRevealedEvent = Extract<ServerEvent, { type: 'ROUND_REVEALED' }>;
 
@@ -39,6 +40,10 @@ export class RoundLossModal {
 
   protected readonly isOpen = signal(false);
   private readonly reveal = signal<RoundRevealedEvent | null>(null);
+
+  /** decor/badge-lost.png — unset falls back to the CSS dashed-roundel placeholder
+   * (round-loss-modal.html's `@if`, same swap pattern as ui/die/die.ts). */
+  protected readonly badgeImageUrl = VISUAL_ASSETS_CONFIG.badgeLost.imageUrl;
 
   /** The last reveal we've already shown (and possibly dismissed) — guards against the modal
    * reopening itself off a still-true derived condition (e.g. a re-render) instead of a

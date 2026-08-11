@@ -1,0 +1,34 @@
+/* Perudo dice sprite — 6 faces, 52px step, 312x52 */
+.dice {
+  width: 52px;
+  height: 52px;
+  display: inline-block;
+  flex: none;
+  background-image: url(dice-sprite.png);
+  background-repeat: no-repeat;
+  background-position: 0 0;          /* face 1 */
+  background-size: 312px 52px;       /* pin the size so scaling never shifts frames */
+  image-rendering: auto;
+}
+
+/* value — nothing but background-position-x changes */
+.dice[data-face="1"] { background-position-x:    0px; }
+.dice[data-face="2"] { background-position-x:  -52px; }
+.dice[data-face="3"] { background-position-x: -104px; }
+.dice[data-face="4"] { background-position-x: -156px; }
+.dice[data-face="5"] { background-position-x: -208px; }
+.dice[data-face="6"] { background-position-x: -260px; }
+
+/* rolling — steps() lands exactly on frame edges, so there is no seam or tween */
+@keyframes dice-roll {
+  from { background-position-x: 0px; }
+  to   { background-position-x: -312px; }
+}
+.dice.is-rolling {
+  animation: dice-roll 480ms steps(6, end) infinite;
+}
+
+/* retina: swap the source only, keep the same 312x52 background-size */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .dice { background-image: url(dice-sprite-2x.png); }
+}

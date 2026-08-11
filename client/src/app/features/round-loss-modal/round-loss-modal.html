@@ -1,5 +1,6 @@
 <ion-modal
   #modalEl
+  class="round-loss-modal"
   [isOpen]="isOpen()"
   (didDismiss)="close()"
   [style.--backdrop-opacity]="0.72"
@@ -9,7 +10,11 @@
   <ng-template>
     <div class="flex h-full flex-col items-center justify-center">
       <div class="round-loss-card flex flex-col items-center gap-3 text-center">
-        <div class="round-loss-badge"></div>
+        @if (badgeImageUrl; as imageUrl) {
+          <img [src]="imageUrl" alt="" aria-hidden="true" class="round-loss-badge-image" />
+        } @else {
+          <div class="round-loss-badge" aria-hidden="true"></div>
+        }
         <h2 class="round-loss__title font-heading text-lg">You lost this round</h2>
 
         @if (lostBecauseBidWasTrue()) {

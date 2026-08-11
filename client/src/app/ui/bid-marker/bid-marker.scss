@@ -1,12 +1,28 @@
 @use 'theme/mixins' as mixins;
 
+// See features/table/table.scss's :host comment — no :host rule defaults a custom element to
+// `display: inline`.
+:host {
+  display: block;
+}
+
 // The wager token (design-kit §4): "the only light object on the table — it always reads as the
 // current claim". A cream/brass gradient chip reads as unmistakably more important than the dark
 // on-table cards around it, satisfying "prominent, high-contrast" without inventing a new color.
+// decor/token-frame.png is a round brass-and-rivet plate, not a match for this chip's own wide,
+// short pill shape — `contain` lets it sit centered and intact behind the quantity/die content
+// rather than being cropped to fill the box, with the original parchment gradient still filling
+// the rest of the chip around it exactly as before (the literal CSS fallback, not just in theory:
+// it's the second, backmost background-image layer here, always painted).
 .bid-marker {
   border-radius: var(--radius-tile);
   border: 1.5px solid var(--color-brass);
-  background: linear-gradient(180deg, var(--color-parchment), var(--color-parchment-dark));
+  background-image:
+    url('/assets/decor/token-frame.png'),
+    linear-gradient(180deg, var(--color-parchment), var(--color-parchment-dark));
+  background-repeat: no-repeat, no-repeat;
+  background-size: contain, cover;
+  background-position: center, center;
   box-shadow: var(--shadow-float);
 }
 

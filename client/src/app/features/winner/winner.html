@@ -1,7 +1,11 @@
 <ion-content>
   <div class="winner-surface flex flex-col items-center justify-center px-2 text-center">
     <div class="winner-card flex w-full max-w-md flex-col items-center gap-3">
-      <div class="winner-badge" aria-hidden="true"></div>
+      @if (badgeImageUrl; as imageUrl) {
+        <img [src]="imageUrl" alt="" aria-hidden="true" class="winner-badge-image" />
+      } @else {
+        <div class="winner-badge" aria-hidden="true"></div>
+      }
       <p class="winner__kicker text-xs font-semibold" role="status">Match complete</p>
       <h1 class="winner__title font-heading text-3xl">{{ winnerName() }} wins!</h1>
       <p class="winner__subtitle">{{ subtitle() }}</p>

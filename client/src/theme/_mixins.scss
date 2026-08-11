@@ -89,6 +89,17 @@
   }
 }
 
+/// Sizing-only shell for the outcome badge's real artwork (decor/badge-won.png /
+/// decor/badge-lost.png) — same footprint as outcome-badge's CSS fallback above so swapping
+/// between the two (winner.ts / round-loss-modal.ts's `@if imageUrl`, same pattern as
+/// ui/die/die.ts) never shifts layout. The two never render at once, so no visual is doubled.
+@mixin outcome-badge-image {
+  width: 60px;
+  height: 60px;
+  flex: none;
+  object-fit: contain;
+}
+
 /// A square element that grows with the viewport between a legible floor and a sane ceiling —
 /// the opening-roll die, the bid-marker die, and other must-read-at-a-glance table elements.
 @mixin clamp-square($min, $preferred, $max) {

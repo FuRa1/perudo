@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { GamePhase, type MatchState, type ServerEvent } from '@shared';
 import { GameStore } from '../../core/game-store';
+import { VISUAL_ASSETS_CONFIG } from '../../ui/visual-assets/visual-assets.config';
 import { RoundLossModal } from './round-loss-modal';
 
 type RoundRevealedEvent = Extract<ServerEvent, { type: 'ROUND_REVEALED' }>;
@@ -255,6 +256,27 @@ describe('RoundLossModal', () => {
       fixture.detectChanges();
 
       expect(instance['isOpen']()).toBe(true);
+    });
+  });
+
+  // IonModal doesn't stamp its <ng-template> content into jsdom (see the note above on the
+  // CALLER_LOSES test) — so, like the rest of this file, this checks the field the template's
+  // `@if (badgeImageUrl; as imageUrl)` actually binds to, not the DOM inside the modal.
+  describe('outcome badge (decor/badge-lost.png)', () => {
+    it('is configured with the real badge image by default', () => {
+      const { instance } = setup();
+      expect(instance['badgeImageUrl']).toContain('/assets/decor/badge-lost.png');
+    });
+
+    it('falls back to undefined (CSS dashed-roundel placeholder) when no badge asset is configured', () => {
+      const original = VISUAL_ASSETS_CONFIG.badgeLost.imageUrl;
+      (VISUAL_ASSETS_CONFIG.badgeLost as { imageUrl?: string }).imageUrl = undefined;
+      try {
+        const { instance } = setup();
+        expect(instance['badgeImageUrl']).toBeUndefined();
+      } finally {
+        (VISUAL_ASSETS_CONFIG.badgeLost as { imageUrl?: string }).imageUrl = original;
+      }
     });
   });
 });

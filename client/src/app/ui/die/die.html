@@ -1,6 +1,8 @@
 <div class="die aspect-square w-full" [attr.aria-label]="face().label" role="img">
   @if (face().imageUrl; as imageUrl) {
     <img [src]="imageUrl" [alt]="face().label" class="h-full w-full object-contain" />
+  } @else if (isSpriteEnabled) {
+    <div class="die__sprite h-full w-full" [style.background-position-x]="spritePositionX()"></div>
   } @else {
     <div class="grid h-full w-full grid-cols-3 grid-rows-3 gap-0.5 p-1.5">
       @for (pip of pips(); track $index) {

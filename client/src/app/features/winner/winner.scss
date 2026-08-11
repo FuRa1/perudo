@@ -1,5 +1,11 @@
 @use 'theme/mixins' as mixins;
 
+// See features/table/table.scss's :host comment — no :host rule defaults a custom element to
+// `display: inline`.
+:host {
+  display: block;
+}
+
 // ion-content manages its own scrollable area in a shadow-DOM inner wrapper — flex-centering
 // classes applied directly to <ion-content> itself don't reach it, leaving content pinned to the
 // top-left instead of centered. A plain child div (as Entry/Lobby already use for their own
@@ -15,6 +21,10 @@
 
 .winner-badge {
   @include mixins.outcome-badge('won');
+}
+
+.winner-badge-image {
+  @include mixins.outcome-badge-image;
 }
 
 .winner__kicker {

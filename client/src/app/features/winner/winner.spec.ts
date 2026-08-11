@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { GamePhase, type MatchState, type Player } from '@shared';
 import { GameStore } from '../../core/game-store';
+import { VISUAL_ASSETS_CONFIG } from '../../ui/visual-assets/visual-assets.config';
 import { Winner } from './winner';
 
 function player(id: string, nickname: string): Player {
@@ -63,5 +64,27 @@ describe('Winner', () => {
   it('renders with no actions — none exist to preserve, so none are added', () => {
     const { nativeElement } = render('p1', 'p1', [player('p1', 'Alice'), player('p2', 'Bob')]);
     expect(nativeElement.querySelectorAll('ion-button, button')).toHaveLength(0);
+  });
+
+  describe('outcome badge (decor/badge-won.png)', () => {
+    it('renders the real badge image, not the CSS placeholder, once configured', () => {
+      const { nativeElement } = render('p1', 'p1', [player('p1', 'Alice'), player('p2', 'Bob')]);
+      const img = nativeElement.querySelector<HTMLImageElement>('.winner-badge-image');
+      expect(img?.src).toContain('/assets/decor/badge-won.png');
+      expect(img?.getAttribute('aria-hidden')).toBe('true');
+      expect(nativeElement.querySelector('.winner-badge')).toBeNull();
+    });
+
+    it('falls back to the CSS dashed-roundel placeholder when no badge asset is configured', () => {
+      const original = VISUAL_ASSETS_CONFIG.badgeWon.imageUrl;
+      (VISUAL_ASSETS_CONFIG.badgeWon as { imageUrl?: string }).imageUrl = undefined;
+      try {
+        const { nativeElement } = render('p1', 'p1', [player('p1', 'Alice'), player('p2', 'Bob')]);
+        expect(nativeElement.querySelector('.winner-badge')).not.toBeNull();
+        expect(nativeElement.querySelector('.winner-badge-image')).toBeNull();
+      } finally {
+        (VISUAL_ASSETS_CONFIG.badgeWon as { imageUrl?: string }).imageUrl = original;
+      }
+    });
   });
 });

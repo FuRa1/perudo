@@ -1,3 +1,10 @@
+// See features/table/table.scss's :host comment — no :host rule defaults a custom element to
+// `display: inline`; <app-die> is used at explicit pixel sizes everywhere (clamp-square etc.)
+// which an inline host can't reliably honor.
+:host {
+  display: block;
+}
+
 .die {
   border-radius: var(--radius-die);
   background: var(--color-ivory);
@@ -6,4 +13,26 @@
 
 .die__pip {
   background: var(--color-ink);
+}
+
+// designs/assets/dice/dice-sprite.png — 312×52, six 52px frames butted edge to edge. Sized as a
+// percentage of the die's own box (not the sprite sheet's literal 312px/52px) so the frame window
+// scales correctly at every size `<app-die>` is used at (die.ts's SPRITE_POSITION_X_PERCENT has
+// the full reasoning); `background-position-x` is set per-value from there. `border-radius` on
+// the sprite matches the die's own so the rounded corners still hold once the flat pip look is
+// replaced by real art.
+.die__sprite {
+  background-image: url('/assets/dice/dice-sprite.png');
+  background-repeat: no-repeat;
+  background-size: 600% 100%;
+  background-position-y: 0;
+  border-radius: var(--radius-die);
+}
+
+// Retina: swap the source only, same percentage-based background-size — the frame window can't
+// drift since it's still expressed as a fraction of the (unchanged) die box.
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .die__sprite {
+    background-image: url('/assets/dice/dice-sprite-2x.png');
+  }
 }

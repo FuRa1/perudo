@@ -1,10 +1,28 @@
 @use 'theme/mixins' as mixins;
 
+// See features/table/table.scss's :host comment — no :host rule defaults a custom element to
+// `display: inline`.
+:host {
+  display: block;
+}
+
 // Same "off the table" light ramp as Entry (design-kit) — kept in each screen's own file since
-// neither shares a parent shell, not because the language differs.
+// neither shares a parent shell, not because the language differs. The radial gradient stays the
+// backmost layer even with the header band photo on top (preserve-as-fallback, same reasoning as
+// features/table/table.scss's $table-fallback-layers) — a failed/slow image load still leaves a
+// complete, on-brand surface.
 .lobby-surface {
   min-height: 100%;
-  background: radial-gradient(60% 50% at 50% 0%, var(--color-surface-alt), var(--color-page) 70%);
+  background-image:
+    linear-gradient(180deg, rgba(20, 14, 8, 0.55) 0%, rgba(20, 14, 8, 0) 55%),
+    url('/assets/bg/lobby-header-band-2880x260.png'),
+    radial-gradient(60% 50% at 50% 0%, var(--color-surface-alt), var(--color-page) 70%);
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  // The band is a thin wide strip (2880×260) — full width, natural (short) height, anchored to
+  // the very top; the radial gradient underneath still sizes to `cover` so it fills the rest of
+  // the screen exactly as it did before this band existed.
+  background-position: top center, top center, top center;
+  background-size: 100% auto, 100% auto, cover;
 }
 
 .lobby-card {
