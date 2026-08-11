@@ -1,5 +1,11 @@
 @use 'theme/mixins' as mixins;
 
+// See features/table/table.scss's :host comment — no :host rule defaults a custom element to
+// `display: inline`.
+:host {
+  display: block;
+}
+
 // A soft, CSS-only glow behind the card (design-kit "off the table" light ramp) — no image asset,
 // just a radial tint using the same warm tones as the on-table lantern glow.
 .entry-surface {

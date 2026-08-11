@@ -1,3 +1,9 @@
+// See features/table/table.scss's :host comment — no :host rule defaults a custom element to
+// `display: inline`.
+:host {
+  display: block;
+}
+
 .seat-card {
   border-radius: var(--radius-tile);
   background: var(--color-fill-onboard-strong);

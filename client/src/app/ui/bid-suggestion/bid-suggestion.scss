@@ -1,5 +1,12 @@
 @use 'theme/mixins' as mixins;
 
+// See features/table/table.scss's :host comment — no :host rule defaults a custom element to
+// `display: inline`, which is very likely why suggestion pills in the horizontally scrollable
+// `.bid-controls__suggestions` row have been unreliable to click in automated testing.
+:host {
+  display: block;
+}
+
 .bid-suggestion {
   @include mixins.focus-ring;
   border-radius: var(--radius-tile);

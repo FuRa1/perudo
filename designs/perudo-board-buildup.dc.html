@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"><link rel="stylesheet" href="_ds/organic-9224328c-04f1-452d-a816-2af010030574/styles.css"><script src="_ds/organic-9224328c-04f1-452d-a816-2af010030574/_ds_bundle.js"></script><style>
+body{margin:0;background:#e7e0d3;font-family:var(--font-body);color:#2e2b25}
+a{color:var(--color-accent)}a:hover{color:var(--color-accent-700)}
+</style></helmet>
+
+<div style="padding:56px 60px 80px;display:flex;flex-direction:column;gap:44px">
+
+  <div style="max-width:780px;display:flex;flex-direction:column;gap:10px">
+    <div style="font-family:var(--font-heading);font-size:40px;line-height:1.05">Board, assembled one layer at a time</div>
+    <div style="font-size:14.5px;line-height:1.6;color:#474238;text-wrap:pretty">The same 390&times;844 frame four times, each adding one class of component to the last. Nothing moves between steps &mdash; every element lands in its final position the moment it appears, so the build order is legible and the layout never re-flows. Your hand is sharp throughout; the touch-to-look blur is off for now.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+      <div style="padding:6px 12px;border-radius:999px;background:#ebddc5;font-size:12px;font-weight:600">Hand dice 52px, never below</div>
+      <div style="padding:6px 12px;border-radius:999px;background:#ebddc5;font-size:12px;font-weight:600">Positions fixed across all four steps</div>
+      <div style="padding:6px 12px;border-radius:999px;background:#ebddc5;font-size:12px;font-weight:600">No hover blur</div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:38px;align-items:flex-start">
+    <sc-for list="{{ layers }}" as="L" hint-placeholder-count="4">
+      <div style="display:flex;flex-direction:column;gap:14px;width:390px;flex:none">
+
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div style="display:flex;align-items:baseline;gap:9px">
+            <div style="font-family:var(--font-heading);font-size:22px">{{ L.step }}</div>
+            <div style="font-size:12.5px;color:#645c50">{{ L.sub }}</div>
+          </div>
+          <div style="font-size:12.5px;line-height:1.5;color:#8c491a;font-weight:600">{{ L.adds }}</div>
+        </div>
+
+        <div data-screen-label="{{ L.label }}" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:#241d16">
+          <div style="position:absolute;inset:0;background:radial-gradient(112% 58% at 50% 19%,#5a462d 0%,#33281c 52%,#211a13 100%)"></div>
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.035) 0 2px,transparent 2px 7px)"></div>
+
+          <div style="position:relative;height:100%;display:flex;flex-direction:column">
+
+            <div style="height:54px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;color:#f2e7d3;font-size:14px;font-weight:600"><span>9:41</span><div style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:10px;border-radius:2px;background:#f2e7d3;opacity:.85"></span><span style="width:14px;height:10px;border-radius:2px;background:#f2e7d3;opacity:.85"></span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid rgba(242,231,211,.85)"></span></div></div>
+
+            <div style="flex:none;height:44px;padding:6px 20px 0;box-sizing:content-box">
+              <sc-if value="{{ L.showHeader }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div style="padding:8px 13px;border-radius:999px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.16);color:#f2e7d3;font-size:12.5px;font-weight:600">Round 5 &middot; 19 dice</div>
+                  <div style="padding:8px 13px;border-radius:999px;border:1px solid rgba(242,231,211,.16);color:#c0b6a5;font-size:12.5px;font-weight:600">Ledger</div>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="flex:none;position:relative;height:300px;margin-top:6px">
+              <div style="position:absolute;left:-30px;right:-30px;top:150px;height:280px;border-radius:50%;background:radial-gradient(70% 60% at 50% 22%,rgba(255,214,150,.18),rgba(255,214,150,0) 72%);border-top:1px solid rgba(255,224,176,.16)"></div>
+
+              <sc-for list="{{ seats }}" as="s" hint-placeholder-count="4">
+                <div style="position:absolute;left:{{ s.left }};top:{{ s.top }};transform:translateX(-50%);width:84px;display:flex;flex-direction:column;align-items:center;gap:6px">
+                  <div style="width:54px;height:54px;border-radius:17px;background:linear-gradient(160deg,#a97c4c,#5b3f23);border:1px solid rgba(255,224,176,.28);box-shadow:0 3px 7px rgba(0,0,0,.34);position:relative"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:13px;height:13px;border-radius:{{ s.mark }};border:1.5px solid rgba(255,224,176,.5)"></span></div>
+                  <sc-if value="{{ L.showNames }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:3px">
+                      <div style="color:#f2e7d3;font-size:12.5px;font-weight:600">{{ s.name }}</div>
+                      <div style="font-size:10.5px;color:#a19786;font-weight:600">{{ s.dice }}</div>
+                    </div>
+                  </sc-if>
+                </div>
+              </sc-for>
+
+              <sc-if value="{{ L.showBid }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;left:50%;top:196px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:7px">
+                  <div style="display:flex;align-items:center;gap:12px;padding:10px 18px;border-radius:18px;background:linear-gradient(180deg,#f6ecd8,#e4d5b8);border:1.5px solid #d69a52;box-shadow:0 9px 20px rgba(0,0,0,.45)">
+                    <div style="font-family:var(--font-heading);font-size:38px;line-height:.9;color:#2e2b25">4</div>
+                    <div style="font-size:18px;color:#8c491a">&times;</div>
+                    <div style="width:50px;height:50px;border-radius:11px;background:#fffaf0;border:1px solid #c0b6a5;position:relative"><span style="position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:50%;background:#2e2b25;transform:translate(-50%,-50%);box-shadow:-11px -11px 0 #2e2b25,11px -11px 0 #2e2b25,-11px 11px 0 #2e2b25,11px 11px 0 #2e2b25"></span></div>
+                  </div>
+                  <sc-if value="{{ L.showNames }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:11.5px;color:#c0b6a5;letter-spacing:.05em;text-transform:uppercase;font-weight:700">Anne's wager stands</div>
+                  </sc-if>
+                </div>
+              </sc-if>
+            </div>
+
+            <div style="margin-top:auto;flex:none;padding:0 20px">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:20px 0 0;border-top:1px solid rgba(255,224,176,.14)">
+                <div style="font-size:11px;color:#a19786;letter-spacing:.06em;text-transform:uppercase;font-weight:700">Your hand</div>
+                <div style="display:flex;gap:8px;padding:13px 14px;border-radius:18px;background:rgba(242,231,211,.06);border:1px solid rgba(242,231,211,.12)">
+                  <sc-for list="{{ hand }}" as="d" hint-placeholder-count="5">
+                    <div style="width:52px;height:52px;border-radius:12px;background:#fffcf5;position:relative;box-shadow:0 3px 8px rgba(0,0,0,.34)"><span style="position:absolute;left:50%;top:50%;width:9px;height:9px;border-radius:50%;background:{{ d.center }};transform:translate(-50%,-50%);box-shadow:{{ d.shadow }}"></span></div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="height:34px;margin-top:16px;display:flex;align-items:center;justify-content:center"><div style="width:132px;height:5px;border-radius:999px;background:rgba(242,231,211,.3)"></div></div>
+            </div>
+
+          </div>
+        </div>
+
+        <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:16px;padding:13px 15px;display:flex;flex-direction:column;gap:5px">
+          <div style="font-family:var(--font-heading);font-size:13px;color:#8c491a">{{ L.noteTitle }}</div>
+          <div style="font-size:11.5px;line-height:1.55;color:#474238;text-wrap:pretty">{{ L.note }}</div>
+        </div>
+
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="display:flex;gap:20px;flex-wrap:wrap;max-width:1660px">
+    <div style="flex:1;min-width:380px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:22px 24px;display:flex;flex-direction:column;gap:10px">
+      <div style="font-family:var(--font-heading);font-size:19px">Why this order</div>
+      <div style="font-size:12.5px;line-height:1.6;color:#474238;text-wrap:pretty">Hand first, because it is the only thing on screen that is yours and it never leaves. Opponents next as anonymous positions &mdash; the arc has to hold its shape before it holds identities. The wager third, because it is meaningless without someone to have made it. Round, count and names last: they are labels on a board that already reads.</div>
+    </div>
+    <div style="flex:1;min-width:380px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:22px 24px;display:flex;flex-direction:column;gap:10px">
+      <div style="font-family:var(--font-heading);font-size:19px">Reserved space</div>
+      <div style="font-size:12.5px;line-height:1.6;color:#474238;text-wrap:pretty">The header band keeps its 44px in step 1 and 2 even while empty, and every seat column is 84px wide from the start, so names drop in without pushing avatars. The mat's 300px block is fixed too &mdash; the wager token appears inside space already held for it.</div>
+    </div>
+    <div style="flex:1;min-width:380px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:22px 24px;display:flex;flex-direction:column;gap:10px">
+      <div style="font-family:var(--font-heading);font-size:19px">Not here yet</div>
+      <div style="font-size:12.5px;line-height:1.6;color:#474238;text-wrap:pretty">No bid sheet, no roll button, no turn ring, no eliminated seat, no touch-to-look blur on the hand. Those are the next layer and belong on top of a board that is already stable.</div>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  pips(face, off) {
+    const ink = '#302a23';
+    const c = { tl:`${-off}px ${-off}px 0 ${ink}`, tr:`${off}px ${-off}px 0 ${ink}`,
+      bl:`${-off}px ${off}px 0 ${ink}`, br:`${off}px ${off}px 0 ${ink}`,
+      ml:`${-off}px 0 0 ${ink}`, mr:`${off}px 0 0 ${ink}` };
+    const four = [c.tl, c.tr, c.bl, c.br];
+    switch (face) {
+      case 1: return { center: ink, shadow: 'none' };
+      case 2: return { center: 'transparent', shadow: [c.tl, c.br].join(',') };
+      case 3: return { center: ink, shadow: [c.tl, c.br].join(',') };
+      case 4: return { center: 'transparent', shadow: four.join(',') };
+      case 5: return { center: ink, shadow: four.join(',') };
+      default: return { center: 'transparent', shadow: [c.tl, c.tr, c.ml, c.mr, c.bl, c.br].join(',') };
+    }
+  }
+
+  renderVals() {
+    const seats = [
+      { name: 'Mateo',  left: '12%', top: '116px', mark: '50%',        dice: '4 dice' },
+      { name: 'Isabel', left: '31%', top: '56px',  mark: '2px',        dice: '5 dice' },
+      { name: 'Anne',   left: '69%', top: '56px',  mark: '50% 50% 2px 2px', dice: '5 dice' },
+      { name: 'Tobias', left: '88%', top: '116px', mark: '6px 6px 0 0', dice: '3 dice' }
+    ];
+    const hand = [3, 1, 5, 2, 6].map(f => this.pips(f, 14));
+    const layers = [
+      { step: '1 · Your hand', sub: 'and where the others sit', label: 'L1 hand + seats',
+        adds: 'Adds: hand strip, four seat positions',
+        showHeader: false, showBid: false, showNames: false,
+        noteTitle: 'Sharp, and the largest thing on screen',
+        note: 'Five dice at 52px on a quiet tray, pinned to the bottom gutter where a thumb rests. Opponents are silhouettes only — position is the whole message, and the arc gets to prove it works before anything else lands on it.' },
+      { step: '2 · The wager', sub: 'something to answer', label: 'L2 + wager',
+        adds: 'Adds: wager token on the mat',
+        showHeader: false, showBid: true, showNames: false,
+        noteTitle: 'The centre of gravity',
+        note: 'Quantity at 38px Caprasimo against a 50px die — readable at arm\u2019s length, and the only cream object on a brown table. It sits on the mat rather than in a bar, so the board stays a board.' },
+      { step: '3 · Round and count', sub: 'where you are in the match', label: 'L3 + header',
+        adds: 'Adds: round number, dice remaining, ledger',
+        showHeader: true, showBid: true, showNames: false,
+        noteTitle: 'State, not chrome',
+        note: 'One chip carries both the round and the total dice left, because the two are always read together when judging a wager. Ledger is the only other affordance up here and stays outlined so it never competes.' },
+      { step: '4 · Names', sub: 'the table becomes people', label: 'L4 + identity',
+        adds: 'Adds: seat names, per-seat counts, wager attribution',
+        showHeader: true, showBid: true, showNames: true,
+        noteTitle: 'Identity last, on purpose',
+        note: 'Names and counts drop into space the seat columns already held, and the wager finally gets an owner. Nothing above moved to make room — that is the test this sequence exists to run.' }
+    ];
+    return { seats, hand, layers };
+  }
+}
+
+</script>
+</body>
+</html>

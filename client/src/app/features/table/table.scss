@@ -1,10 +1,17 @@
 @use 'theme/mixins' as mixins;
 @use 'theme/variables' as vars;
 
+// With no :host rule, a custom element defaults to `display: inline`. Harmless on its own, but
+// worth being explicit about now that MobileGameBoard nests <app-table> one level deeper than it
+// used to sit (a direct child of <app-root>).
+:host {
+  display: block;
+}
+
 // The table screen is the app's one "on-table" (dark cabin) screen — its own ion-content
 // background/text stay dark even though the global default (styles.scss) is the light
-// "off-table" canvas used by entry/lobby/winner. Angular's emulated view encapsulation scopes
-// this to only the <ion-content> this component's own template renders.
+// "off-table" canvas used by entry/lobby/winner. `position: fixed; inset: 0` is already set
+// globally in styles.scss (load-bearing there, see its own comment) — this only overrides color.
 ion-content {
   --background: var(--color-table-edge);
   --color: var(--color-cream);
@@ -93,7 +100,7 @@ $table-photo-overlay: linear-gradient(
 
 // Mobile board shell (Increment 1) — the screen fills the viewport with safe-area-aware padding
 // below 768px; desktop/tablet keep the ion-content default padding untouched.
-@media (max-width: 767px) {
+@media (min-width: 0) {
   ion-content {
     --padding-top: env(safe-area-inset-top);
     --padding-bottom: env(safe-area-inset-bottom);
@@ -140,6 +147,14 @@ $table-photo-overlay: linear-gradient(
 .table-ledger-modal {
   --background: var(--color-table-edge);
   --color: var(--color-cream);
+  // Ionic always portals a presented inline modal to the document root, not to wherever it's
+  // written in the template — so it can't be confined to DesktopGameBoard's phone frame via a
+  // CSS containing-block trick on an ancestor the way `.mobile-bid-sheet` is. Matching its own
+  // width to the same $phone-frame-width instead sidesteps that: a no-op on a real phone (already
+  // narrower), a centered phone-width panel on desktop, lining up with the phone frame without
+  // either one needing to know where the other lives in the DOM.
+  --width: min(100%, #{vars.$phone-frame-width});
+  --max-width: #{vars.$phone-frame-width};
 }
 
 .table-ledger__title {
@@ -242,9 +257,15 @@ $table-photo-overlay: linear-gradient(
   }
 }
 
+// designs/perudo-board-buildup.dc.html's one explicit callout: "Hand dice 52px, never below" —
+// it's the local player's own hand, the only thing on the mobile board that's unambiguously
+// theirs and never leaves the screen, so it gets the largest dice floor outside the hand-roll cup
+// itself. Fits at every supported width (checked down to 320px: 5 × 52px + 4 × 6px gaps = 284px,
+// against 296px of usable width once .table-surface's own p-3 gutters are subtracted) — no
+// horizontal scroll needed.
 .mobile-hand-strip__die {
-  width: 36px;
-  height: 36px;
+  width: 52px;
+  height: 52px;
 }
 
 // Wager token (Increment 4) — the current claim, floating on the mat itself rather than inside
@@ -278,12 +299,11 @@ $table-photo-overlay: linear-gradient(
   width: 100%;
 }
 
-
 // Mobile bid sheet (Increment 4) — turn-specific bottom sheet, fixed to the viewport rather than
 // sitting in the rail's normal document flow (desktop keeps that flow unchanged; this only
 // applies below 768px). One <app-bid-controls> exists either way (table.html) — this repositions
 // that same instance, it does not duplicate it.
-@media (max-width: 767px) {
+@media (min-width: 0) {
   .mobile-bid-sheet {
     position: fixed;
     left: 0;
@@ -369,6 +389,18 @@ $table-photo-overlay: linear-gradient(
     border-left: 1px solid var(--color-border-onboard);
     padding-left: 1.25rem;
   }
+}
+
+// MobileGameBoard is the canonical Phase 4 composition at every viewport size. These late
+// overrides intentionally win over the dormant tablet/desktop photo and rail rules above; those
+// rules stay in source as reference material for a future dedicated DesktopGameBoard.
+.table-surface {
+  @include table-photo('/assets/bg/table-mobile-1170x2532.png');
+}
+
+.table-layout__rail {
+  border-left: 0;
+  padding-left: 0;
 }
 
 .table-rail__summary {

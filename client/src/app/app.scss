@@ -1,3 +1,9 @@
+// See features/table/table.scss's :host comment — a custom element with no :host rule defaults
+// to `display: inline`, which is never what's wanted for a full-screen root component.
+:host {
+  display: block;
+}
+
 .app-error-toast {
   border-radius: var(--radius-tile);
   border: 1px solid var(--color-ember);

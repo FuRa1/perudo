@@ -1,13 +1,13 @@
 <ion-content>
   <div
-    class="table-surface flex flex-col gap-3 p-3 md:p-5"
+    class="table-surface flex flex-col gap-3 p-3"
     [class.table-surface--bid-sheet-open]="store.matchState()?.phase === GamePhase.BIDDING"
   >
     <!-- Mobile-only header (Increment 1): two 36px chips replace the raw "Round N — PHASE"
          heading below 768px. The Ledger chip is the sole route to bid history on mobile; the
          desktop rail keeps its always-visible history panel unchanged (hidden below md instead
          of duplicated markup). -->
-    <div class="table-mobile-header flex items-center justify-between gap-2 md:hidden">
+    <div class="table-mobile-header flex items-center justify-between gap-2">
       <div class="table-mobile-header__chip table-mobile-header__chip--phase">
         {{ mobilePhaseLabel() }}
       </div>
@@ -20,7 +20,7 @@
       </button>
     </div>
 
-    <h2 class="table__heading hidden font-heading text-lg md:block">
+    <h2 class="table__heading hidden font-heading text-lg">
       Round {{ store.matchState()?.round?.roundNumber ?? '-' }} — {{ store.matchState()?.phase }}
     </h2>
 
@@ -28,7 +28,7 @@
          simply falls after the table in document order (the mobile "stacked action area"); at lg+
          it becomes a two-column layout with the rail as a stable right-hand column. Exactly one
          <app-bid-controls> exists either way. -->
-    <div class="table-layout grid grid-cols-1 gap-3 lg:grid-cols-[1fr_340px] lg:gap-5">
+    <div class="table-layout grid grid-cols-1 gap-3">
       <div class="table-layout__main flex flex-col gap-3">
         <!-- Mobile-only compact arc (Increment 2): opponents only (never the local player, 8.3 —
              their private dice/cup live in the bottom region), fixed-size identity tiles instead
@@ -37,7 +37,7 @@
              this with a two-row layout at 9+ opponents, below). -->
         @if (!isArcStressCase()) {
           <div
-            class="mobile-arc-wrap overflow-x-auto overflow-y-hidden md:hidden"
+            class="mobile-arc-wrap overflow-x-auto overflow-y-hidden"
             [style.padding-top.px]="mobileArcTopPaddingPx"
           >
             <div
@@ -67,7 +67,7 @@
              seats per row needing to fit a 320px-wide screen with no horizontal scroll, letting
              the row shrink the seats via flex is far more robust than percentage-position math. -->
         @if (isArcStressCase()) {
-          <div class="mobile-arc-stress flex flex-col gap-2 md:hidden">
+          <div class="mobile-arc-stress flex flex-col gap-2">
             <div class="mobile-arc-stress__row flex justify-center gap-1">
               @for (opponent of backArcOpponents(); track opponent.id) {
                 <app-arc-seat
@@ -95,7 +95,7 @@
         }
 
         @if (isOpeningRollPhase()) {
-          <p class="mobile-arc__caption text-center text-xs md:hidden">
+          <p class="mobile-arc__caption text-center text-xs">
             {{ openingTieCaption() ?? 'Highest cast opens the round' }}
           </p>
         }
@@ -105,7 +105,7 @@
              Increment 5: one size step smaller at the 9-12 player stress case. -->
         @if (store.matchState()?.phase === GamePhase.BIDDING && latestBidRecord(); as record) {
           <div
-            class="mobile-wager-token flex flex-col items-center gap-1 md:hidden"
+            class="mobile-wager-token flex flex-col items-center gap-1"
             [class.mobile-wager-token--compact]="isArcStressCase()"
           >
             <app-bid-marker [bid]="record.bid" />
@@ -117,7 +117,7 @@
 
         <!-- Desktop/tablet: unchanged from before Increment 2 (separate opening-roll panel, full
              SeatCard arc with the shrink-and-scroll size tiers). -->
-        <div class="hidden md:block">
+        <div class="hidden">
           @if (showOpeningRoll()) {
             <app-opening-roll-panel
               [players]="allPlayers()"
@@ -148,7 +148,7 @@
         </div>
 
         <!-- Desktop/tablet: unchanged local seat card + roll buttons. -->
-        <div class="hidden md:block">
+        <div class="hidden">
           @if (me(); as myPlayer) {
             <div class="flex flex-col items-center gap-2">
               <app-seat-card
@@ -185,7 +185,7 @@
              from here on — obscured while it's not my turn, sharp once it is (the same signal
              Increment 4's bid sheet will key off). -->
         @if (me(); as myPlayer) {
-          <div class="mobile-hand-zone flex flex-col items-center gap-3 md:hidden">
+          <div class="mobile-hand-zone flex flex-col items-center gap-3">
             @if (isOpeningRollPhase()) {
               <span class="mobile-hand-zone__label text-xs font-semibold tracking-wide uppercase"
                 >Your cast — public</span
@@ -233,7 +233,7 @@
 
         <!-- Desktop/tablet: unchanged reveal banner. -->
         @if (reveal(); as r) {
-          <div class="table__reveal hidden p-3 md:block">
+          <div class="table__reveal hidden p-3">
             <p>
               <strong>Reveal:</strong> claimed {{ describeBid(r.claimedBid) }}, actual
               {{ r.actualQuantity }}.
@@ -254,7 +254,7 @@
              rests at REVEAL/ROUND_END — see game-engine.ts — so `reveal()` truthy is the only
              usable signal, same as the desktop banner above and RoundLossModal). -->
         @if (reveal(); as r) {
-          <div class="mobile-reveal p-3 md:hidden">
+          <div class="mobile-reveal p-3">
             <h3 class="mobile-reveal__title font-heading text-base">The count is called</h3>
             <p class="mobile-reveal__summary text-sm">
               {{ nicknameFor(r.bidderId) }} claimed {{ describeBid(r.claimedBid) }} — actual count
@@ -293,7 +293,7 @@
            instance into a fixed bottom sheet via CSS rather than rendering a second copy. -->
       <div class="table-layout__rail flex flex-col gap-3">
         @if (store.matchState()?.phase === GamePhase.BIDDING) {
-          <div class="table-rail__summary hidden p-3 text-sm md:block">
+          <div class="table-rail__summary hidden p-3 text-sm">
             @if (latestBidRecord(); as record) {
               <p>
                 {{ nicknameFor(record.playerId) }} claimed {{ describeBid(record.bid) }}. Raise or
@@ -308,7 +308,7 @@
                waiting state is exactly bid-controls' own single status line (Increment 4), never
                this line duplicating it. -->
           @if (isMyBiddingTurn()) {
-            <div class="table-rail__summary mobile-bid-sheet__summary p-3 text-sm md:hidden">
+            <div class="table-rail__summary mobile-bid-sheet__summary p-3 text-sm">
               @if (latestBidRecord(); as record) {
                 <p>
                   {{ nicknameFor(record.playerId) }} claimed {{ describeBid(record.bid) }}. Raise or
@@ -327,7 +327,7 @@
         }
 
         @if (store.matchState()?.round?.bidHistory; as history) {
-          <div class="table__bid-history hidden p-2 md:block">
+          <div class="table__bid-history hidden p-2">
             <h3 class="table__bid-history-title mb-1 font-semibold">Bid history</h3>
             <ul class="table__bid-history-list flex flex-col gap-0.5">
               @for (record of history; track $index) {
@@ -343,7 +343,7 @@
   <!-- Ledger (Increment 1, mobile only) — same bid-history data as the desktop rail panel above,
        reached on demand instead of permanently occupying board space. Closed by default. -->
   <ion-modal
-    class="table-ledger-modal md:hidden"
+    class="table-ledger-modal"
     [isOpen]="isLedgerOpen()"
     (didDismiss)="closeLedger()"
     [initialBreakpoint]="0.6"

@@ -1,5 +1,12 @@
 @use 'theme/mixins' as mixins;
 
+// See features/table/table.scss's :host comment — no :host rule defaults a custom element to
+// `display: inline`, which breaks layout/hit-testing for a component whose own content is a flex
+// column (this one's root `.flex.flex-col` div, in bid-controls.html).
+:host {
+  display: block;
+}
+
 .bid-controls__invalid {
   color: var(--color-ember-soft);
 }

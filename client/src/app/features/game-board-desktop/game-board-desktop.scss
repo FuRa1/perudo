@@ -1,0 +1,30 @@
+@use 'theme/variables' as vars;
+
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--color-table-edge);
+}
+
+.desktop-board-stage {
+  display: flex;
+  min-height: 100dvh;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(190, 132, 65, 0.14), transparent 42%),
+    var(--color-table-edge);
+}
+
+.desktop-board-stage__phone {
+  // `transform` (any value, including a no-op) makes this the CSS containing block for every
+  // `position: fixed` descendant in the box tree below it — including inside child components'
+  // shadow DOM, e.g. MobileGameBoard's `.mobile-bid-sheet` and every `<ion-modal>` (Ledger,
+  // RoundLossModal). Without it, those anchor to the real browser viewport instead of this
+  // phone-sized box, so on a wide desktop screen the bid sheet/ledger/round-loss card would each
+  // span the full window width instead of staying inside the phone frame.
+  transform: translateZ(0);
+  width: min(100%, vars.$phone-frame-width);
+  min-height: 100dvh;
+  overflow: hidden;
+  box-shadow: 0 0 48px rgba(0, 0, 0, 0.52);
+}
