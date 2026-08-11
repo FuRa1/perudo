@@ -22,6 +22,16 @@
 @media (max-width: 767px) {
   .bid-controls__suggestions {
     -webkit-overflow-scrolling: touch;
+    // The root column above is `items-center`, not `stretch` — a flex item's cross-axis width
+    // defaults to its own content size there, and this row's default `min-width: auto` lets that
+    // content size win even over `overflow-x-auto`: with `flex-nowrap`, its "content size" is all
+    // three pills laid out side by side, uncapped, which is wider than the viewport at 320-430px.
+    // The box itself was growing past the page edge instead of staying put and scrolling
+    // internally. `max-width: 100%` (matched with `min-width: 0` to be sure) caps it to whatever
+    // width the column actually allocates, so the overflow becomes this element's own internal
+    // scroll instead of the page's.
+    min-width: 0;
+    max-width: 100%;
   }
 
   .bid-controls__actions {
