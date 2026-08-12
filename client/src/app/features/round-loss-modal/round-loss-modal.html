@@ -31,7 +31,7 @@
         }
 
         <p class="round-loss__body text-sm">Actual count: {{ actualQuantity() }}</p>
-        <p class="round-loss__final text-sm font-semibold">You lost one die.</p>
+        <p class="round-loss__final text-sm font-semibold">{{ lossSummary() }}</p>
 
         <ion-button (click)="close()">Close</ion-button>
       </div>

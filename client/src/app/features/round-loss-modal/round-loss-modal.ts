@@ -56,6 +56,20 @@ export class RoundLossModal {
   );
   protected readonly claimedBid = computed(() => this.reveal()?.claimedBid ?? null);
   protected readonly actualQuantity = computed(() => this.reveal()?.actualQuantity ?? null);
+  /** The reveal event and the post-loss state update land in the same batch (see the
+   * ROUND_STARTED/ROUND_REVEALED ordering note above), so `me()` already reflects the
+   * decremented count by the time this modal opens — matches the design's "one die taken — N
+   * remain" line rather than leaving the player to do the subtraction themselves. */
+  protected readonly lossSummary = computed(() => {
+    const remaining = this.store.me()?.diceCount;
+    if (remaining === undefined) {
+      return 'You lost one die.';
+    }
+    if (remaining === 0) {
+      return "You lost your last die — you're out.";
+    }
+    return `You lost one die — ${remaining} ${remaining === 1 ? 'remains' : 'remain'}.`;
+  });
 
   constructor() {
     effect(() => {

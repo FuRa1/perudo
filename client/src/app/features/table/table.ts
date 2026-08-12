@@ -1,7 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { IonButton, IonContent, IonModal } from '@ionic/angular/standalone';
 import { LucideDice5 } from '@lucide/angular';
-import { GamePhase, type Bid, type BidRecord, type DiceValue, type Player } from '@shared';
+import {
+  GamePhase,
+  diceValueMatchesClaimedFace,
+  type Bid,
+  type BidRecord,
+  type DiceValue,
+  type Player,
+} from '@shared';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
 import type { ArcSeatOpeningRoll } from '../../ui/arc-seat/arc-seat';
@@ -343,10 +350,18 @@ export class Table {
     if (!r) {
       return [];
     }
+    // The design's "ringed" die treatment (Die-face component inventory) — highlights the
+    // specific dice that count toward the claimed face, wilds included unless it was a special
+    // round (5.4/5.5). `lastRevealWasSpecialRound` is a client-only snapshot (GameStore) since
+    // that flag resets before this event's own `state` message would otherwise let us read it.
+    const isSpecialRound = this.store.lastRevealWasSpecialRound();
     return Object.entries(r.dice).map(([playerId, dice]) => ({
       playerId,
       nickname: this.nicknameFor(playerId),
-      dice,
+      dice: dice.map((value) => ({
+        value,
+        ringed: diceValueMatchesClaimedFace(value, r.claimedBid, isSpecialRound),
+      })),
       isBidder: playerId === r.bidderId,
       isLoser: playerId === r.loserId,
     }));

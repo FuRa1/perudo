@@ -18,6 +18,15 @@ export class GameStore {
    * ever observe it. Consumers that care about "is this reveal still fresh" (e.g. the round-loss
    * modal) track that themselves by object identity, not by relying on this being nulled. */
   readonly lastReveal = signal<Extract<ServerEvent, { type: 'ROUND_REVEALED' }> | null>(null);
+  /** Whether the just-revealed round had the special round declared (5.5, aces not wild) —
+   * `RoundRevealedEvent` itself doesn't carry this, and `matchState().round.isSpecialRoundDeclared`
+   * can't be read for it after the fact either: the special round never carries into the next
+   * round (5.5), so once the accompanying `state` message lands, that flag has already reset.
+   * The server always sends `events` before `state` for the same batch (game.gateway.ts), so
+   * `applyEvents` below runs while `matchState()` still holds the round that was just revealed —
+   * this snapshots it right there, at the one moment it's still correct, rather than adding a
+   * field to the event contract for a purely-client-presentational need. */
+  readonly lastRevealWasSpecialRound = signal(false);
 
   readonly me = computed(() => {
     const state = this.matchState();
@@ -52,6 +61,7 @@ export class GameStore {
   applyEvents(events: readonly ServerEvent[]): void {
     const revealed = events.find((e) => e.type === 'ROUND_REVEALED');
     if (revealed) {
+      this.lastRevealWasSpecialRound.set(this.matchState()?.round?.isSpecialRoundDeclared ?? false);
       this.lastReveal.set(revealed);
     }
   }

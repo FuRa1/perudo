@@ -11,9 +11,36 @@
   color: var(--color-ember-soft);
 }
 
+// Status bar (design's "Status bar" component: waiting on other · your turn (replaced by sheet)
+// · resolving) — an identity tile echoing the active seat's own lantern-gradient/brass-ring
+// styling (ArcSeat's `--active` tile) plus two lines: who's acting, and who answers next.
 .bid-controls__waiting {
   @include mixins.onboard-panel;
+  min-height: 56px;
+}
+
+.bid-controls__waiting-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: linear-gradient(160deg, var(--color-identity-start), var(--color-identity-end));
+  border: 1.5px solid var(--color-brass);
+  box-shadow: 0 0 0 3px rgba(214, 154, 82, 0.4);
+}
+
+.bid-controls__waiting-avatar-initial {
+  font-family: var(--font-heading, inherit);
+  font-size: 15px;
+  font-weight: 700;
   color: var(--color-cream);
+}
+
+.bid-controls__waiting-primary {
+  color: var(--color-cream);
+}
+
+.bid-controls__waiting-secondary {
+  color: var(--color-cream-faint);
 }
 
 // Mobile bid sheet (Increment 4) — horizontally scrollable suggestions, and Place bid/Call liar

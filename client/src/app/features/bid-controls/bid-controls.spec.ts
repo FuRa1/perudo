@@ -81,13 +81,31 @@ describe('BidControls', () => {
     expect(callLiar?.getAttribute('color')).toBe('danger');
   });
 
-  it('shows a neutral waiting status instead of the picker for the inactive player', () => {
+  it('shows a neutral waiting status bar (who is acting, who answers next) instead of the picker for the inactive player', () => {
     const { text } = render('p2', biddingState());
-    expect(text).toContain('Waiting for Alice to bid');
+    expect(text).toContain('Alice weighs their wager');
+    expect(text).toContain('Bob answers next');
     expect(text).not.toContain('Place bid');
     expect(text).not.toContain('Call liar');
     expect(text).not.toContain('Minimum');
     expect(text).not.toContain('Not a legal raise');
+  });
+
+  it('wraps around to the first seat for "answers next" when the active player is last in turn order', () => {
+    const state = biddingState({
+      players: [player('p1', 'Alice'), player('p2', 'Bob'), player('p3', 'Cleo')],
+      round: {
+        roundNumber: 1,
+        turnOrder: ['p1', 'p2', 'p3'],
+        currentTurnIndex: 2,
+        bidHistory: [],
+        isSpecialRoundDeclared: false,
+        pendingRolls: [],
+      },
+    });
+    const { text } = render('p1', state);
+    expect(text).toContain('Cleo weighs their wager');
+    expect(text).toContain('Alice answers next');
   });
 
   it('does not show a false "Not a legal raise" for the newly-active player right after a 4x5 first bid', () => {
@@ -133,7 +151,9 @@ describe('BidControls', () => {
     store.matchState.set(biddingState()); // p1's turn
     const fixture = TestBed.createComponent(BidControls);
     fixture.detectChanges();
-    expect((fixture.nativeElement as HTMLElement).textContent ?? '').toContain('Waiting for');
+    expect((fixture.nativeElement as HTMLElement).textContent ?? '').toContain(
+      'Alice weighs their wager',
+    );
 
     // The turn passes to p2.
     store.matchState.set(
@@ -150,7 +170,7 @@ describe('BidControls', () => {
     );
     fixture.detectChanges();
     const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
-    expect(text).not.toContain('Waiting for');
+    expect(text).not.toContain('weighs their wager');
     expect(text).toContain('Place bid');
   });
 });

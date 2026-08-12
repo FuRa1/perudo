@@ -267,8 +267,12 @@
                     row.nickname
                   }}</span>
                   <span class="flex flex-wrap gap-1">
-                    @for (value of row.dice; track $index) {
-                      <app-die [value]="value" class="mobile-reveal__die block" />
+                    @for (die of row.dice; track $index) {
+                      <app-die
+                        [value]="die.value"
+                        [ringed]="die.ringed"
+                        class="mobile-reveal__die block"
+                      />
                     }
                   </span>
                 </li>

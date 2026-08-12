@@ -81,6 +81,10 @@ const SPRITE_POSITION_X_PERCENT: Record<DiceValue, string> = {
 })
 export class Die {
   readonly value = input.required<DiceValue>();
+  /** Reveal-only (5.3): rings this die in brass, the design's treatment for "this specific die is
+   * one of the ones counted toward the claimed face" — purely presentational, never used to judge
+   * the outcome itself (that's already decided server-side by the time reveal renders anything). */
+  readonly ringed = input(false);
 
   protected readonly face = computed(() => FACE_BY_VALUE[this.value()]);
   protected readonly pips = computed(() => PIP_LAYOUTS[this.value()]);

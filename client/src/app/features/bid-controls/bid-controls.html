@@ -52,9 +52,21 @@
       </ion-button>
     </div>
   } @else {
-    <p class="bid-controls__waiting px-3 py-2 text-sm">
-      Waiting for {{ currentPlayerName() ?? 'the next player' }} to bid
-    </p>
+    <div class="bid-controls__waiting flex w-full items-center gap-3 px-3 py-2">
+      <div class="bid-controls__waiting-avatar flex flex-none items-center justify-center">
+        <span class="bid-controls__waiting-avatar-initial">{{ currentPlayerInitial() }}</span>
+      </div>
+      <div class="flex min-w-0 flex-col gap-0.5">
+        <span class="bid-controls__waiting-primary truncate text-sm font-semibold"
+          >{{ currentPlayerName() ?? 'The next player' }} weighs their wager</span
+        >
+        @if (nextPlayerName(); as next) {
+          <span class="bid-controls__waiting-secondary truncate text-xs"
+            >{{ next }} answers next</span
+          >
+        }
+      </div>
+    </div>
   }
 
   @if (canDeclareSpecialRound()) {

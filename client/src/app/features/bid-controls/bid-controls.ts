@@ -35,15 +35,34 @@ export class BidControls {
   protected readonly face = signal<DiceValue>(DEFAULT_FACE);
 
   protected readonly isMyTurn = this.store.isMyTurn;
-  protected readonly currentPlayerName = computed(() => {
+  protected readonly currentPlayer = computed(() => {
     const round = this.store.matchState()?.round;
     if (!round) {
       return null;
     }
     const currentPlayerId = round.turnOrder[round.currentTurnIndex];
     const players = this.store.matchState()?.players ?? [];
-    return players.find((p) => p.id === currentPlayerId)?.nickname ?? null;
+    return players.find((p) => p.id === currentPlayerId) ?? null;
   });
+  protected readonly currentPlayerName = computed(() => this.currentPlayer()?.nickname ?? null);
+  /** The waiting status bar's "X answers next" line (design's status-bar spec) — the next seat in
+   * turnOrder after the current one, wrapping around. Deliberately not "next player after me
+   * specifically" — turnOrder is the single source of truth for who goes when. */
+  protected readonly nextPlayerName = computed(() => {
+    const round = this.store.matchState()?.round;
+    if (!round || round.turnOrder.length === 0) {
+      return null;
+    }
+    const nextIndex = (round.currentTurnIndex + 1) % round.turnOrder.length;
+    const nextPlayerId = round.turnOrder[nextIndex];
+    const players = this.store.matchState()?.players ?? [];
+    return players.find((p) => p.id === nextPlayerId)?.nickname ?? null;
+  });
+  /** Deterministic decorative mark, not a real avatar (CLAUDE.md 3.5/5.1) — same convention as
+   * ArcSeat's own identity tile. */
+  protected readonly currentPlayerInitial = computed(() =>
+    (this.currentPlayer()?.nickname.trim()[0] ?? '?').toUpperCase(),
+  );
   protected readonly canCallLiar = computed(
     () => (this.store.matchState()?.round?.bidHistory.length ?? 0) > 0,
   );

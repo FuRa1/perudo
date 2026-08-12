@@ -1,4 +1,9 @@
-<div class="die aspect-square w-full" [attr.aria-label]="face().label" role="img">
+<div
+  class="die aspect-square w-full"
+  [class.die--ringed]="ringed()"
+  [attr.aria-label]="face().label"
+  role="img"
+>
   @if (face().imageUrl; as imageUrl) {
     <img [src]="imageUrl" [alt]="face().label" class="h-full w-full object-contain" />
   } @else if (isSpriteEnabled) {
