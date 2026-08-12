@@ -17,6 +17,22 @@ export const ARC_SEAT_ACTIVE_WIDTH_PX = 104;
  * of the regular tier above, so two rows of up to six each still fit without horizontal scroll. */
 export const ARC_SEAT_COMPACT_WIDTH_PX = 58;
 
+/** How many distinct identity-tile variants exist (arc-seat.scss's `.arc-seat__tile--0..4`) — a
+ * restrained set of gradient-angle tweaks, not a color palette, so no two opponents' tiles look
+ * like the exact same stamped-out block without relying on hue to tell them apart (identity
+ * itself is always the initial letter + nickname, never the tile alone). */
+const TILE_VARIANT_COUNT = 5;
+
+/** Simple, stable string hash (not cryptographic — just needs to be deterministic and roughly
+ * even) so the same player always lands on the same tile variant across reconnects/re-renders. */
+function hashToVariant(id: string): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash * 31 + id.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash) % TILE_VARIANT_COUNT;
+}
+
 /**
  * Compact mobile opponent seat (Increment 2, designs/perudo-mobile-board.dc.html) — a 54x54
  * identity tile, nickname, and one small state slot. Deliberately not a re-skinned SeatCard: no
@@ -49,5 +65,12 @@ export class ArcSeat {
    * Lobby's roster tile, just larger and on the dark table surface. */
   protected readonly initial = computed(() =>
     (this.player().nickname.trim()[0] ?? '?').toUpperCase(),
+  );
+
+  /** Restrained per-player tile variant (see TILE_VARIANT_COUNT) — a geometric/gradient tweak,
+   * not a hue swap, so it reads as "an intentional set of carved tiles" rather than either
+   * identical stamps or a color-coded legend. */
+  protected readonly tileVariantClass = computed(
+    () => `arc-seat__tile--v${hashToVariant(this.player().id)}`,
   );
 }

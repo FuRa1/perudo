@@ -175,7 +175,15 @@ $table-photo-overlay: linear-gradient(
 // Mobile mat glow (Increment 2) — a soft radial highlight behind the compact arc seats rather
 // than the desktop's solid pill panel (.table__arc above); matches the reference's "lamplit"
 // treatment for the one board region every mobile screen shares.
-.mobile-arc-wrap {
+// The decorative mat glow lives on this plain (non-scrolling) outer wrapper, not on
+// .mobile-arc-wrap below — it used to be on the scroll container itself, and its own negative
+// inset (bleeding 30px past its right edge for a soft vignette) was real content as far as that
+// element's own `overflow-x: auto` was concerned. Even with a single opponent, whose seats never
+// approach the container's actual width, that bleed alone was enough to make `scrollWidth` exceed
+// `clientWidth` and paint a native horizontal scrollbar across the mat with nothing meaningful to
+// scroll to. A pseudo-element on a plain ancestor can bleed past its own edges freely; only an
+// `overflow: auto`/`scroll` element's own scrollable box cares about content extending past it.
+.mobile-arc-outer {
   position: relative;
 
   &::before {
@@ -188,6 +196,20 @@ $table-photo-overlay: linear-gradient(
     background: radial-gradient(70% 60% at 50% 24%, rgba(255, 214, 150, 0.16), transparent 72%);
     border-top: 1px solid rgba(255, 224, 176, 0.16);
     pointer-events: none;
+  }
+}
+
+.mobile-arc-wrap {
+  position: relative;
+  // 6-7 opponents can still genuinely exceed the available width before the two-arc stress
+  // layout takes over at 8 (isArcStressCase) — real touch/trackpad/keyboard scrolling stays
+  // intact, this only hides the visible scrollbar track, matching the "swipeable arc" feel rather
+  // than a literal browser scroll list (the same treatment bid-controls__suggestions uses).
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 

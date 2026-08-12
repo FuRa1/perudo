@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { IonButton, IonContent, IonModal } from '@ionic/angular/standalone';
-import { LucideDice5 } from '@lucide/angular';
+import { LucideDices } from '@lucide/angular';
 import {
   GamePhase,
   diceValueMatchesClaimedFace,
@@ -122,7 +122,7 @@ function joinWithAnd(names: readonly string[]): string {
     IonContent,
     IonButton,
     IonModal,
-    LucideDice5,
+    LucideDices,
     SeatCard,
     ArcSeat,
     BidMarker,

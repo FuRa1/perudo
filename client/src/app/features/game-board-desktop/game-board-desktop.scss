@@ -10,9 +10,11 @@
   display: flex;
   min-height: 100dvh;
   justify-content: center;
-  background:
-    radial-gradient(circle at 50% 18%, rgba(190, 132, 65, 0.14), transparent 42%),
-    var(--color-table-edge);
+  // Flat, quiet backdrop (no off-center hot-spot) — the previous radial gradient was centered at
+  // 50% 18% (near the very top), which combined with the phone frame's own wide ambient shadow
+  // below read as a bright band across the top of the surround and a dark funnel down the sides.
+  // A single flat fill keeps the surround visually quiet without competing with the board itself.
+  background: var(--color-table-edge);
 }
 
 .desktop-board-stage__phone {
@@ -21,10 +23,16 @@
   // shadow DOM, e.g. MobileGameBoard's `.mobile-bid-sheet` and every `<ion-modal>` (Ledger,
   // RoundLossModal). Without it, those anchor to the real browser viewport instead of this
   // phone-sized box, so on a wide desktop screen the bid sheet/ledger/round-loss card would each
-  // span the full window width instead of staying inside the phone frame.
+  // span the full window width instead of staying inside the phone frame. Keep this even though
+  // the shadow/border below changed — the fixed-position containment depends on it, not on how
+  // the frame is decorated.
   transform: translateZ(0);
   width: min(100%, vars.$phone-frame-width);
   min-height: 100dvh;
   overflow: hidden;
-  box-shadow: 0 0 48px rgba(0, 0, 0, 0.52);
+  // A quiet hairline edge plus a narrow, soft shadow reads as "a distinct panel" without the
+  // previous 48px/52%-opacity glow, which was wide and dark enough against the equally-dark stage
+  // background to look like a funnel rather than a clean edge.
+  border: 1px solid var(--color-border-onboard);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 }

@@ -46,18 +46,54 @@
 }
 
 .arc-seat__tile {
+  // Restrained per-player variants (ArcSeat.tileVariantClass, arc-seat.ts) tweak only this angle
+  // — same two identity tokens every tile already uses, so no opponent introduces a new hue into
+  // the roster; identity itself is always the initial letter + nickname below, never the tile.
+  --tile-angle: 160deg;
   width: 54px;
   height: 54px;
   border-radius: 17px;
-  background: linear-gradient(160deg, var(--color-identity-start), var(--color-identity-end));
+  // A second, backmost layer reusing the same faint plank-grain stripe as the table surface
+  // itself (features/table/table.scss's $table-fallback-layers) — ties the tile into the same
+  // "carved wood" material language instead of reading as a flat stamped color block. Behind the
+  // gradient in paint order but ahead of nothing (background layers always paint behind a box's
+  // own child content), so the initial letter stays fully legible over it.
+  background-image:
+    repeating-linear-gradient(96deg, rgba(255, 235, 200, 0.07) 0 2px, transparent 2px 6px),
+    linear-gradient(var(--tile-angle), var(--color-identity-start), var(--color-identity-end));
   border: 1px solid var(--color-border-onboard-strong);
-  box-shadow: 0 3px 7px rgba(0, 0, 0, 0.34);
+  // The inset highlight is a top-edge light catch (a carved/brass-fitting cue), on top of the
+  // existing drop shadow — cosmetic only, doesn't change the tile's footprint or hit area.
+  box-shadow:
+    inset 0 1px 0 rgba(255, 224, 176, 0.22),
+    0 3px 7px rgba(0, 0, 0, 0.34);
   flex: none;
+
+  &--v0 {
+    --tile-angle: 120deg;
+  }
+
+  &--v1 {
+    --tile-angle: 145deg;
+  }
+
+  &--v2 {
+    --tile-angle: 165deg;
+  }
+
+  &--v3 {
+    --tile-angle: 185deg;
+  }
+
+  &--v4 {
+    --tile-angle: 205deg;
+  }
 
   .arc-seat--active & {
     width: 60px;
     height: 60px;
     box-shadow:
+      inset 0 1px 0 rgba(255, 224, 176, 0.22),
       0 0 0 3px var(--color-brass),
       0 4px 9px rgba(0, 0, 0, 0.4);
   }
@@ -65,6 +101,7 @@
   .arc-seat--eliminated & {
     background: rgba(242, 231, 211, 0.05);
     border: 1px dashed rgba(242, 231, 211, 0.4);
+    box-shadow: none;
   }
 
   // 42px identity tile for the compact tier (Increment 5) — active still grows, just from a

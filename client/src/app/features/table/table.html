@@ -36,28 +36,30 @@
              seat instead of a separate panel above it. 2-8 players only (Increment 5 replaces
              this with a two-row layout at 9+ opponents, below). -->
         @if (!isArcStressCase()) {
-          <div
-            class="mobile-arc-wrap overflow-x-auto overflow-y-hidden"
-            [style.padding-top.px]="mobileArcTopPaddingPx"
-          >
+          <div class="mobile-arc-outer">
             <div
-              class="mobile-arc relative h-44 w-full"
-              [style.min-width.px]="mobileArcMinWidthPx()"
+              class="mobile-arc-wrap overflow-x-auto overflow-y-hidden"
+              [style.padding-top.px]="mobileArcTopPaddingPx"
             >
-              @for (opponent of opponents(); track opponent.id; let i = $index) {
-                <div
-                  class="absolute -translate-x-1/2 -translate-y-1/2"
-                  [style.left]="opponentPositions()[i].left"
-                  [style.top]="opponentPositions()[i].top"
-                >
-                  <app-arc-seat
-                    [player]="opponent"
-                    [isCurrentBidder]="opponent.id === currentBidderId()"
-                    [handRollStatus]="handRollStatusFor(opponent.id)"
-                    [openingRoll]="openingRollFor(opponent.id)"
-                  />
-                </div>
-              }
+              <div
+                class="mobile-arc relative h-44 w-full"
+                [style.min-width.px]="mobileArcMinWidthPx()"
+              >
+                @for (opponent of opponents(); track opponent.id; let i = $index) {
+                  <div
+                    class="absolute -translate-x-1/2 -translate-y-1/2"
+                    [style.left]="opponentPositions()[i].left"
+                    [style.top]="opponentPositions()[i].top"
+                  >
+                    <app-arc-seat
+                      [player]="opponent"
+                      [isCurrentBidder]="opponent.id === currentBidderId()"
+                      [handRollStatus]="handRollStatusFor(opponent.id)"
+                      [openingRoll]="openingRollFor(opponent.id)"
+                    />
+                  </div>
+                }
+              </div>
             </div>
           </div>
         }
@@ -162,7 +164,7 @@
               @if (canRollHand()) {
                 <div class="dice-cup-owner-roll-button">
                   <ion-button expand="block" (click)="roll()">
-                    <svg lucideDice5 slot="start" aria-hidden="true"></svg>
+                    <svg lucideDices slot="start" aria-hidden="true"></svg>
                     Roll your hand
                   </ion-button>
                 </div>
@@ -172,7 +174,7 @@
 
           @if (canRollOpeningDie()) {
             <ion-button expand="block" (click)="roll()">
-              <svg lucideDice5 slot="start" aria-hidden="true"></svg>
+              <svg lucideDices slot="start" aria-hidden="true"></svg>
               Roll opening die
             </ion-button>
           }
@@ -197,7 +199,7 @@
               </div>
               @if (canRollOpeningDie()) {
                 <ion-button expand="block" class="mobile-primary-btn" (click)="roll()">
-                  <svg lucideDice5 slot="start" aria-hidden="true"></svg>
+                  <svg lucideDices slot="start" aria-hidden="true"></svg>
                   {{ openingRollFor(myPlayer.id)?.value !== null ? 'Cast again' : 'Cast' }}
                 </ion-button>
                 <p class="mobile-hand-zone__hint text-xs">Shake the phone or tap the die</p>
@@ -212,7 +214,7 @@
                 [ownerSizePx]="236"
               />
               <ion-button expand="block" class="mobile-hand-roll-btn" (click)="roll()">
-                <svg lucideDice5 slot="start" aria-hidden="true"></svg>
+                <svg lucideDices slot="start" aria-hidden="true"></svg>
                 Roll your hand
               </ion-button>
               <p class="mobile-hand-zone__hint text-center text-xs">

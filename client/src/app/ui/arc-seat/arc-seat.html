@@ -5,7 +5,10 @@
   [class.arc-seat--compact]="compact()"
   [class.arc-seat--subdued]="subdued()"
 >
-  <div class="arc-seat__tile relative flex items-center justify-center">
+  <div
+    class="arc-seat__tile relative flex items-center justify-center"
+    [class]="tileVariantClass()"
+  >
     <span class="arc-seat__initial">{{ initial() }}</span>
   </div>
 
