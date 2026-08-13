@@ -8,7 +8,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "eslint .",
-    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit"
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.spec.json --noEmit",
+    "e2e": "node e2e/lobby-flow.e2e.mjs && node e2e/bidding-flow.e2e.mjs",
+    "e2e:render": "node e2e/render-states.mjs"
   },
   "private": true,
   "packageManager": "npm@11.4.2",

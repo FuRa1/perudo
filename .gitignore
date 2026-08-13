@@ -29,3 +29,4 @@ Thumbs.db
 
 # Test artifacts
 *.tsbuildinfo
+/client/e2e/.screenshots/

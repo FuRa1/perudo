@@ -6,62 +6,379 @@
   display: block;
 }
 
-// A soft, CSS-only glow behind the card (design-kit "off the table" light ramp) — no image asset,
-// just a radial tint using the same warm tones as the on-table lantern glow.
-.entry-surface {
-  min-height: 100%;
-  background: radial-gradient(60% 50% at 50% 0%, var(--color-surface-alt), var(--color-page) 70%);
+// "M Entrance" is the app's one other dark cabin screen besides the table itself (design-kit's
+// "on the table" ramp) — same radial + plank-stripe fallback layers as table.scss's
+// $table-fallback-layers, kept local rather than shared: entry has no photographic backdrop to
+// layer on top of it (graphics-spec only names table/lobby plates), so there is nothing else to
+// keep this in sync with.
+$entry-fallback-layers:
+  repeating-linear-gradient(96deg, rgba(255, 235, 200, 0.03) 0 2px, transparent 2px 7px),
+  radial-gradient(
+    96% 62% at 50% 18%,
+    var(--color-table-center) 0%,
+    var(--color-table-mid) 54%,
+    var(--color-table-edge) 100%
+  );
+
+// This is the app's other full-bleed dark screen besides Table (features/table/table.scss does
+// the same thing for the same reason) — the global `ion-content` padding in styles.scss
+// (`--padding-*: max(var(--app-gutter-x/y), env(safe-area-inset-*))`) is meant for screens whose
+// content is a padded card floating on the page background (Lobby, Winner). Left un-overridden
+// here, it inset `.entry-stage` by ~24px on every side (confirmed live: at 390px wide,
+// `--app-gutter-x` resolves to `1rem + 2vw` ≈ 23.8px), so the light `--color-page` body showed
+// through as a visible pale ring, and the dark cabin surface never reached the true edges — the
+// "three nested visual surfaces" / "large inset before the illustrated cabin surface" symptom.
+// Safe-area-only padding removes the deliberate gutter but keeps devices with a notch/home
+// indicator clear; `.entry-scroll`'s own Tailwind padding (`px-4 py-6 md:px-6`) still supplies the
+// actual content margin, now living INSIDE the dark surface instead of as a gap around it.
+ion-content {
+  --padding-start: env(safe-area-inset-left);
+  --padding-end: env(safe-area-inset-right);
+  --padding-top: env(safe-area-inset-top);
+  --padding-bottom: env(safe-area-inset-bottom);
+  --background: var(--color-table-edge);
+  --color: var(--color-cream);
 }
 
-.entry-card {
-  border-radius: var(--radius-card);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-lift);
+.entry-stage {
+  @include mixins.phone-frame-stage(var(--color-table-edge));
+}
+
+.entry-frame {
+  @include mixins.phone-frame-shell;
+}
+
+.entry-scroll {
+  min-height: 100%;
+  background-image: $entry-fallback-layers;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.entry__brand {
+  color: var(--color-cream);
+}
+
+.entry__brand-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-brass);
 }
 
 .entry__badge {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   border-radius: var(--radius-seat);
   background: linear-gradient(160deg, var(--color-identity-start), var(--color-identity-end));
-  border: 1px solid var(--color-border-strong);
-  box-shadow: var(--shadow-lift);
+  border: 1.5px solid var(--color-brass);
+  box-shadow: var(--shadow-float);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.entry__badge-icon {
+  width: 26px;
+  height: 26px;
+  color: var(--color-cream);
 }
 
 .entry__title {
-  color: var(--color-ink);
+  color: var(--color-ivory);
+  // Tailwind's `text-3xl` computed to 26px in this build, short of the ~28-30px the reference
+  // heading reads at (confirmed live) — set explicitly rather than hunting for the right utility.
+  font-size: 1.75rem;
 }
 
 .entry__tagline {
-  color: var(--color-ink-muted);
-  max-width: 34ch;
+  color: var(--color-cream-muted);
+  max-width: 32ch;
 }
 
 .entry__status {
-  color: var(--color-meta);
+  color: var(--color-cream-muted);
+  padding-top: 0.75rem;
 }
 
-.entry__field-group {
-  border-radius: var(--radius-tile);
-  background: transparent;
+// The join step's back row (designs/perudo-lobby-lantern.dc.html §1a2) — a quiet circular back
+// affordance plus the nickname carried over from the name step, so the player can see whose seat
+// they're about to join with without retyping it.
+.entry__code-header {
+  color: var(--color-cream-faint);
+}
 
-  // Ionic's own focused-underline color defaults to the primary (terracotta) accent — pin it to
-  // the same brass focus token every custom control on the table already uses (focus-ring mixin,
-  // theme/_mixins.scss), so keyboard focus reads consistently across the whole app.
-  ion-input {
-    --highlight-color-focused: var(--color-focus);
+// 44px (CLAUDE.md's non-negotiable touch-target floor), not the reference's ~42px circle — the
+// mockup is a visual reference, not a pixel contract, and this rule is explicit in the project's
+// own quality bar.
+.entry__back {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-border-onboard-strong);
+  background: transparent;
+  color: var(--color-cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  appearance: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    background: var(--color-fill-onboard-hover);
+  }
+
+  // Same bespoke focus treatment as `.lobby__room-code` (lobby.scss) — a real interactive
+  // non-Ionic <button>, so it needs its own focus-visible rule rather than the pill-action-button
+  // mixin, which targets ion-button's exposed custom properties.
+  &:focus-visible {
+    outline: none;
+    border-color: var(--color-brass);
+    box-shadow: 0 0 0 2px var(--color-focus);
   }
 }
 
-.entry__divider {
-  color: var(--color-meta);
+.entry__code-name {
+  color: var(--color-cream-faint);
+}
+
+// Ionic's own DOM for a stacked-label ion-input is two siblings under the host: `.input-wrapper`
+// (a <label> containing the label text AND the native input together) and `.input-bottom` (the
+// helper/error caption, deliberately background-less — Ionic keeps it outside the field's visual
+// box by design). The field's box chrome (fill, border, radius, focus ring) belongs on
+// `.input-wrapper` alone. An earlier version of this put it on the `ion-input` HOST instead, which
+// wraps BOTH children — that produced two different rounded boxes nested inside each other
+// (`.input-wrapper`'s own background/radius sitting inside the host's separate outer
+// border/radius, with `.input-bottom` neither, since it has no background at all), which read as
+// a stray seam/bright edge right where they met (confirmed live via a zoomed screenshot of the
+// focused Room code field — visible in Playwright, not just theoretical). Scoping to
+// `.input-wrapper` makes it one real box.
+//
+// This build runs Ionic in scoped (non-shadow) CSS mode (confirmed live: ion-input's shadowRoot is
+// null here) — but `.input-wrapper`/`.label-text`/`.helper-text`/`.native-input` are rendered by
+// Ionic's own Stencil component, not authored in this component's template, so they never receive
+// Angular's `_ngcontent` scoping attribute and a plain scoped selector silently matches nothing
+// (confirmed live). `::ng-deep` is the one part of each rule below that needs to cross that gap;
+// nothing here relies on `::part()` because there is no shadow root to expose one from.
+.entry__field-group {
+  // `ion-list` (this element) has an opaque background of its own by default (Ionic's default
+  // list surface — confirmed live: it computed to `rgb(231, 224, 211)`, the light --color-page
+  // body tone). Left unset, it sat behind `.input-wrapper`'s 10%-opacity cream fill and made the
+  // whole field read as flat opaque cream instead of a translucent dark tile — the regression
+  // that briefly reappeared while reworking the block below.
+  background: transparent;
+
+  ion-item {
+    --background: transparent;
+    --border-color: transparent;
+    // The rounded input wrapper is the only element allowed to paint a border; explicitly remove
+    // Ionic's item-native divider so it cannot escape past the field corners as an underline.
+    --inner-border-width: 0;
+    // Ionic's own MD default (16px each side) otherwise insets `.input-wrapper` an *extra* 16px
+    // past `ion-list`'s own edge on top of `.entry-scroll`'s outer gutter — confirmed live via
+    // getBoundingClientRect: the nickname field measured 16px narrower on each side than the
+    // segmented code control and both action buttons below it (Design QA audit Round 1: "buttons
+    // must not appear wider than the input/control system because of mismatched Ionic item
+    // insets" — this was exactly that bug, just on the *input* side rather than the buttons).
+    // `.input-wrapper`'s own padding (`entry.scss`, `ion-input` block below) already supplies the
+    // real internal inset, so this outer one is pure duplication once removed. `--padding-*` alone
+    // left a further 16px gap on the *end* side only (confirmed live via getBoundingClientRect:
+    // `ion-item` correctly spanned the full row, but `ion-input`'s own host stopped 16px short of
+    // it on the right only) — MD `ion-item` also reserves a separate `--inner-padding-end` for
+    // trailing slotted content (e.g. an end icon), which this field never has.
+    --padding-start: 0;
+    --padding-end: 0;
+    --inner-padding-start: 0;
+    --inner-padding-end: 0;
+  }
+
+  ion-input {
+    --color: var(--color-ivory);
+    --placeholder-color: var(--color-cream-faint);
+    // The input is inside ion-item, so Ionic currently omits its MD highlight node altogether.
+    // Keep the intended contract explicit in case Ionic's rendering mode changes: focus belongs
+    // to the complete rounded wrapper, never to a separate bottom highlight.
+    --highlight-height: 0;
+
+    ::ng-deep .label-text {
+      color: var(--color-cream-faint);
+    }
+
+    // Brass, not the generic on-table `--color-border-onboard-strong` token every plain panel/
+    // button on the table already uses — "M Entrance"'s fields read as deliberately brass-edged
+    // cabin hardware, not a neutral dark tile (Design QA audit, finding 3: resting fields computed
+    // to a flat cream-tinted `rgba(242,231,211,.28)` with no warmth at all). Same restrained
+    // treatment `.lobby__row--me` already uses for a quiet identity border (lobby.scss) — a plain
+    // 1.5px line, no glow — so the *stronger* focus ring below (added border-color + a real
+    // box-shadow ring) still reads as a distinct, more emphatic state rather than a duplicate.
+    ::ng-deep .input-wrapper {
+      box-sizing: border-box;
+      min-height: 56px;
+      // Deliberately unequal, not `justify-content: center` (tried first, confirmed live to be a
+      // no-op here: `min-height` is only a floor, and the wrapper's real height is entirely
+      // determined by content + padding — with no extra flex-container slack, `justify-content`
+      // has nothing to redistribute). Ionic renders the stacked label shrunk via a `scale(0.75)
+      // translateY(9px)` transform, not a font-size change, and `getBoundingClientRect()` reports
+      // its post-transform (painted) position — so even a genuinely centered flex layout still
+      // *measures* top-heavy by exactly that 9px shift (confirmed live: symmetric 0.65rem padding
+      // measured 20.4px above the label vs 11.4px below the value, a 9px gap matching the
+      // transform exactly). Splitting the difference the other way here — less top padding, more
+      // bottom — cancels that shift and the block measures visually centered.
+      padding: 6px 1rem 15px;
+      background: var(--color-fill-onboard-strong);
+      border: 1.5px solid var(--color-brass);
+      border-radius: var(--radius-tile);
+      // `gap` fixes a separate, purely numeric issue: confirmed live via getBoundingClientRect
+      // (before this), the label wrapper's own post-transform bottom edge sat ~4.5px *below* the
+      // value row's top edge with zero gap declared — a real measured overlap, even though the
+      // 0.75 scale visually reads as "close but not touching" rather than as a literal collision.
+      // 9px of flex gap clears that overlap and lands the requested 3-5px separation.
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    // `:has()` reaches back up from the actual focused descendant to the box that visually needs
+    // the ring — keyboard focus lands on `.native-input`, nested two levels inside
+    // `.input-wrapper`, never on the `ion-input` host itself, so a plain `:focus-visible` on an
+    // ancestor never matches (confirmed live). True focus-visible (keyboard-only) semantics,
+    // deliberately not the broader `:focus-within` (which also fires on a mouse click/tap).
+    ::ng-deep .input-wrapper:has(.native-input:focus-visible) {
+      outline: none;
+      border-color: var(--color-focus);
+      // Keep focus clear without stacking a heavy opaque ring around the rounded corners.
+      box-shadow: 0 0 0 1px rgba(214, 154, 82, 0.48);
+    }
+
+    // `.input-bottom` (helper/error caption) sits below the field box, not inside it — Ionic
+    // renders it as a sibling of `.input-wrapper`, spanning the same full host width rather than
+    // the wrapper's own inset content box, so it needs its own horizontal padding to visually line
+    // up under the label/value text rather than under the rounded border itself. Explicit colors:
+    // Ionic's own default helper/error colors are tuned for a light Material theme (confirmed live:
+    // helper text computed to `rgb(77, 77, 77)`, barely visible against this screen's dark cabin
+    // background) and were never overridden before, which is the "placeholder and helper text are
+    // hard to distinguish" symptom — it wasn't a contrast difference between the two, the helper
+    // text was just nearly invisible on its own.
+    ::ng-deep .input-bottom {
+      // 1rem left/right matches `.input-wrapper`'s own padding above (both boxes start from the
+      // same x — confirmed live: with this, helper text lands 1px off the label/value's own left
+      // edge, the width of the wrapper's border, rather than the ~13px off it read at the old
+      // 0.25rem). 7px top clears the rounded border with the requested 6-8px gap (confirmed live).
+      padding: 7px 1rem 0;
+    }
+
+    ::ng-deep .helper-text {
+      color: var(--color-cream-faint);
+    }
+
+    ::ng-deep .error-text {
+      color: var(--color-ember-soft);
+    }
+  }
+}
+
+// The segmented invitation-code control (designs/perudo-lobby-lantern.dc.html §1a2, "Lobby A
+// join" — visual/interaction reference only, see entry.ts's ROOM_CODE_LENGTH comment for what was
+// deliberately NOT carried over from that screen). `ion-input-otp`, like `ion-input` above, turns
+// out NOT to use a real shadow root in this build either (confirmed live: `shadowRoot` is null) —
+// its compiled CSS's `:host()`-looking selectors are Stencil's scoped-mode syntax, not an actual
+// shadow boundary. So the same `::ng-deep` + custom-property mix as the plain-input block above
+// applies here too; unlike that block, no light-DOM class collides with anything already declared
+// in this file, so this stays self-contained. `text-transform: uppercase` on the host is a
+// genuinely inherited property that reaches the light-DOM native inputs with no gap to cross — the
+// underlying `roomId` signal still keeps whatever case was actually typed (5.3, same as the
+// plain-input implementation this replaces; see entry.spec.ts).
+.entry__code-group {
+  color: var(--color-cream);
+}
+
+.entry__code-otp {
+  --margin-top: 0;
+  --margin-bottom: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --background: var(--color-fill-onboard-strong);
+  --border-radius: var(--radius-tile);
+  --border-width: 1.5px;
+  // Quiet cream at rest (design-kit "off the table" chip language, same restrained treatment as
+  // the reference screen's filled/upcoming slots) — deliberately NOT the brass resting border the
+  // nickname/room-code plain-input fields use elsewhere on this screen: the reference specifically
+  // reserves brass for the one active slot, via --highlight-color-focused below, so that a single
+  // slot reads as "here" rather than the whole row looking uniformly emphasized.
+  --border-color: var(--color-border-onboard-strong);
+  --color: var(--color-ivory);
+  --highlight-color-focused: var(--color-brass);
+  // A floor/ceiling rather than a fixed px value — the real width comes from `::ng-deep
+  // .input-otp-group` below stretching all five slots to fill the row exactly (`justify-content:
+  // space-between` on a `width: 100%` group), same as the plain nickname/room-code fields already
+  // do; --width only keeps each slot from collapsing below a legible minimum on the narrowest
+  // supported viewport before that fill takes over.
+  --width: clamp(44px, 14vw, 58px);
+  --height: clamp(52px, 15vw, 62px);
+  --min-width: 40px;
+  display: block;
+  width: 100%;
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 6vw, 1.625rem);
+  text-transform: uppercase;
+
+  ::ng-deep .input-otp-group {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.entry__code-helper {
+  color: var(--color-cream-faint);
+  padding-left: 2px;
 }
 
 .entry__error {
   border-radius: var(--radius-tile);
   border: 1px solid var(--color-ember);
-  background: var(--color-sand);
-  color: var(--color-danger);
+  background: rgba(179, 80, 63, 0.14);
+  color: var(--color-ember-soft);
   padding: 0.5rem 0.75rem;
+}
+
+// Entry sits on the dark on-table surface, so its outline (secondary/quiet) state uses the same
+// cream outline the "Watch instead" secondary language elsewhere uses (design-kit §5) — a neutral
+// cream border/text rather than Ionic's own primary-tinted outline default, so the demoted action
+// reads as quiet, not just "primary but lighter". Everything else about the button shape (radius,
+// depth shadow, hover/pressed/focus states) is shared with Lobby's ready button via one mixin
+// (theme/_mixins.scss's pill-action-button, Step 6) — see that mixin's own doc comment for how it
+// reaches into ion-button's shadow root.
+.entry__action {
+  @include mixins.pill-action-button(
+    var(--color-border-onboard-strong),
+    var(--color-cream),
+    var(--color-fill-onboard-hover)
+  );
+}
+
+.entry__footer {
+  color: var(--color-cream-faint);
+}
+
+.entry__footer-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-neutral);
+  flex: none;
+
+  &--online {
+    background: var(--color-sage);
+    box-shadow: 0 0 8px rgba(122, 138, 94, 0.8);
+  }
 }

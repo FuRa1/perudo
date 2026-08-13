@@ -43,6 +43,24 @@
   color: var(--color-cream-faint);
 }
 
+// Same pill shape/depth/typography every other primary/outline action pair in the app shares
+// (Entry's Open a table/Join table, Lobby's I'm ready) — theme/_mixins.scss's pill-action-button.
+// Place bid never sets `[fill='outline']` so that branch is simply inert for it; Call liar does
+// (bid-controls.html), which is what actually renders it outlined/transparent instead of solid —
+// a plain `--background: transparent` custom-property override here could not reliably win against
+// Ionic's own internal `color="danger"` fill, since both apply to the same host element at equal
+// specificity and Ionic's own shadow-DOM rule was winning the tiebreak (confirmed live: the
+// override had zero effect, computed background stayed solid ember). Using the same `fill="outline"`
+// input Ionic itself defines, the way every other outline button in the app already does, is what
+// actually works.
+.bid-controls__action-btn {
+  @include mixins.pill-action-button(
+    var(--color-ember),
+    var(--color-ember-soft),
+    rgba(224, 138, 120, 0.16)
+  );
+}
+
 // Mobile bid sheet (Increment 4) — horizontally scrollable suggestions, and Place bid/Call liar
 // as a fixed-height action row (flex:1 primary + a narrower fixed-width danger action) rather
 // than the desktop's centered, wrapping button pair. Desktop is untouched below 768px's boundary.
@@ -71,13 +89,6 @@
     flex-wrap: nowrap;
   }
 
-  .bid-controls__place-btn,
-  .bid-controls__liar-btn {
-    &::part(native) {
-      height: 56px;
-    }
-  }
-
   .bid-controls__place-btn {
     flex: 1;
   }
@@ -85,17 +96,5 @@
   .bid-controls__liar-btn {
     flex: none;
     width: 126px;
-    // Faked outline look via Ionic's own CSS custom properties (set on the host, per Ionic's
-    // documented API — not `::part()`, which is for the few properties Ionic doesn't expose as
-    // vars, like the `height` override above) rather than switching the component's `fill`
-    // input — the desktop button's actual fill mode stays solid/unchanged, this only repaints
-    // the mobile instance of the very same element.
-    --background: transparent;
-    --background-activated: rgba(224, 138, 120, 0.16);
-    --border-width: 1.5px;
-    --border-style: solid;
-    --border-color: var(--color-ember);
-    --color: var(--color-ember-soft);
-    --box-shadow: none;
   }
 }

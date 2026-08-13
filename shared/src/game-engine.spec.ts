@@ -369,6 +369,28 @@ describe('BIDDING — turn order and bid legality', () => {
 });
 
 describe('CALL_LIAR -> reveal -> round end (5.3, 4.5)', () => {
+  it('marks an exact count as a true bid and makes the caller lose', () => {
+    const p1 = makePlayer('p1', { dice: [6, 2, 3, 4, 5] });
+    const p2 = makePlayer('p2', { dice: [6, 2, 3, 4, 5] });
+    const state = makeBiddingState([p1, p2], {
+      turnOrder: ['p1', 'p2'],
+      currentTurnIndex: 1,
+      bidHistory: [{ playerId: 'p1', bid: normalBid(2, 6) }],
+    });
+
+    const { state: after, events } = expectOk(
+      applyIntent(state, { type: 'CALL_LIAR', playerId: 'p2' }, deps([])),
+    );
+    const revealEvent = events.find((e) => e.type === 'ROUND_REVEALED');
+
+    expect(revealEvent).toMatchObject({
+      actualQuantity: 2,
+      outcome: 'CALLER_LOSES',
+      loserId: 'p2',
+    });
+    expect(after.players.find((p) => p.id === 'p2')?.diceCount).toBe(4);
+  });
+
   it('the caller loses a die on an exact or exceeded count, and the loser (still active) goes first next round', () => {
     const p1 = makePlayer('p1', { dice: [3, 3, 5, 1, 1] }); // two 3s, two aces
     const p2 = makePlayer('p2', { dice: [3, 4, 4, 6, 1] }); // one 3, one ace

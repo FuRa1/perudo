@@ -34,21 +34,23 @@
 
     <div class="bid-controls__actions flex flex-wrap justify-center gap-2 md:flex-row">
       <ion-button
-        class="bid-controls__place-btn"
+        class="bid-controls__place-btn bid-controls__action-btn"
         color="primary"
+        fill="solid"
         [disabled]="!isValid()"
         (click)="placeBid()"
       >
         Place bid
       </ion-button>
       <ion-button
-        class="bid-controls__liar-btn"
+        class="bid-controls__liar-btn bid-controls__action-btn"
         color="danger"
+        fill="outline"
         [disabled]="!canCallLiar()"
         (click)="callLiar()"
       >
         <svg lucideHand slot="start" aria-hidden="true"></svg>
-        Call liar!
+        Call liar
       </ion-button>
     </div>
   } @else {

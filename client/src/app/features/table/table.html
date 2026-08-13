@@ -3,21 +3,14 @@
     class="table-surface flex flex-col gap-3 p-3"
     [class.table-surface--bid-sheet-open]="store.matchState()?.phase === GamePhase.BIDDING"
   >
-    <!-- Mobile-only header (Increment 1): two 36px chips replace the raw "Round N — PHASE"
-         heading below 768px. The Ledger chip is the sole route to bid history on mobile; the
-         desktop rail keeps its always-visible history panel unchanged (hidden below md instead
-         of duplicated markup). -->
+    <!-- Mobile-only header (Increment 1): a single 36px chip replaces the raw "Round N — PHASE"
+         heading below 768px. There is no Ledger/history control on the mobile board (removed —
+         see history-removal task); round.bidHistory itself still drives bid validation, the
+         current wager token, and reveal below. -->
     <div class="table-mobile-header flex items-center justify-between gap-2">
       <div class="table-mobile-header__chip table-mobile-header__chip--phase">
         {{ mobilePhaseLabel() }}
       </div>
-      <button
-        type="button"
-        class="table-mobile-header__chip table-mobile-header__chip--ledger"
-        (click)="openLedger()"
-      >
-        Ledger
-      </button>
     </div>
 
     <h2 class="table__heading hidden font-heading text-lg">
@@ -103,7 +96,7 @@
         }
 
         <!-- Wager token (Increment 4) — the current claim, floating on the mat rather than
-             squeezed into any one 84px seat column; earlier bids stay collapsed into Ledger.
+             squeezed into any one 84px seat column; there is no earlier-bids UI on mobile.
              Increment 5: one size step smaller at the 9-12 player stress case. -->
         @if (store.matchState()?.phase === GamePhase.BIDDING && latestBidRecord(); as record) {
           <div
@@ -111,9 +104,9 @@
             [class.mobile-wager-token--compact]="isArcStressCase()"
           >
             <app-bid-marker [bid]="record.bid" />
-            <span class="mobile-wager-token__caption text-xs"
-              >{{ nicknameFor(record.playerId) }}'s wager stands</span
-            >
+            <span class="mobile-wager-token__caption text-xs">{{
+              wagerCaptionFor(record.playerId)
+            }}</span>
           </div>
         }
 
@@ -182,10 +175,12 @@
 
         <!-- Mobile-only private local zone (Increment 3): exactly one of these three states is
              ever visible, no duplicate local seat/card UI. The opening die sits bare (public by
-             rule), the hand-roll cup is fixed at 236px rather than the desktop's responsive
-             clamp, and the post-roll hand strip is the only place private dice render on mobile
-             from here on — obscured while it's not my turn, sharp once it is (the same signal
-             Increment 4's bid sheet will key off). -->
+             rule); the hand-roll state reserves the same breathing room a dice-cup graphic used
+             to occupy there via a plain non-interactive spacer instead (Design QA audit, finding
+             10 — a second, competing roll affordance ahead of the real "Roll your hand" button);
+             and the post-roll hand strip is the only place private dice render on mobile from here
+             on — always sharp and fully opaque, regardless of whose bidding turn it is; they're
+             the player's own dice, already private at the data layer (4.5/6.6). -->
         @if (me(); as myPlayer) {
           <div class="mobile-hand-zone flex flex-col items-center gap-3">
             @if (isOpeningRollPhase()) {
@@ -207,24 +202,16 @@
                 <p class="mobile-hand-zone__hint text-xs">Waiting for the rest of the table</p>
               }
             } @else if (canRollHand()) {
-              <app-dice-cup
-                [dice]="myPlayer.dice"
-                [diceCount]="myPlayer.diceCount"
-                [isOwner]="true"
-                [ownerSizePx]="236"
-              />
+              <div class="mobile-roll-stage" aria-hidden="true"></div>
               <ion-button expand="block" class="mobile-hand-roll-btn" (click)="roll()">
                 <svg lucideDices slot="start" aria-hidden="true"></svg>
                 Roll your hand
               </ion-button>
               <p class="mobile-hand-zone__hint text-center text-xs">
-                Shake to roll, or tap the cup. Five dice, yours alone until the reveal.
+                Shake to roll, or use the button. Five dice, yours alone until reveal.
               </p>
             } @else if (myPlayer.dice.length > 0) {
-              <div
-                class="mobile-hand-strip flex gap-1.5"
-                [class.mobile-hand-strip--sharp]="isMyBiddingTurn()"
-              >
+              <div class="mobile-hand-strip flex gap-1.5">
                 @for (value of myPlayer.dice; track $index) {
                   <app-die [value]="value" class="mobile-hand-strip__die block" />
                 }
@@ -241,11 +228,7 @@
               {{ r.actualQuantity }}.
             </p>
             <p>
-              {{
-                r.outcome === 'CALLER_LOSES'
-                  ? 'The caller was wrong and loses a die.'
-                  : 'The bidder was lying and loses a die.'
-              }}
+              {{ revealOutcomeText(r) }}
             </p>
           </div>
         }
@@ -257,11 +240,27 @@
              usable signal, same as the desktop banner above and RoundLossModal). -->
         @if (reveal(); as r) {
           <div class="mobile-reveal p-3">
-            <h3 class="mobile-reveal__title font-heading text-base">The count is called</h3>
+            <h3 class="mobile-reveal__title font-heading text-base">Truth revealed</h3>
             <p class="mobile-reveal__summary text-sm">
               {{ nicknameFor(r.bidderId) }} claimed {{ describeBid(r.claimedBid) }} — actual count
               {{ r.actualQuantity }}.
             </p>
+            <div
+              class="mobile-reveal__verdict flex flex-col gap-0.5"
+              [class.mobile-reveal__verdict--true]="r.outcome === 'CALLER_LOSES'"
+              [class.mobile-reveal__verdict--false]="r.outcome === 'BIDDER_LOSES'"
+            >
+              <strong class="text-xs uppercase tracking-wide">
+                {{ r.outcome === 'CALLER_LOSES' ? 'Bid true' : 'Bid false' }}
+              </strong>
+              <span class="text-xs">
+                {{
+                  r.outcome === 'CALLER_LOSES'
+                    ? 'The actual count met the claim. An exact match is still true.'
+                    : 'The actual count was below the claim.'
+                }}
+              </span>
+            </div>
             <ul class="mobile-reveal__rows flex flex-col gap-1.5">
               @for (row of revealRows(); track row.playerId) {
                 <li class="mobile-reveal__row flex items-center gap-2">
@@ -281,20 +280,16 @@
               }
             </ul>
             <p class="mobile-reveal__outcome text-sm font-semibold">
-              {{
-                r.outcome === 'CALLER_LOSES'
-                  ? nicknameFor(r.loserId) + ' called liar and was wrong — loses a die.'
-                  : nicknameFor(r.loserId) + "'s wager was false — loses a die."
-              }}
+              {{ revealOutcomeText(r) }}
             </p>
           </div>
         }
       </div>
 
       <!-- The bidding rail: on the active turn only, this is where the game actually gets played
-           (bid summary, picker, suggestions, Place bid/Call liar); the compact waiting state and
-           the quiet ledger live here too so nothing bidding-related is duplicated between a rail
-           and a below-table area — there is only ever one of each. There is exactly one
+           (bid summary, picker, suggestions, Place bid/Call liar); the compact waiting state
+           lives here too so nothing bidding-related is duplicated between a rail and a
+           below-table area — there is only ever one of each. There is exactly one
            <app-bid-controls> either way (below): mobile (Increment 4) repositions this SAME
            instance into a fixed bottom sheet via CSS rather than rendering a second copy. -->
       <div class="table-layout__rail flex flex-col gap-3">
@@ -331,49 +326,9 @@
             [class.mobile-bid-sheet--waiting]="!isMyBiddingTurn()"
           />
         }
-
-        @if (store.matchState()?.round?.bidHistory; as history) {
-          <div class="table__bid-history hidden p-2">
-            <h3 class="table__bid-history-title mb-1 font-semibold">Bid history</h3>
-            <ul class="table__bid-history-list flex flex-col gap-0.5">
-              @for (record of history; track $index) {
-                <li>{{ nicknameFor(record.playerId) }}: {{ describeBid(record.bid) }}</li>
-              }
-            </ul>
-          </div>
-        }
       </div>
     </div>
   </div>
-
-  <!-- Ledger (Increment 1, mobile only) — same bid-history data as the desktop rail panel above,
-       reached on demand instead of permanently occupying board space. Closed by default. -->
-  <ion-modal
-    class="table-ledger-modal"
-    [isOpen]="isLedgerOpen()"
-    (didDismiss)="closeLedger()"
-    [initialBreakpoint]="0.6"
-    [breakpoints]="[0, 0.6, 0.9]"
-  >
-    <ng-template>
-      <div class="table-ledger flex h-full flex-col gap-2 p-4">
-        <h3 class="table-ledger__title font-heading text-base">Ledger</h3>
-        @if (store.matchState()?.round?.bidHistory; as history) {
-          @if (history.length > 0) {
-            <ul class="table-ledger__list flex flex-col gap-1 overflow-y-auto">
-              @for (record of history; track $index) {
-                <li>{{ nicknameFor(record.playerId) }}: {{ describeBid(record.bid) }}</li>
-              }
-            </ul>
-          } @else {
-            <p class="table-ledger__empty text-sm">No bids yet this round.</p>
-          }
-        } @else {
-          <p class="table-ledger__empty text-sm">No bids yet.</p>
-        }
-      </div>
-    </ng-template>
-  </ion-modal>
 
   <app-round-loss-modal />
 </ion-content>

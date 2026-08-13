@@ -21,17 +21,26 @@ function render() {
     store,
     nativeElement,
     buttons: () => Array.from(nativeElement.querySelectorAll('ion-button')),
+    otp: () => nativeElement.querySelector('ion-input-otp') as Element,
+    backButton: () => nativeElement.querySelector<HTMLButtonElement>('.entry__back'),
   };
 }
 
-function setInputValue(
-  fixture: ReturnType<typeof TestBed.createComponent>,
-  index: number,
-  value: string,
-): void {
+function setNickname(fixture: ReturnType<typeof TestBed.createComponent>, value: string): void {
   const nativeElement = fixture.nativeElement as HTMLElement;
-  const input = nativeElement.querySelectorAll('ion-input')[index];
-  input.dispatchEvent(new CustomEvent('ionInput', { detail: { value } }));
+  const input = nativeElement.querySelector('ion-input');
+  input?.dispatchEvent(new CustomEvent('ionInput', { detail: { value } }));
+  fixture.detectChanges();
+}
+
+/** `ion-input-otp` isn't hydrated in this test environment (same reasoning as the existing
+ * isDisabled()/fillOf() helpers below for ion-button) — a real Playwright run exercises its
+ * actual per-character typing/paste/backspace behavior; here we only need to simulate the one DOM
+ * event (`ionInput`) the component's own (ionInput) binding listens for. */
+function setRoomCode(fixture: ReturnType<typeof TestBed.createComponent>, value: string): void {
+  const nativeElement = fixture.nativeElement as HTMLElement;
+  const otp = nativeElement.querySelector('ion-input-otp');
+  otp?.dispatchEvent(new CustomEvent('ionInput', { detail: { value } }));
   fixture.detectChanges();
 }
 
@@ -39,6 +48,19 @@ function setInputValue(
  * element isn't upgraded in this test environment, so read the property directly. */
 function isDisabled(button: Element): boolean {
   return (button as unknown as { disabled: boolean }).disabled === true;
+}
+
+/** Reaches the join-code step the same way a real player does: type a nickname, then tap "Join
+ * with a code" (never sends a join intent by itself). */
+function goToCodeStep(
+  fixture: ReturnType<typeof TestBed.createComponent>,
+  nativeElement: HTMLElement,
+  nickname = 'Jack',
+): void {
+  setNickname(fixture, nickname);
+  const joinWithCodeBtn = Array.from(nativeElement.querySelectorAll('ion-button'))[1];
+  joinWithCodeBtn.dispatchEvent(new Event('click'));
+  fixture.detectChanges();
 }
 
 describe('Entry', () => {
@@ -57,120 +79,257 @@ describe('Entry', () => {
     expect(socket.connect).toHaveBeenCalled();
   });
 
-  it('disables both actions until a nickname is entered', () => {
-    const { buttons } = render();
-    const [createBtn, joinBtn] = buttons();
-    expect(isDisabled(createBtn)).toBe(true);
-    expect(isDisabled(joinBtn)).toBe(true);
-  });
-
-  it('enables Create once a nickname is present, independent of room code', () => {
-    const { fixture, buttons } = render();
-    setInputValue(fixture, 1, 'Jack');
-    const [createBtn, joinBtn] = buttons();
-    expect(isDisabled(createBtn)).toBe(false);
-    expect(isDisabled(joinBtn)).toBe(true);
-  });
-
-  it('enables Join only once both room code and nickname are present', () => {
-    const { fixture, buttons } = render();
-    setInputValue(fixture, 0, 'TORTUGA');
-    setInputValue(fixture, 1, 'Jack');
-    const [, joinBtn] = buttons();
-    expect(isDisabled(joinBtn)).toBe(false);
-  });
-
-  it('creates a room with a generated code and the trimmed nickname', () => {
-    const { fixture, buttons } = render();
-    setInputValue(fixture, 1, '  Jack  ');
-    buttons()[0].click();
-    expect(socket.joinRoom).toHaveBeenCalledTimes(1);
-    const [roomIdArg, nicknameArg] = socket.joinRoom.mock.calls[0] as [string, string];
-    expect(typeof roomIdArg).toBe('string');
-    expect(roomIdArg.length).toBeGreaterThan(0);
-    expect(nicknameArg).toBe('Jack');
-  });
-
-  it('joins the exact room code entered, trimmed, with the trimmed nickname', () => {
-    const { fixture, buttons } = render();
-    setInputValue(fixture, 0, '  tortuga  ');
-    setInputValue(fixture, 1, '  Jack  ');
-    buttons()[1].click();
-    expect(socket.joinRoom).toHaveBeenCalledWith('tortuga', 'Jack');
-  });
-
-  it('does not submit when the required fields are blank, even if clicked', () => {
-    const { buttons } = render();
-    buttons()[0].click();
-    buttons()[1].click();
-    expect(socket.joinRoom).not.toHaveBeenCalled();
-  });
-
-  it('disables both actions while not yet connected to the server', () => {
-    const fixture = TestBed.createComponent(Entry);
-    const store = TestBed.inject(GameStore);
-    store.setConnected(false);
-    fixture.detectChanges();
-    const nativeElement = fixture.nativeElement as HTMLElement;
-    setInputValue(fixture, 0, 'TORTUGA');
-    setInputValue(fixture, 1, 'Jack');
-    const buttons = Array.from(nativeElement.querySelectorAll('ion-button'));
-    expect(isDisabled(buttons[0])).toBe(true);
-    expect(isDisabled(buttons[1])).toBe(true);
-    expect(nativeElement.textContent ?? '').toContain('Connecting');
-  });
-
-  it('shows a loading state on the button that was pressed while the request is in flight', () => {
-    const { fixture, buttons, nativeElement } = render();
-    setInputValue(fixture, 1, 'Jack');
-    buttons()[0].click();
-    fixture.detectChanges();
-    expect(nativeElement.textContent ?? '').toContain('Creating');
-  });
-
-  // Design QA Task 6, finding 3: the room-code field's "leave it blank" instruction used to be
-  // packed entirely into the placeholder, where it got clipped on both desktop and mobile.
-  describe('room-code instruction (Design QA Task 6)', () => {
-    it('uses a short placeholder that fits, not the full instruction', () => {
-      const { nativeElement } = render();
-      const roomCodeInput = nativeElement.querySelector('ion-input[label="Room code"]');
-      const placeholder =
-        roomCodeInput?.getAttribute('placeholder') ??
-        (roomCodeInput as unknown as { placeholder?: string } | null)?.placeholder;
-      expect(placeholder).toBe('e.g. TORTUGA');
+  describe('name step', () => {
+    it('disables both actions until a nickname is entered', () => {
+      const { buttons } = render();
+      const [createBtn, joinWithCodeBtn] = buttons();
+      expect(isDisabled(createBtn)).toBe(true);
+      expect(isDisabled(joinWithCodeBtn)).toBe(true);
     });
 
-    it('moves the actual instruction into visible helper text below the field', () => {
-      const { nativeElement } = render();
-      const roomCodeInput = nativeElement.querySelector('ion-input[label="Room code"]');
-      const helperText =
-        roomCodeInput?.getAttribute('helperText') ??
-        roomCodeInput?.getAttribute('helpertext') ??
-        (roomCodeInput as unknown as { helperText?: string } | null)?.helperText;
-      expect(helperText).toBe('Leave blank to start a new table.');
+    it('enables both actions once a nickname is present', () => {
+      const { fixture, buttons } = render();
+      setNickname(fixture, 'Jack');
+      const [createBtn, joinWithCodeBtn] = buttons();
+      expect(isDisabled(createBtn)).toBe(false);
+      expect(isDisabled(joinWithCodeBtn)).toBe(false);
     });
 
-    it('does not smuggle the instruction back into the room-code placeholder', () => {
+    it('does not show a room-code field on this step', () => {
       const { nativeElement } = render();
-      const roomCodeInput = nativeElement.querySelector('ion-input[label="Room code"]');
-      const placeholder =
-        roomCodeInput?.getAttribute('placeholder') ??
-        (roomCodeInput as unknown as { placeholder?: string } | null)?.placeholder;
-      expect(placeholder ?? '').not.toContain('leave blank');
+      expect(nativeElement.querySelector('ion-input-otp')).toBeNull();
+    });
+
+    it('creates a room with a generated, five-character code and the trimmed nickname', () => {
+      const { fixture, buttons } = render();
+      setNickname(fixture, '  Jack  ');
+      buttons()[0].click();
+      expect(socket.joinRoom).toHaveBeenCalledTimes(1);
+      const [roomIdArg, nicknameArg] = socket.joinRoom.mock.calls[0] as [string, string];
+      expect(roomIdArg).toHaveLength(5);
+      expect(nicknameArg).toBe('Jack');
+    });
+
+    it('does not create a room when clicked with no nickname', () => {
+      const { buttons } = render();
+      buttons()[0].click();
+      expect(socket.joinRoom).not.toHaveBeenCalled();
+    });
+
+    it('submits Start a table on Enter in the nickname field', () => {
+      const { fixture, nativeElement } = render();
+      setNickname(fixture, 'Jack');
+      const input = nativeElement.querySelector('ion-input');
+      input?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      fixture.detectChanges();
+      expect(socket.joinRoom).toHaveBeenCalledTimes(1);
+    });
+
+    it('disables Start a table while not yet connected, but never sends a join', () => {
+      const fixture = TestBed.createComponent(Entry);
+      const store = TestBed.inject(GameStore);
+      store.setConnected(false);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      setNickname(fixture, 'Jack');
+      const [createBtn] = Array.from(nativeElement.querySelectorAll('ion-button'));
+      expect(isDisabled(createBtn)).toBe(true);
+      expect(nativeElement.textContent ?? '').toContain('Offline');
+    });
+
+    it('still allows moving to the code step while not yet connected', () => {
+      const fixture = TestBed.createComponent(Entry);
+      const store = TestBed.inject(GameStore);
+      store.setConnected(false);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      goToCodeStep(fixture, nativeElement);
+      expect(nativeElement.querySelector('ion-input-otp')).not.toBeNull();
+    });
+
+    it('shows a loading state on Start a table while the request is in flight', () => {
+      const { fixture, buttons, nativeElement } = render();
+      setNickname(fixture, 'Jack');
+      buttons()[0].click();
+      fixture.detectChanges();
+      expect(nativeElement.textContent ?? '').toContain('Creating');
+    });
+
+    it('shows the server error and clears the loading state once an error arrives', () => {
+      const { fixture, store, nativeElement, buttons } = render();
+      setNickname(fixture, 'Jack');
+      buttons()[0].click();
+      fixture.detectChanges();
+      expect(nativeElement.textContent ?? '').toContain('Creating');
+
+      store.setError(gameError(ErrorCode.ROOM_FULL, 'This room is already full.'));
+      fixture.detectChanges();
+
+      expect(nativeElement.textContent ?? '').toContain('This room is already full.');
+      expect(nativeElement.textContent ?? '').not.toContain('Creating');
+    });
+
+    it('does not render any spectator/public-table-browser controls', () => {
+      const { nativeElement } = render();
+      expect(nativeElement.textContent ?? '').not.toMatch(/watch instead|tables are lit/i);
     });
   });
 
-  it('shows the server error and clears the loading state once an error arrives', () => {
-    const { fixture, store, nativeElement, buttons } = render();
-    setInputValue(fixture, 1, 'Jack');
-    buttons()[0].click();
-    fixture.detectChanges();
-    expect(nativeElement.textContent ?? '').toContain('Creating');
+  describe('join-code step', () => {
+    it('moves to the code step without sending a join, keeping the nickname', () => {
+      const { fixture, nativeElement } = render();
+      goToCodeStep(fixture, nativeElement, 'Jack');
+      expect(socket.joinRoom).not.toHaveBeenCalled();
+      expect(nativeElement.textContent ?? '').toContain('Jack');
+    });
 
-    store.setError(gameError(ErrorCode.ROOM_FULL, 'This room is already full.'));
-    fixture.detectChanges();
+    it('renders the room-code control with five slots', () => {
+      const { fixture, nativeElement, otp } = render();
+      goToCodeStep(fixture, nativeElement);
+      expect((otp() as unknown as { length: number }).length).toBe(5);
+    });
 
-    expect(nativeElement.textContent ?? '').toContain('This room is already full.');
-    expect(nativeElement.textContent ?? '').not.toContain('Creating');
+    it('exposes an accessible name for the room-code control', () => {
+      const { fixture, nativeElement, otp } = render();
+      goToCodeStep(fixture, nativeElement);
+      expect(otp().getAttribute('aria-label')).toBe('Room code');
+    });
+
+    it('states the exact required length', () => {
+      const { fixture, nativeElement } = render();
+      goToCodeStep(fixture, nativeElement);
+      expect(nativeElement.textContent ?? '').toContain('Enter the 5-character invitation code.');
+    });
+
+    it('keeps Join table disabled while the code is partial', () => {
+      const { fixture, nativeElement, buttons } = render();
+      goToCodeStep(fixture, nativeElement);
+      setRoomCode(fixture, 'TOR');
+      expect(isDisabled(buttons()[0])).toBe(true);
+    });
+
+    it('enables Join table once the code reaches exactly five characters', () => {
+      const { fixture, nativeElement, buttons } = render();
+      goToCodeStep(fixture, nativeElement);
+      setRoomCode(fixture, 'TORTU');
+      expect(isDisabled(buttons()[0])).toBe(false);
+    });
+
+    it('a partial code remains visible rather than being auto-cleared', () => {
+      const { fixture, nativeElement, otp } = render();
+      goToCodeStep(fixture, nativeElement);
+      setRoomCode(fixture, 'TOR');
+      expect((otp() as unknown as { value: string }).value).toBe('TOR');
+    });
+
+    it('caps the room-code signal at five characters as a safety net independent of the OTP control', () => {
+      const { fixture, nativeElement, otp } = render();
+      goToCodeStep(fixture, nativeElement);
+      setRoomCode(fixture, 'TOOLONGVALUE');
+      expect((otp() as unknown as { value: string }).value).toBe('TOOLO');
+    });
+
+    it('joins the exact five-character code entered, case preserved, with the trimmed nickname', () => {
+      const { fixture, nativeElement, buttons } = render();
+      goToCodeStep(fixture, nativeElement, '  Jack  ');
+      setRoomCode(fixture, 'tortu');
+      buttons()[0].click();
+      expect(socket.joinRoom).toHaveBeenCalledWith('tortu', 'Jack');
+    });
+
+    it('does not submit when the code is blank, even if clicked', () => {
+      const { fixture, nativeElement, buttons } = render();
+      goToCodeStep(fixture, nativeElement);
+      buttons()[0].click();
+      expect(socket.joinRoom).not.toHaveBeenCalled();
+    });
+
+    it('does not fire a duplicate join while a request is already pending', () => {
+      const { fixture, nativeElement, buttons } = render();
+      goToCodeStep(fixture, nativeElement);
+      setRoomCode(fixture, 'TORTU');
+      buttons()[0].click();
+      buttons()[0].click();
+      expect(socket.joinRoom).toHaveBeenCalledTimes(1);
+    });
+
+    it('shows a loading state on Join table while the request is in flight', () => {
+      const { fixture, nativeElement, buttons } = render();
+      goToCodeStep(fixture, nativeElement);
+      setRoomCode(fixture, 'TORTU');
+      buttons()[0].click();
+      fixture.detectChanges();
+      expect(nativeElement.textContent ?? '').toContain('Joining');
+    });
+
+    it('disables Join table while not yet connected', () => {
+      const fixture = TestBed.createComponent(Entry);
+      const store = TestBed.inject(GameStore);
+      store.setConnected(false);
+      fixture.detectChanges();
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      goToCodeStep(fixture, nativeElement);
+      setRoomCode(fixture, 'TORTU');
+      const [joinBtn] = Array.from(nativeElement.querySelectorAll('ion-button'));
+      expect(isDisabled(joinBtn)).toBe(true);
+    });
+
+    it('submits Join table on Enter in the code control once complete', () => {
+      const { fixture, nativeElement } = render();
+      goToCodeStep(fixture, nativeElement, 'Jack');
+      setRoomCode(fixture, 'TORTU');
+      const otpEl = nativeElement.querySelector('ion-input-otp');
+      otpEl?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      fixture.detectChanges();
+      expect(socket.joinRoom).toHaveBeenCalledWith('TORTU', 'Jack');
+    });
+
+    it('does not submit on Enter while the code is only partially entered', () => {
+      const { fixture, nativeElement } = render();
+      goToCodeStep(fixture, nativeElement);
+      setRoomCode(fixture, 'TOR');
+      const otpEl = nativeElement.querySelector('ion-input-otp');
+      otpEl?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      fixture.detectChanges();
+      expect(socket.joinRoom).not.toHaveBeenCalled();
+    });
+
+    it('returns to the name step on back, keeping the nickname, without sending a join', () => {
+      const { fixture, nativeElement, backButton } = render();
+      goToCodeStep(fixture, nativeElement, 'Jack');
+      setRoomCode(fixture, 'TOR');
+      backButton()?.click();
+      fixture.detectChanges();
+      expect(nativeElement.querySelector('ion-input-otp')).toBeNull();
+      const nicknameInput = nativeElement.querySelector('ion-input');
+      expect((nicknameInput as unknown as { value: string })?.value).toBe('Jack');
+      expect(socket.joinRoom).not.toHaveBeenCalled();
+    });
+
+    it('clears a stale error from a failed join when navigating back', () => {
+      const { fixture, store, nativeElement, buttons, backButton } = render();
+      goToCodeStep(fixture, nativeElement, 'Jack');
+      setRoomCode(fixture, 'TORTU');
+      buttons()[0].click();
+      store.setError(gameError(ErrorCode.ROOM_NOT_FOUND, 'No table with that code.'));
+      fixture.detectChanges();
+      expect(nativeElement.textContent ?? '').toContain('No table with that code.');
+
+      backButton()?.click();
+      fixture.detectChanges();
+      expect(nativeElement.textContent ?? '').not.toContain('No table with that code.');
+    });
+
+    it('keeps an invalid-join error visible without losing the entered code', () => {
+      const { fixture, store, nativeElement, buttons, otp } = render();
+      goToCodeStep(fixture, nativeElement, 'Jack');
+      setRoomCode(fixture, 'TORTU');
+      buttons()[0].click();
+      store.setError(gameError(ErrorCode.ROOM_NOT_FOUND, 'No table with that code.'));
+      fixture.detectChanges();
+
+      expect(nativeElement.textContent ?? '').toContain('No table with that code.');
+      expect((otp() as unknown as { value: string }).value).toBe('TORTU');
+    });
   });
 });

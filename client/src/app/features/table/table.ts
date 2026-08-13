@@ -1,5 +1,5 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { IonButton, IonContent, IonModal } from '@ionic/angular/standalone';
+import { Component, computed, inject } from '@angular/core';
+import { IonButton, IonContent } from '@ionic/angular/standalone';
 import { LucideDices } from '@lucide/angular';
 import {
   GamePhase,
@@ -8,13 +8,13 @@ import {
   type BidRecord,
   type DiceValue,
   type Player,
+  type ServerEvent,
 } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
 import type { ArcSeatOpeningRoll } from '../../ui/arc-seat/arc-seat';
 import { ARC_SEAT_ACTIVE_WIDTH_PX, ARC_SEAT_WIDTH_PX, ArcSeat } from '../../ui/arc-seat/arc-seat';
 import { BidMarker } from '../../ui/bid-marker/bid-marker';
-import { DiceCup } from '../../ui/dice-cup/dice-cup';
 import { Die } from '../../ui/die/die';
 import { OpeningRollPanel } from '../../ui/opening-roll-panel/opening-roll-panel';
 import type { HandRollStatus, SeatSize } from '../../ui/seat-card/seat-card';
@@ -28,6 +28,8 @@ interface ArcPosition {
   readonly left: string;
   readonly top: string;
 }
+
+type RoundRevealedEvent = Extract<ServerEvent, { type: 'ROUND_REVEALED' }>;
 
 /**
  * Table layout (8.3): my seat is fixed bottom-center; everyone else is spread across the top
@@ -121,12 +123,10 @@ function joinWithAnd(names: readonly string[]): string {
   imports: [
     IonContent,
     IonButton,
-    IonModal,
     LucideDices,
     SeatCard,
     ArcSeat,
     BidMarker,
-    DiceCup,
     Die,
     OpeningRollPanel,
     BidControls,
@@ -157,18 +157,6 @@ export class Table {
     const totalDiceCount = this.allPlayers().reduce((sum, p) => sum + p.diceCount, 0);
     return describeMobilePhase(state, totalDiceCount, this.store.isMyTurn());
   });
-
-  /** Ledger trigger (Increment 1) — closed by default, holds the same bid-history data the
-   * desktop rail shows inline; mobile hides that inline panel and reaches it from here instead. */
-  protected readonly isLedgerOpen = signal(false);
-
-  protected openLedger(): void {
-    this.isLedgerOpen.set(true);
-  }
-
-  protected closeLedger(): void {
-    this.isLedgerOpen.set(false);
-  }
 
   protected readonly opponents = computed<readonly Player[]>(() => {
     const myId = this.store.playerId();
@@ -230,9 +218,9 @@ export class Table {
 
   /** Whether it's meaningfully my turn to act (Increment 3/4) — deliberately narrower than
    * GameStore's own `isMyTurn`, which is already true the instant a round's turn order is
-   * decided (well before BIDDING opens, same reason currentBidderId above gates on phase). The
-   * mobile hand strip's blur/sharp state (and Increment 4's bid sheet) must only react once
-   * there's actually something to act on. */
+   * decided (well before BIDDING opens, same reason currentBidderId above gates on phase).
+   * Increment 4's bid sheet must only switch out of its compact "waiting" state once there's
+   * actually something to act on. */
   protected readonly isMyBiddingTurn = computed(() => {
     const bidderId = this.currentBidderId();
     return bidderId !== null && bidderId === this.store.playerId();
@@ -253,6 +241,24 @@ export class Table {
       return 'You';
     }
     return this.allPlayers().find((p) => p.id === playerId)?.nickname ?? UNKNOWN_PLAYER_LABEL;
+  }
+
+  /** Possessive form of nicknameFor — "You's" doesn't read as English, so the local player gets
+   * "Your" instead of the generic "'s" suffix. */
+  protected possessiveNicknameFor(playerId: string): string {
+    if (playerId === this.store.playerId()) {
+      return 'Your';
+    }
+    return `${this.nicknameFor(playerId)}'s`;
+  }
+
+  /** The wager token's caption (mobile-lantern.dc.html: "Anne's bid — your turn") — the bidder
+   * is guaranteed to never be the player whose turn it currently is (placing a bid always advances
+   * the turn), so "— your turn" only ever appends to someone else's bid, never doubles up with the
+   * possessive "Your" case. */
+  protected wagerCaptionFor(bidderPlayerId: string): string {
+    const bid = `${this.possessiveNicknameFor(bidderPlayerId)} bid`;
+    return this.isMyBiddingTurn() ? `${bid} — your turn` : bid;
   }
 
   /** Public opening-roll data is shown whenever either the live roll or its resolved, still
@@ -341,6 +347,20 @@ export class Table {
   });
 
   protected readonly reveal = this.store.lastReveal;
+
+  /** The verdict is intentionally phrased around the bid, not the caller. An exact count is a
+   * true bid under 5.3, so the caller loses even though the quantity matches perfectly. */
+  protected revealOutcomeText(reveal: RoundRevealedEvent): string {
+    const isLocalLoser = reveal.loserId === this.store.playerId();
+    if (reveal.outcome === 'CALLER_LOSES') {
+      return isLocalLoser
+        ? 'You called liar — the bid was true, so you lose a die.'
+        : `${this.nicknameFor(reveal.loserId)} called liar — the bid was true, so they lose a die.`;
+    }
+    return isLocalLoser
+      ? 'Your bid was false — you lose a die.'
+      : `${this.nicknameFor(reveal.loserId)}'s bid was false — they lose a die.`;
+  }
 
   /** Per-player revealed hands for the mobile reveal panel (Increment 5) — the same
    * ROUND_REVEALED event already drives the desktop banner and RoundLossModal, just read here

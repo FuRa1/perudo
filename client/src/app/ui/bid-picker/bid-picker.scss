@@ -6,8 +6,12 @@
   display: block;
 }
 
+// No boxed panel around the picker (design reference, mobile-lantern.dc.html): the quantity/face
+// steppers sit directly on the tray's own dark surface, matching the reference's picker, which has
+// no secondary border of its own. Only the individual buttons/die stay bordered (onboard-control
+// below, and Die's own chrome) — this wrapper is layout-only.
 .bid-picker {
-  @include mixins.onboard-panel;
+  // Intentionally no border/background here.
 }
 
 .bid-picker__button {
@@ -26,9 +30,14 @@
   }
 }
 
+// The quantity digit is the number the player is actually setting — the reference
+// (mobile-lantern.dc.html) sets it in the heading font at 40px, not the plain body font every
+// other run of text on the tray uses. Harmless on the face slot (the other consumer of this same
+// class), which holds only an <app-die>, no text.
 .bid-picker__value {
   @include mixins.focus-ring;
   color: var(--color-cream);
+  font-family: var(--font-heading);
 }
 
 .bid-picker__separator {

@@ -97,4 +97,15 @@ export default tseslint.config(
     files: ['client/src/**/*.html'],
     extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
   },
+
+  // client/e2e — plain Node scripts driving `playwright` directly (no @playwright/test, no
+  // Angular). Browser globals are needed too: `page.evaluate`/`page.addInitScript` callback
+  // bodies run inside the browser page, not this Node process, but they're authored inline in
+  // this same file, so ESLint statically sees `window`/`document`/`navigator` here as well.
+  {
+    files: ['client/e2e/**/*.mjs'],
+    languageOptions: {
+      globals: { ...globals.node, ...globals.browser },
+    },
+  },
 );

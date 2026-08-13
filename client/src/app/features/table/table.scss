@@ -111,9 +111,8 @@ $table-photo-overlay: linear-gradient(
   }
 }
 
-// Header chips (Increment 1) — 36px tall, plain-language phase context + the sole route to the
-// Ledger on mobile. Desktop keeps the raw "Round N — PHASE" heading (hidden here via md:hidden
-// in the template) rather than these chips.
+// Header chip (Increment 1) — 36px tall, plain-language phase context. Desktop keeps the raw
+// "Round N — PHASE" heading (hidden here via md:hidden in the template) rather than this chip.
 .table-mobile-header__chip {
   display: flex;
   align-items: center;
@@ -129,42 +128,6 @@ $table-photo-overlay: linear-gradient(
   border: 1px solid var(--color-border-onboard);
   background: var(--color-fill-onboard);
   color: var(--color-cream);
-}
-
-.table-mobile-header__chip--ledger {
-  min-width: 44px;
-  border: 1px solid var(--color-border-onboard);
-  background: transparent;
-  color: var(--color-cream-muted);
-
-  &:hover {
-    background: var(--color-fill-onboard);
-  }
-}
-
-// Ledger sheet (Increment 1) — same dark on-table language as the rest of the board, not Ionic's
-// light modal default, since its content (bid history) is board content reached on demand.
-.table-ledger-modal {
-  --background: var(--color-table-edge);
-  --color: var(--color-cream);
-  // Ionic always portals a presented inline modal to the document root, not to wherever it's
-  // written in the template — so it can't be confined to DesktopGameBoard's phone frame via a
-  // CSS containing-block trick on an ancestor the way `.mobile-bid-sheet` is. Matching its own
-  // width to the same $phone-frame-width instead sidesteps that: a no-op on a real phone (already
-  // narrower), a centered phone-width panel on desktop, lining up with the phone frame without
-  // either one needing to know where the other lives in the DOM.
-  --width: min(100%, #{vars.$phone-frame-width});
-  --max-width: #{vars.$phone-frame-width};
-}
-
-.table-ledger__title {
-  color: var(--color-cream);
-}
-
-.table-ledger__list,
-.table-ledger__empty {
-  color: var(--color-cream-faint);
-  font-size: 12.5px;
 }
 
 .table__arc {
@@ -253,7 +216,9 @@ $table-photo-overlay: linear-gradient(
   }
 }
 
-// Hand-roll button (Increment 3) — never wider than the 236px cup it sits directly beneath.
+// Hand-roll button (Increment 3) — matches the reserved roll-stage spacer's width below it, so
+// the two read as one deliberate column rather than a button floating independently of the space
+// above it.
 .mobile-hand-roll-btn {
   width: 236px;
 
@@ -262,20 +227,19 @@ $table-photo-overlay: linear-gradient(
   }
 }
 
-// Private hand strip (Increment 3) — the only place a mobile player's own dice render once
-// they've rolled. Blurred while it's not their turn (nothing to act on yet), sharp once it is;
-// purely cosmetic since the dice themselves are already private at the data layer (4.5/6.6) —
-// nobody else's dice are ever in this DOM to begin with.
-.mobile-hand-strip {
-  filter: blur(3px);
-  opacity: 0.7;
-  transition:
-    filter 0.2s ease,
-    opacity 0.2s ease;
+// Reserved breathing room above the "Roll your hand" button (Design QA audit, finding 10) — a
+// dice-cup graphic used to render here, but it read as a second, competing roll affordance ahead
+// of the real button (tapping the cup and tapping the button did the same thing). Removed in
+// favor of plain empty space: `roll()` is unchanged, only triggerable via the button/shake, and
+// the composition keeps the same vertical rhythm the cup used to give it. Same 236px the cup was
+// fixed at everywhere except the narrowest supported width, where it tightens modestly rather than
+// staying a fixed block that eats into the button/hint's own room.
+.mobile-roll-stage {
+  width: 236px;
+  height: 236px;
 
-  &--sharp {
-    filter: none;
-    opacity: 1;
+  @media (max-width: 359px) {
+    height: 180px;
   }
 }
 
@@ -387,6 +351,25 @@ $table-photo-overlay: linear-gradient(
   color: var(--color-cream-muted);
 }
 
+.mobile-reveal__verdict {
+  margin: 0.75rem 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border-onboard-strong);
+  border-radius: var(--radius-tile);
+}
+
+.mobile-reveal__verdict--true {
+  border-color: var(--color-sage);
+  background: var(--color-fill-onboard-strong);
+  color: var(--color-sage-soft);
+}
+
+.mobile-reveal__verdict--false {
+  border-color: var(--color-ember);
+  background: var(--color-fill-onboard-strong);
+  color: var(--color-ember-soft);
+}
+
 .mobile-reveal__name {
   color: var(--color-cream-muted);
   font-weight: 600;
@@ -428,24 +411,4 @@ $table-photo-overlay: linear-gradient(
 .table-rail__summary {
   @include mixins.onboard-panel;
   color: var(--color-cream-muted);
-}
-
-// Bid history is a secondary ledger/debug section (design-kit "Label 11 uppercase — column
-// headers" scale) — quieter border, no fill, smaller and more muted text than every other panel
-// on the table, so it reads as reference material rather than something needing attention.
-.table__bid-history {
-  border-radius: var(--radius-tile);
-  border: 1px solid var(--color-border-onboard);
-}
-
-.table__bid-history-title {
-  color: var(--color-cream-faint);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.table__bid-history-list {
-  color: var(--color-cream-faint);
-  font-size: 12px;
 }

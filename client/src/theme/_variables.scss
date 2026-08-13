@@ -12,8 +12,8 @@ $owner-cup-size: clamp(190px, 46vw, 260px);
 
 // DesktopGameBoard's centered phone silhouette (game-board-desktop.scss) — the canonical mobile
 // board's own max width there. Also consumed by every inline `<ion-modal>` the mobile board opens
-// (table.scss's Ledger, round-loss-modal.scss): Ionic always portals a presented modal to the
-// document root, not to wherever it's written in the template (documented Ionic behavior, done to
+// (round-loss-modal.scss): Ionic always portals a presented modal to the document root, not to
+// wherever it's written in the template (documented Ionic behavior, done to
 // escape clipping ancestors) — so a CSS "confine it to this box" trick on an ancestor can't reach
 // it. Matching the modal's own `--width` to this value instead sidesteps that: on a real phone
 // (viewport already ≤ this width) it's a no-op full-width sheet exactly as before; on desktop it

@@ -5,6 +5,47 @@
 // particular repeats across the table, opening-roll panel, bid picker, bid suggestions and the
 // waiting-for-bid message.
 
+@use 'theme/variables' as vars;
+
+/// Full-viewport centering stage for a screen that gets the phone-frame treatment below the
+/// desktop breakpoint — the same 768px threshold GameBoard already switches its own mobile/desktop
+/// components at (features/game-board/game-board.ts's DESKTOP_BOARD_QUERY), kept as one plain
+/// number here rather than importing a component constant into Sass. $background is the color that
+/// shows in the surround once the frame is narrower than the viewport.
+@mixin phone-frame-stage($background) {
+  display: flex;
+  justify-content: center;
+  min-height: 100%;
+  background: $background;
+}
+
+/// The phone-sized column itself (design direction: "centered 430px phone frame on desktop") —
+/// mirrors features/game-board-desktop/game-board-desktop.scss's `.desktop-board-stage__phone`
+/// chrome (a uniform 1px hairline + a narrow, low-opacity shadow, no radius) so every screen in
+/// the app, not just the table, confines to one consistent silhouette above 768px instead of
+/// stretching into a broad desktop layout. Below 768px this is a no-op: full width, no border, no
+/// shadow — pixel-identical to the edge-to-edge mobile layout that predates this mixin. $border
+/// lets a light (off-table) screen use the off-table hairline token instead of the on-table one a
+/// dark screen needs to stay visible.
+///
+/// The shadow value is deliberately copied from game-board-desktop's own, NOT the generic
+/// `--shadow-overlay` token (0 24px 54px, 52% opacity) this mixin originally used: that wide, dark
+/// glow was already found and fixed once, specifically for the desktop board's own phone frame
+/// (ISSUES.md, "Four visual bugs in the mobile board when displayed inside DesktopGameBoard" —
+/// against an equally-dark stage background it reads as a diffuse funnel, not a clean edge). This
+/// mixin re-introduced that exact bug for every OTHER screen using it (confirmed live on Entry at
+/// 1440×900: `box-shadow: rgba(0,0,0,.5) 0 24px 54px`, a uniform border only on left/right instead
+/// of all four sides). Fixing it here, once, fixes every consumer instead of overriding each one.
+@mixin phone-frame-shell($border: var(--color-border-onboard)) {
+  width: min(100%, #{vars.$phone-frame-width});
+  min-height: 100%;
+
+  @media (min-width: 768px) {
+    border: 1px solid $border;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  }
+}
+
 /// A quiet panel resting directly on the dark table surface (design-kit "on the table" ramp).
 @mixin onboard-panel {
   border-radius: var(--radius-panel);
@@ -105,4 +146,72 @@
 @mixin clamp-square($min, $preferred, $max) {
   width: clamp(#{$min}, #{$preferred}, #{$max});
   height: clamp(#{$min}, #{$preferred}, #{$max});
+}
+
+/// The app's one "primary action" button shape — Entry's Open a table/Join table and Lobby's I'm
+/// ready/Cancel ready all share this exact silhouette (Design QA audit, Step 6): a full pill,
+/// heading-font sentence-case label, a flat shape-following bottom-edge depth (traces the pill
+/// radius exactly, unlike a blurred elevation shadow) plus a restrained ambient glow for the solid
+/// fill, and hover/pressed/focus-visible states that only ever touch the depth and background, not
+/// the shape itself. `--border-radius` and `--box-shadow` are genuine Ionic-exposed custom
+/// properties that reach `.button-native` inside ion-button's shadow root directly (confirmed
+/// live) — no `::part()`/`::ng-deep` needed here, unlike properties Ionic doesn't expose as vars
+/// (e.g. height on table.scss's `.mobile-hand-roll-btn`, which genuinely does need `::part(native)`).
+///
+/// Only the outline (secondary/quiet) fill's colors are consumer-supplied: Entry sits on the dark
+/// on-table surface (a cream outline reads as quiet there) while Lobby's ready button sits on the
+/// light off-table card (the same cream tone would nearly vanish, so it needs the off-table
+/// hairline/ink tokens instead) — every other property in the outline variant is identical, so
+/// only the three colors that differ take arguments.
+@mixin pill-action-button($outline-border, $outline-color, $outline-hover-bg) {
+  height: 56px;
+  font-family: var(--font-heading);
+  font-size: 1.0625rem;
+  text-transform: none;
+  --border-radius: var(--radius-pill);
+  --box-shadow: 0 3px 0 var(--color-brass-deep), var(--shadow-button);
+  transition: transform 0.12s ease;
+
+  &:hover:not([disabled]) {
+    --background: var(--color-terracotta-shade);
+  }
+
+  // Compresses toward its own shadow rather than just moving — the offset shrinks from 3px to 1px
+  // in step with the 2px translate, so the button reads as sinking into the depth it already had,
+  // not sliding independently of it.
+  &:active:not([disabled]) {
+    transform: translateY(2px);
+    --box-shadow: 0 1px 0 var(--color-brass-deep);
+  }
+
+  &:focus-visible {
+    --box-shadow:
+      0 0 0 3px var(--color-focus),
+      0 3px 0 var(--color-brass-deep),
+      var(--shadow-button);
+  }
+
+  // Disabled removes the depth/ambient shadow entirely (nothing to "sink" or glow) — Ionic's own
+  // default opacity(.5) on [disabled] already dims background+text together, kept as-is.
+  &[disabled] {
+    --box-shadow: none;
+  }
+
+  &[fill='outline'] {
+    --border-color: #{$outline-border};
+    --color: #{$outline-color};
+    --box-shadow: none;
+
+    &:hover:not([disabled]) {
+      --background: #{$outline-hover-bg};
+    }
+
+    &:active:not([disabled]) {
+      transform: translateY(1px);
+    }
+
+    &:focus-visible {
+      --box-shadow: 0 0 0 3px var(--color-focus);
+    }
+  }
 }

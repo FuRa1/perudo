@@ -102,8 +102,8 @@ describe('Table', () => {
     });
   });
 
-  describe('bid history nicknames (1.)', () => {
-    it("shows 'You' for the local player and the opponent's nickname, never a raw player id", () => {
+  describe('bid nicknames (1.)', () => {
+    it("shows 'You' for the local player in the current-wager caption, never a raw player id", () => {
       const state = biddingState({
         round: {
           roundNumber: 1,
@@ -115,12 +115,13 @@ describe('Table', () => {
         },
       });
       const { nativeElement } = render('p1', state);
-      const text = nativeElement.textContent ?? '';
-      expect(text).toContain('You:');
-      expect(text).not.toContain('p1:');
+      const caption =
+        nativeElement.querySelector('.mobile-wager-token__caption')?.textContent ?? '';
+      expect(caption).toContain('You');
+      expect(caption).not.toContain('p1');
     });
 
-    it("shows the opponent's nickname (not their id) from the other player's perspective", () => {
+    it("shows the opponent's nickname (not their id) in the current-wager caption from the other player's perspective", () => {
       const state = biddingState({
         round: {
           roundNumber: 1,
@@ -132,9 +133,10 @@ describe('Table', () => {
         },
       });
       const { nativeElement } = render('p2', state);
-      const text = nativeElement.textContent ?? '';
-      expect(text).toContain('Alice:');
-      expect(text).not.toContain('p1:');
+      const caption =
+        nativeElement.querySelector('.mobile-wager-token__caption')?.textContent ?? '';
+      expect(caption).toContain('Alice');
+      expect(caption).not.toContain('p1');
     });
 
     it('falls back to a safe label for a bid from a player no longer in the roster', () => {
@@ -149,7 +151,9 @@ describe('Table', () => {
         },
       });
       const { nativeElement } = render('p1', state);
-      expect(nativeElement.textContent ?? '').toContain('Unknown player:');
+      const caption =
+        nativeElement.querySelector('.mobile-wager-token__caption')?.textContent ?? '';
+      expect(caption).toContain('Unknown player');
     });
   });
 
@@ -260,12 +264,111 @@ describe('Table', () => {
       const token = nativeElement.querySelector('.mobile-wager-token');
       expect(token).not.toBeNull();
       expect(token?.querySelector('app-bid-marker')).not.toBeNull();
-      expect(token?.textContent ?? '').toContain("Alice's wager stands");
+      // p2 is next to act (currentTurnIndex 1), so the reference's "— your turn" suffix applies
+      // (mobile-lantern.dc.html: "Anne's bid — your turn").
+      expect(token?.textContent ?? '').toContain("Alice's bid — your turn");
     });
 
     it('is absent before any bid has been placed this round', () => {
       const { nativeElement } = render('p1', biddingState());
       expect(nativeElement.querySelector('.mobile-wager-token')).toBeNull();
+    });
+
+    it('omits "— your turn" for a viewer who is not next to act', () => {
+      // Same bid/turn shape as above, but rendered as p1 — the bidder themself, and NOT next to
+      // act (p2 is) — so the possessive form applies with no turn suffix (mobile-lantern.dc.html
+      // only shows the suffix from the perspective of whoever is actually next to act).
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 1,
+          bidHistory: [{ playerId: 'p1', bid: { kind: 'NORMAL', quantity: 4, face: 5 } }],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p1', state);
+      const caption =
+        nativeElement.querySelector('.mobile-wager-token__caption')?.textContent ?? '';
+      expect(caption).toBe('Your bid');
+      expect(caption).not.toContain('your turn');
+    });
+  });
+
+  describe('no bid-history UI on the mobile board', () => {
+    it('renders no Ledger chip, ledger modal, or bid-history list, while the current wager stays visible', () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 1,
+          bidHistory: [{ playerId: 'p1', bid: { kind: 'NORMAL', quantity: 4, face: 5 } }],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p2', state);
+      const text = nativeElement.textContent ?? '';
+
+      expect(text).not.toContain('Ledger');
+      expect(nativeElement.querySelector('.table-mobile-header__chip--ledger')).toBeNull();
+      expect(nativeElement.querySelector('ion-modal.table-ledger-modal')).toBeNull();
+      expect(nativeElement.querySelector('.table-ledger')).toBeNull();
+      expect(nativeElement.querySelector('.table__bid-history')).toBeNull();
+      expect(text).not.toContain('Bid history');
+
+      // History removal is presentation-only: the current wager token must still render.
+      expect(nativeElement.querySelector('.mobile-wager-token')).not.toBeNull();
+      expect(nativeElement.querySelector('app-bid-marker')).not.toBeNull();
+    });
+  });
+
+  describe('reveal verdict copy (5.3)', () => {
+    it('labels an exact count as a true bid and explains why the liar caller loses', () => {
+      const { fixture, nativeElement } = render('p1', biddingState());
+      const store = TestBed.inject(GameStore);
+      store.lastReveal.set(
+        reveal({
+          claimedBid: { kind: 'NORMAL', quantity: 4, face: 6 },
+          actualQuantity: 4,
+          outcome: 'CALLER_LOSES',
+          loserId: 'p2',
+        }),
+      );
+      fixture.detectChanges();
+
+      const text = nativeElement.textContent ?? '';
+      expect(text).toContain('Truth revealed');
+      expect(text).toContain('Bid true');
+      expect(text).toContain('An exact match is still true');
+      expect(text).toContain('Bob called liar — the bid was true, so they lose a die.');
+      expect(nativeElement.querySelector('.mobile-reveal__verdict--true')).not.toBeNull();
+      expect(
+        fixture.componentInstance['revealOutcomeText'](
+          reveal({ outcome: 'CALLER_LOSES', loserId: 'p1' }),
+        ),
+      ).toBe('You called liar — the bid was true, so you lose a die.');
+    });
+
+    it('labels a short count as a false bid and assigns the bidder as loser', () => {
+      const { fixture, nativeElement } = render('p1', biddingState());
+      const store = TestBed.inject(GameStore);
+      store.lastReveal.set(
+        reveal({
+          actualQuantity: 2,
+          outcome: 'BIDDER_LOSES',
+          bidderId: 'p2',
+          loserId: 'p2',
+        }),
+      );
+      fixture.detectChanges();
+
+      const text = nativeElement.textContent ?? '';
+      expect(text).toContain('Bid false');
+      expect(text).toContain('The actual count was below the claim.');
+      expect(text).toContain("Bob's bid was false — they lose a die.");
+      expect(nativeElement.querySelector('.mobile-reveal__verdict--false')).not.toBeNull();
     });
   });
 
@@ -299,22 +402,6 @@ describe('Table', () => {
       const summary = nativeElement.querySelector('.table-rail__summary');
       expect(summary?.textContent ?? '').toContain('Alice claimed');
       expect(summary?.textContent ?? '').toContain('4 × face 5');
-    });
-
-    it('keeps the bid-history ledger inside the rail column alongside the controls', () => {
-      const state = biddingState({
-        round: {
-          roundNumber: 1,
-          turnOrder: ['p1', 'p2'],
-          currentTurnIndex: 1,
-          bidHistory: [{ playerId: 'p1', bid: { kind: 'NORMAL', quantity: 4, face: 5 } }],
-          isSpecialRoundDeclared: false,
-          pendingRolls: [],
-        },
-      });
-      const { nativeElement } = render('p1', state);
-      const rail = nativeElement.querySelector('.table-layout__rail');
-      expect(rail?.querySelector('.table__bid-history')).not.toBeNull();
     });
 
     it('does not render the rail summary or bid-controls outside the BIDDING phase', () => {
@@ -357,6 +444,61 @@ describe('Table', () => {
       const bobCard = seatCards.find((c) => (c.textContent ?? '').includes('Bob'));
       expect(bobCard?.textContent ?? '').toContain('Bidding');
       expect(aliceCard?.textContent ?? '').not.toContain('Bidding');
+    });
+  });
+
+  describe('mobile hand-roll state has no competing dice-cup affordance (Design QA audit, finding 10)', () => {
+    it('renders the roll button and a reserved, non-interactive spacer instead of a dice cup', () => {
+      const { nativeElement } = render('p1', roundRollingState());
+      // Scoped to the mobile-only zone specifically: the desktop seat card for "me" (a separate,
+      // CSS-hidden-on-mobile block in the same template) legitimately still renders its own
+      // app-dice-cup regardless of phase — that one is untouched by this fix.
+      const mobileZone = nativeElement.querySelector('.mobile-hand-zone');
+      expect(mobileZone?.querySelector('app-dice-cup')).toBeNull();
+      const spacer = mobileZone?.querySelector('.mobile-roll-stage');
+      expect(spacer).not.toBeNull();
+      expect(spacer?.getAttribute('aria-hidden')).toBe('true');
+      expect(spacer?.matches('button, a, [tabindex]')).toBe(false);
+      expect(nativeElement.querySelector('.mobile-hand-roll-btn')).not.toBeNull();
+      expect(nativeElement.textContent ?? '').toContain(
+        'Shake to roll, or use the button. Five dice, yours alone until reveal.',
+      );
+    });
+  });
+
+  describe('private hand strip stays sharp regardless of turn (Design QA audit, finding 9)', () => {
+    it("renders the local hand strip with no sharp/blur modifier class on the local player's own turn", () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 0,
+          bidHistory: [],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p1', state);
+      const strip = nativeElement.querySelector('.mobile-hand-strip');
+      expect(strip).not.toBeNull();
+      expect(strip?.className ?? '').not.toContain('sharp');
+    });
+
+    it("renders the local hand strip with no sharp/blur modifier class off the local player's own turn", () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 0,
+          bidHistory: [],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p2', state);
+      const strip = nativeElement.querySelector('.mobile-hand-strip');
+      expect(strip).not.toBeNull();
+      expect(strip?.className ?? '').not.toContain('sharp');
     });
   });
 
@@ -421,7 +563,7 @@ describe('Table', () => {
       expect(text).toContain('You'); // p1 is the local player here
       expect(text).toContain('Bob');
       expect(panel?.querySelectorAll('app-die').length).toBe(10);
-      expect(text).toContain('wager was false');
+      expect(text).toContain('bid was false');
     });
 
     it('is absent when there has been no reveal yet', () => {

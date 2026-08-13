@@ -3,8 +3,19 @@
 // See features/table/table.scss's :host comment — no :host rule defaults a custom element to
 // `display: inline`, which is very likely why suggestion pills in the horizontally scrollable
 // `.bid-controls__suggestions` row have been unreliable to click in automated testing.
+//
+// `flex-shrink: 0` here matters beyond that: this host element (not the inner .bid-suggestion
+// button) is the actual flex item inside the row's `flex flex-nowrap`. Without it, the default
+// `flex-shrink: 1` lets the flexbox algorithm squeeze this item narrower than its label's natural
+// width once the row itself is capped (bid-controls.scss's `max-width: 100%` on the mobile
+// suggestions row) — and because `white-space` is `normal` by default, that squeeze wraps the
+// label across 2-3 lines instead of the row simply scrolling further, growing the pill taller
+// than its siblings and clipping the last pill mid-word at the scroll boundary (confirmed at both
+// 320px and 390px). Keeping this item at its full natural width and letting the row's own
+// `overflow-x: auto` do the work instead is what "compact hints, internal scroll only" requires.
 :host {
   display: block;
+  flex-shrink: 0;
 }
 
 .bid-suggestion {
@@ -13,6 +24,7 @@
   border: 1px solid var(--color-border-onboard);
   background: var(--color-fill-onboard);
   color: var(--color-cream);
+  white-space: nowrap;
   transition:
     border-color 0.15s ease,
     background-color 0.15s ease,

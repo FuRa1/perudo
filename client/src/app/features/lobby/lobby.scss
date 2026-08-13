@@ -6,72 +6,187 @@
   display: block;
 }
 
-// Same "off the table" light ramp as Entry (design-kit) — kept in each screen's own file since
-// neither shares a parent shell, not because the language differs. The radial gradient stays the
-// backmost layer even with the header band photo on top (preserve-as-fallback, same reasoning as
-// features/table/table.scss's $table-fallback-layers) — a failed/slow image load still leaves a
-// complete, on-brand surface.
-.lobby-surface {
-  min-height: 100%;
-  background-image:
-    linear-gradient(180deg, rgba(20, 14, 8, 0.55) 0%, rgba(20, 14, 8, 0) 55%),
-    url('/assets/bg/lobby-header-band-2880x260.png'),
-    radial-gradient(60% 50% at 50% 0%, var(--color-surface-alt), var(--color-page) 70%);
-  background-repeat: no-repeat, no-repeat, no-repeat;
-  // The band is a thin wide strip (2880×260) — full width, natural (short) height, anchored to
-  // the very top; the radial gradient underneath still sizes to `cover` so it fills the rest of
-  // the screen exactly as it did before this band existed.
-  background-position: top center, top center, top center;
-  background-size: 100% auto, 100% auto, cover;
+// The waiting room is now one continuous dark lantern-lit surface (design reference §2a: "one
+// room, not two screens") instead of the old dark-header-band-over-a-light-card split — the same
+// treatment Entry already uses for the same reason (entry.scss's $entry-fallback-layers), kept as
+// its own local copy rather than a shared mixin: this step's scope is Lobby only, and duplicating
+// one small gradient list is cheaper than widening the diff to touch Entry/mixins.scss for it.
+$lobby-fallback-layers:
+  repeating-linear-gradient(96deg, rgba(255, 235, 200, 0.03) 0 2px, transparent 2px 7px),
+  radial-gradient(
+    100% 46% at 50% 8%,
+    var(--color-table-center) 0%,
+    var(--color-table-mid) 46%,
+    var(--color-table-edge) 100%
+  );
+
+ion-content {
+  --padding-start: env(safe-area-inset-left);
+  --padding-end: env(safe-area-inset-right);
+  --padding-top: env(safe-area-inset-top);
+  --padding-bottom: env(safe-area-inset-bottom);
+  --background: var(--color-table-edge);
+  --color: var(--color-cream);
 }
 
-.lobby-card {
-  border-radius: var(--radius-card);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-lift);
+.lobby-stage {
+  @include mixins.phone-frame-stage(var(--color-table-edge));
+}
+
+.lobby-frame {
+  @include mixins.phone-frame-shell;
+}
+
+.lobby-scroll {
+  min-height: 100%;
+  background-image: $lobby-fallback-layers;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.lobby__topbar {
+  color: var(--color-cream);
+}
+
+.lobby__brand-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-brass);
+}
+
+// A quiet, deliberately inert label (Claude prompt's own instruction: never ship a fake button
+// that claims to change rules) — no click handler, no href, just the affordance's shape.
+.lobby__house-rules {
+  padding: 0.4rem 0.7rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-onboard-strong);
+  color: var(--color-cream-muted);
+  font-weight: 600;
 }
 
 .lobby__title {
-  color: var(--color-ink);
-}
-
-.lobby__room-code {
-  border-radius: var(--radius-tile);
-  background: var(--color-surface-alt);
-  color: var(--color-ink-muted);
-
-  strong {
-    color: var(--color-ink);
-  }
+  color: var(--color-ivory);
 }
 
 .lobby__hint {
-  color: var(--color-meta);
+  color: var(--color-cream-muted);
 }
 
-// Handles 2-12 players without an unreadable single column or page overflow: as many columns as
-// fit at a legible minimum width, wrapping to more rows rather than shrinking cards below it.
-// auto-fit (not auto-fill) is the deliberate choice here: auto-fill reserves a track for every
-// column that *could* fit even when no player occupies it, so with only 2-3 players the real
-// cards stayed pinned at the ~200px floor with dead grid tracks to their right — auto-fit
-// collapses those empty tracks and lets the 1fr growth go entirely to the real cards instead
-// (Design QA Task 6, finding 2). 220px (up from 200px) gives the nickname/"(you)"/badge row a
-// little more breathing room; at 12 players this still comfortably fits 5-6 columns.
+// The room-code hero card (design reference §2a) — same cream/brass "verdict surface" language as
+// the winner screen and round-loss modal (theme/_mixins.scss's outcome-card), reused here rather
+// than duplicated: this card is the other place in the app where something needs to read as
+// unambiguously important against the dark table.
+.lobby__code-card {
+  @include mixins.outcome-card('win');
+  padding: 1.1rem 1.25rem;
+}
+
+.lobby__code-label {
+  color: var(--color-brass-deep);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.lobby__code-value {
+  color: var(--color-ink);
+  font-size: clamp(1.75rem, 8vw, 2.25rem);
+  line-height: 1;
+  letter-spacing: 0.1em;
+}
+
+// Sized to sit inline with the 44px Copy icon button beside it, not the app's full 56px primary
+// action height (theme/_mixins.scss's pill-action-button) — this button lives inside the hero
+// card's own compact row, not standing alone as the screen's one primary action.
+.lobby__code-share {
+  height: 44px;
+  flex: 1;
+  margin: 0;
+  --border-radius: var(--radius-pill);
+  --box-shadow: 0 3px 0 var(--color-brass-deep);
+  font-family: var(--font-heading);
+  font-size: 0.9375rem;
+  text-transform: none;
+
+  &::part(native) {
+    min-height: 44px;
+  }
+
+  &:hover {
+    --background: var(--color-terracotta-shade);
+  }
+}
+
+// Icon-only Copy control (was previously the whole "Room code: XXXXX" chip before the code moved
+// into its own large display above — see lobby.ts's copyRoomCode doc comment for why this stays a
+// real interactive <button>, not a styled div). 44px floor for the tap target.
+.lobby__room-code {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-brass-deep);
+  background: transparent;
+  color: var(--color-brass-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  cursor: pointer;
+  appearance: none;
+  padding: 0;
+  transition: background-color 0.15s ease;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: rgba(140, 73, 26, 0.1);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-focus);
+  }
+}
+
+// Sits on the light cream hero card, so failure uses the light-surface danger token
+// (--color-danger) rather than the dark-surface --color-ember-soft the rest of the app uses —
+// text alone already carries success vs. failure ("Copied" vs. "Couldn't copy..."), this is
+// reinforcement, matching the ready chip's own "never color alone" reasoning above.
+.lobby__copy-status,
+.lobby__share-status {
+  color: var(--color-brass-deep);
+  font-weight: 600;
+  min-height: 1em;
+
+  &--failure {
+    color: var(--color-danger);
+  }
+}
+
+.lobby__table-label {
+  color: var(--color-cream-faint);
+}
+
+.lobby__table-count {
+  color: var(--color-brass);
+  font-weight: 600;
+}
+
 .lobby__roster {
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
 .lobby__row {
-  border-radius: var(--radius-tile);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-alt);
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+  @include mixins.onboard-tile;
 
   // The local player's own row (design-kit "seated" entrant state) — a brass ring, the same
   // active/mine language the table already uses, so "this one is you" reads consistently
@@ -90,18 +205,102 @@
   border-radius: var(--radius-tile);
   background: linear-gradient(160deg, var(--color-identity-start), var(--color-identity-end));
   color: var(--color-ivory);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-border-onboard-strong);
 }
 
 .lobby__name {
-  color: var(--color-ink);
+  color: var(--color-cream);
 }
 
 .lobby__you-tag {
-  color: var(--color-brass-deep);
+  color: var(--color-brass);
   font-weight: 600;
 }
 
-.lobby__status {
-  color: var(--color-meta);
+// Text, not color alone (CLAUDE.md 4.5-adjacent non-negotiable rule) — the word "Host" itself is
+// the signal; the quiet border is reinforcement only, same restrained treatment the ready chip
+// below uses for its own not-ready state.
+.lobby__host-tag {
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid var(--color-border-onboard-strong);
+  color: var(--color-cream-faint);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+// A quiet outline for "not ready" and a positive sage fill for "ready" — the label text itself
+// ("Ready" / "Not ready") already carries the state, this pair is reinforcement, never the only
+// signal. On-table tones (not the off-table sage-soft/sage-deep pair the previous light-card
+// version used) so both states stay legible against the dark cabin background.
+.lobby__ready-chip {
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--color-border-onboard-strong);
+  color: var(--color-cream-faint);
+
+  &--ready {
+    border-color: transparent;
+    background: rgba(122, 138, 94, 0.22);
+    color: var(--color-sage);
+  }
+}
+
+// Dashed open-seat placeholder (design reference §2a) — turns remaining table capacity into
+// information instead of blank space below a small roster. Deliberately no avatar-initial content
+// and no per-player data (no fabricated "joined 2 minutes ago" style text for real rows either —
+// the shared Player model carries no timestamp to report truthfully).
+.lobby__seat--open {
+  border-radius: var(--radius-tile);
+  border: 1.5px dashed var(--color-border-onboard);
+  color: var(--color-cream-faint);
+}
+
+.lobby__seat--open-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-tile);
+  border: 1.5px dashed var(--color-border-onboard);
+}
+
+.lobby__all-ready {
+  border-radius: var(--radius-tile);
+  padding: 0.6rem 0.85rem;
+  margin-top: 0.75rem;
+
+  // Celebratory but restrained once everyone is ready — a soft brass-tinted panel rather than a
+  // banner, motion, or confetti (CLAUDE.md 10: "deep visual polish/complex animations" is out).
+  &--active {
+    background: rgba(214, 154, 82, 0.16);
+    color: var(--color-brass);
+    font-weight: 600;
+  }
+}
+
+// Sits on the same dark cabin surface as Entry's actions now (not the light "off-table" card the
+// previous version used), so it shares Entry's exact on-table outline colors — same silhouette
+// mixin (theme/_mixins.scss's pill-action-button) both screens' primary actions use.
+.lobby__ready-button {
+  @include mixins.pill-action-button(
+    var(--color-border-onboard-strong),
+    var(--color-cream),
+    var(--color-fill-onboard-hover)
+  );
+  min-height: 56px;
+  width: 100%;
+  margin: 0;
+
+  &::part(native) {
+    min-height: 56px;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-heading);
+    font-size: 1.0625rem;
+    line-height: 1;
+  }
+}
+
+.lobby__ready-caption {
+  color: var(--color-cream-faint);
 }
