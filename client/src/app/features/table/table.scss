@@ -246,9 +246,11 @@ $table-photo-overlay: linear-gradient(
 // designs/perudo-board-buildup.dc.html's one explicit callout: "Hand dice 52px, never below" —
 // it's the local player's own hand, the only thing on the mobile board that's unambiguously
 // theirs and never leaves the screen, so it gets the largest dice floor outside the hand-roll cup
-// itself. Fits at every supported width (checked down to 320px: 5 × 52px + 4 × 6px gaps = 284px,
-// against 296px of usable width once .table-surface's own p-3 gutters are subtracted) — no
-// horizontal scroll needed.
+// itself. The strip's own gap (table.html's `.mobile-hand-strip`) is 8px, matching the reference
+// (mobile-lantern.dc.html) rather than the 6px this used to be tightened to. Still fits at every
+// supported width with no horizontal scroll (checked live down to 320px: 5 × 52px + 4 × 8px gaps
+// = 292px, against 296px of usable width once .table-surface's own p-3 gutters are subtracted —
+// a tight but confirmed 4px to spare).
 .mobile-hand-strip__die {
   width: 52px;
   height: 52px;
@@ -288,9 +290,8 @@ $table-photo-overlay: linear-gradient(
 // Mobile bid sheet (Increment 4) — turn-specific bottom sheet, fixed to the viewport rather than
 // sitting in the rail's normal document flow (desktop keeps that flow unchanged; this only
 // applies below 768px). One <app-bid-controls> exists either way (table.html) — this repositions
-// it, it does not duplicate it. The claim line (mobile-bid-sheet-wrap__summary) and
-// <app-bid-controls> are both plain children of this ONE fixed box, not two independently
-// positioned elements — see table.html's own comment on why that matters (no dead gap, no drift).
+// it, it does not duplicate it. No separate claim-summary line lives in this fixed box (removed —
+// see table.html's own comment: it duplicated the standalone wager token above the dice).
 @media (min-width: 0) {
   .mobile-bid-sheet-wrap {
     position: fixed;
@@ -310,10 +311,6 @@ $table-photo-overlay: linear-gradient(
   .mobile-bid-sheet-wrap--waiting {
     border-radius: 0;
     box-shadow: none;
-  }
-
-  .mobile-bid-sheet-wrap__summary {
-    color: var(--color-cream-muted);
   }
 
   // The wrap is `position: fixed`, so it no longer reserves space in .table-surface's own flow —

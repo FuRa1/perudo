@@ -80,6 +80,10 @@ describe('BidControls', () => {
     const callLiar = buttons.find((b) => b.textContent?.includes('Call liar'));
     expect(placeBid?.getAttribute('color')).toBe('primary');
     expect(callLiar?.getAttribute('color')).toBe('danger');
+    // Call liar is outlined, not solid, and carries no icon (reference: mobile-lantern.dc.html /
+    // perudo-design-kit.dc.html §5 both show a plain text-only outlined button).
+    expect(callLiar?.getAttribute('fill')).toBe('outline');
+    expect(callLiar?.querySelector('svg')).toBeNull();
   });
 
   it('shows a neutral waiting status bar (who is acting, who answers next) instead of the picker for the inactive player', () => {

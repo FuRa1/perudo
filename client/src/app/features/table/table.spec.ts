@@ -294,6 +294,27 @@ describe('Table', () => {
       expect(caption).toBe('Your bid');
       expect(caption).not.toContain('your turn');
     });
+
+    it('does not repeat the claim inside the fixed mobile tray — the wager token above is the only claim description', () => {
+      const state = biddingState({
+        round: {
+          roundNumber: 1,
+          turnOrder: ['p1', 'p2'],
+          currentTurnIndex: 1,
+          bidHistory: [{ playerId: 'p1', bid: { kind: 'NORMAL', quantity: 4, face: 5 } }],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      // p2 is next to act, so the active picker (not the waiting bar) renders in the tray.
+      const { nativeElement } = render('p2', state);
+      expect(nativeElement.querySelector('.mobile-wager-token')).not.toBeNull();
+      const tray = nativeElement.querySelector('.mobile-bid-sheet-wrap');
+      expect(tray).not.toBeNull();
+      expect(tray?.textContent ?? '').not.toContain('claimed');
+      expect(tray?.textContent ?? '').not.toContain('Raise or call');
+      expect(tray?.querySelector('app-bid-picker')).not.toBeNull();
+    });
   });
 
   describe('no bid-history UI on the mobile board', () => {

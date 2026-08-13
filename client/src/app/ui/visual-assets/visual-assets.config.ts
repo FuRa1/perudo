@@ -63,8 +63,14 @@ export const VISUAL_ASSETS_CONFIG = {
    *  DICE_CUP_CSS_CLASS). */
   cupClosed: { imageUrl: '/assets/cups/cup-closed-side.png' },
 
-  /** graphics-spec decor/token-frame.png — the 9-slice cream-and-brass plate behind the wager
-   *  token. Fallback: the bid-marker's own bordered-chip class (ui/bid-marker/bid-marker.scss). */
+  /** graphics-spec decor/token-frame.png — a 9-slice cream-and-brass plate, listed here as a
+   *  future swap-in point but not currently consumed by `BidMarker` (ui/bid-marker/bid-marker.scss
+   *  uses only its own bordered-gradient chip). A prior version painted this asset directly as a
+   *  `background-image` at `background-size: contain` instead of a true 9-slice `border-image` —
+   *  since the asset itself is round and the chip is a wide, short pill, `contain` sizing painted
+   *  a visible circular ring/rivet texture the reference (mobile-lantern.dc.html,
+   *  perudo-design-kit.dc.html §4) doesn't have. Re-integrating this slot correctly would need a
+   *  real `border-image`/9-slice treatment, not a straight swap back to `background-image`. */
   bidMarkerFrame: { imageUrl: '/assets/decor/token-frame.png' },
 
   /** graphics-spec decor/badge-won.png. Fallback: the `outcome-badge('won')` mixin

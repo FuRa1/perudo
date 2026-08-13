@@ -211,7 +211,7 @@
                 Shake to roll, or use the button. Five dice, yours alone until reveal.
               </p>
             } @else if (myPlayer.dice.length > 0) {
-              <div class="mobile-hand-strip flex gap-1.5">
+              <div class="mobile-hand-strip flex gap-2">
                 @for (value of myPlayer.dice; track $index) {
                   <app-die [value]="value" class="mobile-hand-strip__die block" />
                 }
@@ -305,30 +305,17 @@
             }
           </div>
 
-          <!-- Mobile bid sheet (Increment 4, reworked): the claim line and the picker/actions
-               (or the waiting bar) are welded into ONE fixed-position column, not two separately
-               positioned pieces — the claim line used to sit in normal document flow above a
-               fixed-position tray, so its actual screen position (and the empty gap below it)
-               depended on how tall the arc/dice/reveal content above happened to be. Anchoring
-               both to the same fixed box means the claim line always sits exactly at the top of
-               the tray, immune to unrelated content changes anywhere else on the board. -->
+          <!-- Mobile bid sheet (Increment 4): a fixed-position column holding the picker/actions
+               (or the waiting bar). No claim-summary sentence here on the active turn — the
+               standalone wager token above the dice ("X's bid — your turn") already names the
+               bidder and the bid; repeating it inside the tray too ("X claimed N × face M. Raise
+               or call.") was a duplicate of the same claim, confirmed live against the reference
+               (mobile-lantern.dc.html), which shows only the one wager token, never two claim
+               descriptions on screen at once. -->
           <div
             class="mobile-bid-sheet-wrap flex flex-col"
             [class.mobile-bid-sheet-wrap--waiting]="!isMyBiddingTurn()"
           >
-            @if (isMyBiddingTurn()) {
-              <div class="table-rail__summary mobile-bid-sheet-wrap__summary p-3 text-sm">
-                @if (latestBidRecord(); as record) {
-                  <p>
-                    {{ nicknameFor(record.playerId) }} claimed {{ describeBid(record.bid) }}. Raise
-                    or call.
-                  </p>
-                } @else {
-                  <p>No bids yet this round — any face, any quantity.</p>
-                }
-              </div>
-            }
-
             <app-bid-controls class="block" />
           </div>
         }

@@ -9,20 +9,15 @@
 // The wager token (design-kit §4): "the only light object on the table — it always reads as the
 // current claim". A cream/brass gradient chip reads as unmistakably more important than the dark
 // on-table cards around it, satisfying "prominent, high-contrast" without inventing a new color.
-// decor/token-frame.png is a round brass-and-rivet plate, not a match for this chip's own wide,
-// short pill shape — `contain` lets it sit centered and intact behind the quantity/die content
-// rather than being cropped to fill the box, with the original parchment gradient still filling
-// the rest of the chip around it exactly as before (the literal CSS fallback, not just in theory:
-// it's the second, backmost background-image layer here, always painted).
+// decor/token-frame.png (a round brass-and-rivet plate) previously painted behind the quantity/die
+// content via `background-size: contain` — but that asset's shape is a circle, not a match for
+// this chip's own wide, short pill, so at `contain` sizing it painted a visible circular ring/rivet
+// texture the reference (mobile-lantern.dc.html, perudo-design-kit.dc.html §4) doesn't have —
+// confirmed live against both. Flat gradient only, matching the reference exactly.
 .bid-marker {
   border-radius: var(--radius-tile);
   border: 1.5px solid var(--color-brass);
-  background-image:
-    url('/assets/decor/token-frame.png'),
-    linear-gradient(180deg, var(--color-parchment), var(--color-parchment-dark));
-  background-repeat: no-repeat, no-repeat;
-  background-size: contain, cover;
-  background-position: center, center;
+  background: linear-gradient(180deg, var(--color-parchment), var(--color-parchment-dark));
   box-shadow: var(--shadow-float);
 }
 
