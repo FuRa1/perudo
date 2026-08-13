@@ -93,6 +93,22 @@ describe('BidSuggestion', () => {
     button.click();
 
     expect(emitted).toEqual([]);
-    expect(button.textContent).toContain('unavailable');
+    // Visible text is the compact "n/a" (5.8: the tray's hint row must fit without wrapping), but
+    // the accessible name still spells out "unavailable" in full — never lost, just not shown.
+    expect(button.textContent).toContain('n/a');
+    expect(button.getAttribute('aria-label')).toContain('unavailable');
+  });
+
+  it('shows a compact visible label while keeping the full label in the accessible name', () => {
+    const fixture = TestBed.createComponent(BidSuggestion);
+    fixture.componentRef.setInput('label', 'Switch to aces');
+    fixture.componentRef.setInput('shortLabel', 'Aces');
+    fixture.componentRef.setInput('bid', normalBid(2, 4));
+    fixture.detectChanges();
+
+    const button = getButton(fixture);
+    expect(button.textContent).toContain('Aces:');
+    expect(button.textContent).not.toContain('Switch to aces');
+    expect(button.getAttribute('aria-label')).toContain('Switch to aces');
   });
 });

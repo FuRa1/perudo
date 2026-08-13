@@ -19,6 +19,11 @@ import { bidToFaceValue } from '../bid-picker/bid-face.util';
 })
 export class BidMarker {
   readonly bid = input.required<Bid>();
+  /** 'default' fits inline next to a seat card's own nickname/cup/badges (SeatCard, the round-loss
+   * verdict card); 'prominent' matches the reference's standalone mat token (mobile-lantern.dc.html:
+   * a 50px die), used only where the marker itself is the focal point of the screen — the mobile
+   * wager token, not embedded in any other card. */
+  readonly size = input<'default' | 'prominent'>('default');
 
   protected readonly faceValue = computed(() => bidToFaceValue(this.bid()));
 }

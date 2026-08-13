@@ -94,7 +94,14 @@
   }
 
   .bid-controls__liar-btn {
+    // No fixed width: "Call liar" plus its hand icon in the heading font's wide/bold face needed
+    // more than the 126px this used to be pinned to, wrapping the label across two lines instead
+    // of clipping or overflowing. Sizing to its own content (flex: none, explicit padding so it
+    // isn't at the mercy of Ionic's own default) is what actually guarantees a single line,
+    // regardless of exactly how wide the heading font renders that particular label.
     flex: none;
-    width: 126px;
+    white-space: nowrap;
+    --padding-start: 20px;
+    --padding-end: 20px;
   }
 }

@@ -9,11 +9,11 @@
   "
   (click)="onClick()"
 >
-  <span>{{ label() }}:</span>
+  <span>{{ displayLabel() }}:</span>
   @if (bid(); as b) {
     <span class="tabular-nums">{{ b.quantity }} ×</span>
     <span [style.width.px]="dieSizePx"><app-die [value]="diceValueOf(b)" /></span>
   } @else {
-    <span class="italic">unavailable</span>
+    <span class="italic">n/a</span>
   }
 </button>

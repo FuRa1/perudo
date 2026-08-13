@@ -288,9 +288,11 @@ $table-photo-overlay: linear-gradient(
 // Mobile bid sheet (Increment 4) — turn-specific bottom sheet, fixed to the viewport rather than
 // sitting in the rail's normal document flow (desktop keeps that flow unchanged; this only
 // applies below 768px). One <app-bid-controls> exists either way (table.html) — this repositions
-// that same instance, it does not duplicate it.
+// it, it does not duplicate it. The claim line (mobile-bid-sheet-wrap__summary) and
+// <app-bid-controls> are both plain children of this ONE fixed box, not two independently
+// positioned elements — see table.html's own comment on why that matters (no dead gap, no drift).
 @media (min-width: 0) {
-  .mobile-bid-sheet {
+  .mobile-bid-sheet-wrap {
     position: fixed;
     left: 0;
     right: 0;
@@ -305,22 +307,24 @@ $table-photo-overlay: linear-gradient(
 
   // The compact "waiting" bar (bid-controls' own single status line, no picker/suggestions) —
   // flatter chrome than the full sheet, since it's meant to read as a status bar, not a sheet.
-  .mobile-bid-sheet--waiting {
+  .mobile-bid-sheet-wrap--waiting {
     border-radius: 0;
     box-shadow: none;
-    padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
   }
 
-  .mobile-bid-sheet__summary {
+  .mobile-bid-sheet-wrap__summary {
     color: var(--color-cream-muted);
   }
 
-  // The sheet/bar is `position: fixed`, so it no longer reserves space in .table-surface's own
-  // flow — without this, its taller (full-sheet) state can cover the last of the scrollable
-  // content behind it. Sized to the larger of the two states (the sheet, not the compact bar);
-  // the bar's own leftover slack reads as a bit of breathing room, not a layout bug.
+  // The wrap is `position: fixed`, so it no longer reserves space in .table-surface's own flow —
+  // without this, its taller (full-sheet) state can cover the last of the scrollable content
+  // behind it. Sized to the larger of the two states (the sheet, not the compact bar); the bar's
+  // own leftover slack reads as a bit of breathing room, not a layout bug. 420px (measured live:
+  // the full sheet — claim line + picker + hints + actions — renders at ~379px at 390-440px
+  // widths) rather than the sheet's exact height, since the claim line can wrap to a second line
+  // for a longer bid description ("X claimed N × face M. Raise or call.") on a narrow screen.
   .table-surface--bid-sheet-open {
-    padding-bottom: 320px;
+    padding-bottom: 420px;
   }
 }
 
@@ -401,6 +405,28 @@ $table-photo-overlay: linear-gradient(
 // rules stay in source as reference material for a future dedicated DesktopGameBoard.
 .table-surface {
   @include table-photo('/assets/bg/table-mobile-1170x2532.png');
+}
+
+// Fills .table-surface's own available height instead of sizing to intrinsic content only, then
+// pushes .table-layout__main's own content (arc/wager/dice) to the bottom of that space — only
+// while the fixed bid tray (.table-surface--bid-sheet-open, BIDDING only) is actually on screen:
+// that tray is what creates the visual disconnect in the first place (its own `position: fixed`
+// removes it from flow, so on a real device viewport taller than the design reference's fixed
+// 844px mock, the leftover height between the mat content and the tray reads as a dead gap).
+// Opening-roll and hand-rolling have no such tray, so their content stays top-anchored exactly as
+// before — scoping this to the open-tray state only is what keeps that unaffected.
+// `minmax(auto, 1fr)` (not bare `1fr`) keeps this a pure "close the gap when there IS one" effect:
+// content taller than the available space (a crowded reveal panel, the 9-12 player stress arc)
+// still gets its full natural height and stays scrollable, never clipped.
+.table-surface--bid-sheet-open {
+  .table-layout {
+    flex: 1;
+    grid-template-rows: minmax(auto, 1fr) auto;
+  }
+
+  .table-layout__main {
+    justify-content: flex-end;
+  }
 }
 
 .table-layout__rail {

@@ -103,7 +103,7 @@
             class="mobile-wager-token flex flex-col items-center gap-1"
             [class.mobile-wager-token--compact]="isArcStressCase()"
           >
-            <app-bid-marker [bid]="record.bid" />
+            <app-bid-marker [bid]="record.bid" size="prominent" />
             <span class="mobile-wager-token__caption text-xs">{{
               wagerCaptionFor(record.playerId)
             }}</span>
@@ -305,26 +305,32 @@
             }
           </div>
 
-          <!-- Mobile-only claim line above the sheet, shown only on my own turn — otherwise the
-               waiting state is exactly bid-controls' own single status line (Increment 4), never
-               this line duplicating it. -->
-          @if (isMyBiddingTurn()) {
-            <div class="table-rail__summary mobile-bid-sheet__summary p-3 text-sm">
-              @if (latestBidRecord(); as record) {
-                <p>
-                  {{ nicknameFor(record.playerId) }} claimed {{ describeBid(record.bid) }}. Raise or
-                  call.
-                </p>
-              } @else {
-                <p>No bids yet this round — any face, any quantity.</p>
-              }
-            </div>
-          }
+          <!-- Mobile bid sheet (Increment 4, reworked): the claim line and the picker/actions
+               (or the waiting bar) are welded into ONE fixed-position column, not two separately
+               positioned pieces — the claim line used to sit in normal document flow above a
+               fixed-position tray, so its actual screen position (and the empty gap below it)
+               depended on how tall the arc/dice/reveal content above happened to be. Anchoring
+               both to the same fixed box means the claim line always sits exactly at the top of
+               the tray, immune to unrelated content changes anywhere else on the board. -->
+          <div
+            class="mobile-bid-sheet-wrap flex flex-col"
+            [class.mobile-bid-sheet-wrap--waiting]="!isMyBiddingTurn()"
+          >
+            @if (isMyBiddingTurn()) {
+              <div class="table-rail__summary mobile-bid-sheet-wrap__summary p-3 text-sm">
+                @if (latestBidRecord(); as record) {
+                  <p>
+                    {{ nicknameFor(record.playerId) }} claimed {{ describeBid(record.bid) }}. Raise
+                    or call.
+                  </p>
+                } @else {
+                  <p>No bids yet this round — any face, any quantity.</p>
+                }
+              </div>
+            }
 
-          <app-bid-controls
-            class="mobile-bid-sheet block"
-            [class.mobile-bid-sheet--waiting]="!isMyBiddingTurn()"
-          />
+            <app-bid-controls class="block" />
+          </div>
         }
       </div>
     </div>

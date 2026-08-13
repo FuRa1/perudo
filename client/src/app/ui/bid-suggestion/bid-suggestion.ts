@@ -21,11 +21,17 @@ export class BidSuggestion {
   protected readonly dieSizePx = DIE_SIZE_PX.suggestion;
 
   readonly label = input.required<string>();
+  /** Compact visible text (e.g. "Min" for "Minimum") — the accessible name (aria-label) always
+   * uses the full `label` regardless, so shortening this never loses information for a screen
+   * reader, only for the on-screen pill (5.8: the three hint pills must fit without wrapping or
+   * clipping mid-word in the mobile tray's horizontally scrollable row). Falls back to `label`. */
+  readonly shortLabel = input<string | undefined>(undefined);
   readonly bid = input<Bid | null>(null);
   readonly disabled = input(false);
 
   readonly bidSelected = output<Bid>();
 
+  protected readonly displayLabel = computed(() => this.shortLabel() ?? this.label());
   protected readonly isUnavailable = computed(() => this.disabled() || !this.bid());
   protected readonly diceValueOf = bidToFaceValue;
 

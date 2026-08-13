@@ -67,7 +67,8 @@ describe('BidControls', () => {
     const { text } = render('p1', biddingState());
     expect(text).toContain('Place bid');
     expect(text).toContain('Call liar');
-    expect(text).toContain('Minimum');
+    // "Min" is the compact visible label (5.8) — the full "Minimum" only lives in the aria-label.
+    expect(text).toContain('Min');
     expect(text).not.toContain('Waiting for');
   });
 
@@ -87,7 +88,7 @@ describe('BidControls', () => {
     expect(text).toContain('Bob answers next');
     expect(text).not.toContain('Place bid');
     expect(text).not.toContain('Call liar');
-    expect(text).not.toContain('Minimum');
+    expect(text).not.toContain('Min:');
     expect(text).not.toContain('Not a legal raise');
   });
 

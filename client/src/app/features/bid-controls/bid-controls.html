@@ -17,16 +17,19 @@
     >
       <app-bid-suggestion
         label="Minimum"
+        shortLabel="Min"
         [bid]="minimumSuggestion()"
         (bidSelected)="applySuggestion($event)"
       />
       <app-bid-suggestion
         label="Switch to aces"
+        shortLabel="Aces"
         [bid]="aceSwitchSuggestion()"
         (bidSelected)="applySuggestion($event)"
       />
       <app-bid-suggestion
         label="Switch to a face"
+        shortLabel="Face"
         [bid]="normalSwitchSuggestion()"
         (bidSelected)="applySuggestion($event)"
       />

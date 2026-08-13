@@ -1,5 +1,6 @@
 <div
   class="bid-marker flex items-center gap-1.5 px-2 py-1.5"
+  [class.bid-marker--prominent]="size() === 'prominent'"
   role="status"
   [attr.aria-label]="'Current bid: ' + bid().quantity + ' of face ' + faceValue()"
 >

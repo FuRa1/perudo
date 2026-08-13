@@ -40,3 +40,26 @@
 .bid-marker__die {
   @include mixins.clamp-square(40px, 9vw, 56px);
 }
+
+// Prominent variant (BidMarker.size) — the standalone mobile wager token, the one thing on the
+// mat this whole component exists to make "unmistakably the current claim" (design-kit §4), gets
+// the reference's own scale (mobile-lantern.dc.html: 50px die, 38px quantity) rather than the
+// smaller inline scale tuned for sitting next to a seat card's own nickname/cup/badges.
+.bid-marker--prominent {
+  gap: 12px;
+  padding: 9px 18px;
+
+  .bid-marker__quantity {
+    font-size: 38px;
+  }
+
+  // The reference keeps the × noticeably smaller than the quantity digit (20px vs 38px) — it's a
+  // separator, not content competing with the number or the die for attention.
+  .bid-marker__times {
+    font-size: 20px;
+  }
+
+  .bid-marker__die {
+    @include mixins.clamp-square(50px, 12vw, 62px);
+  }
+}
