@@ -61,8 +61,29 @@ Runs the NestJS server (`http://localhost:3000` — Socket.io/API backend, not a
 | `npm run lint:fix`     | Same, with `--fix`.                                                                                           |
 | `npm run format`       | Formats the whole repo with the single root Prettier config ([.prettierrc.json](./.prettierrc.json)).         |
 | `npm run format:check` | Checks formatting without writing.                                                                            |
+| `npm run e2e`          | Runs the client's real-browser Playwright suite (`client/e2e/*.e2e.mjs`) against a live client+server.        |
 
 There is deliberately **one** ESLint config and **one** Prettier config for the whole repo (CLAUDE.md 4.1) — no per-package configs.
+
+## End-to-end tests
+
+```
+npm run e2e
+```
+
+Drives two real browser contexts (Playwright/Chromium) through the actual running app over a
+real Socket.io connection — room creation, ready-up, the opening roll, hidden hand-rolling, a
+full bid → call-liar → reveal cycle, and (in a separate script) a real page reload proving the
+reconnect-token flow restores the correct seat with dice privacy intact. If a dev server isn't
+already running on `:3000`/`:4200`, the suite starts one itself (and stops it afterward); if one
+already is, it reuses it. See [client/README.md](./client/README.md) for the individual scripts.
+This is separate from `npm test` (deterministic, fake-timer unit/integration tests) — the e2e
+suite exercises the real transport and real (short) timers end to end.
+
+## Known issues
+
+See [ISSUES.md](./ISSUES.md) for a running log of things found but not fixed in the moment —
+mostly resolved by now, but kept as a record rather than deleted.
 
 ## Testing over the internet with ngrok
 
@@ -81,6 +102,35 @@ https://<client-tunnel>/?serverUrl=https://<server-tunnel>
 
 Nothing else to configure — CORS is already permissive (`origin: '*'`, no auth by design), the server binds all interfaces by default, and `client/angular.json`'s dev-server `allowedHosts` already allows `*.ngrok-free.app` / `*.ngrok.io` / `*.ngrok.app` (Vite's dev server otherwise rejects unrecognized `Host` headers). A free ngrok tunnel gets a new random URL each run unless you have a reserved domain — regenerate the shared link each session.
 
+## Testing on an Android emulator/device
+
+A native Capacitor Android project already exists at [client/android](./client/android) (appId `com.perudo.app`), but for day-to-day playtesting you don't need to build it — just point the emulator/device's browser at your dev machine over `adb`.
+
+1. Connect the device/emulator and confirm it's authorized: `adb devices` should list it as `device` (not `unauthorized`/`offline`).
+2. Run:
+   ```
+   npm run dev:android
+   ```
+   This forwards the device's `localhost:4200` and `localhost:3000` to your dev machine (`adb reverse`), then starts the server + client exactly like `npm run dev`.
+3. On the device, open Chrome to `http://localhost:4200`. No `?serverUrl=` override needed — the reverse tunnel makes the client's default `http://localhost:3000` resolve correctly.
+4. Perudo needs 2+ players — open a second player in a desktop browser tab at `http://localhost:4200` and join the same room code.
+
+To instead run the actual installed native app (not just the browser) on a connected device/emulator:
+
+```
+npm run build -w client
+cd client && npx cap sync android && npx cap run android
+```
+
+This loads a static build (no live reload — repeat after each change) and still needs `adb reverse tcp:3000 tcp:3000` (or the app's native-only "Server URL" field on the Entry screen) so it can reach the server.
+
 ## Deploy
 
-Not chosen yet — see CLAUDE.md section 12 (open questions). This is a separate question from the ngrok testing above (which needs no hosting at all); this section will be filled in with step-by-step instructions once a real host is picked.
+**Stub — no host chosen yet.** This is an open question (AGENTS.md/CLAUDE.md section 12) that
+only the project owner can close, not something an agent should pick on its own — so this section
+deliberately stays a placeholder rather than a real guide. Once a host is chosen, this section
+gets the same step-by-step pattern as "Run locally" above: prerequisites, the exact commands, and
+what to configure (the client needs to know the server's public URL — see the `serverUrl` query
+param used for ngrok above, the same mechanism a real deploy would use unless the client and
+server end up served from the same origin). This is a separate question from the ngrok testing
+above, which needs no hosting decision at all and works today.

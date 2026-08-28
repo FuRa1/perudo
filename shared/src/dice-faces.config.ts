@@ -10,15 +10,19 @@ export interface DiceFaceVisual {
   readonly label: string;
   /** The wild ace face by default (5.4) — descriptive here, not itself game logic. */
   readonly isAce: boolean;
-  /** Unset until real 2D art (Scenario) is integrated — renderers fall back to CSS pips. */
+  /** Client-relative `/assets/...` URL once real 2D art exists for this face — the `Die`
+   * component (client) prefers this over the dice-sprite sheet, which itself is preferred over
+   * CSS pips (see ui/die/die.ts's own doc comment for the full fallback order). Populated from
+   * the real Scenario-generated art already integrated under `client/public/assets/dice/`
+   * (Phase 4) — six standard pips on the six face, no skull or other substitute glyph (8.2). */
   readonly imageUrl?: string;
 }
 
 export const DICE_FACES_CONFIG: readonly DiceFaceVisual[] = [
-  { value: 1, label: 'Ace', isAce: true },
-  { value: 2, label: 'Two', isAce: false },
-  { value: 3, label: 'Three', isAce: false },
-  { value: 4, label: 'Four', isAce: false },
-  { value: 5, label: 'Five', isAce: false },
-  { value: 6, label: 'Six', isAce: false },
+  { value: 1, label: 'Ace', isAce: true, imageUrl: '/assets/dice/die-face-1.png' },
+  { value: 2, label: 'Two', isAce: false, imageUrl: '/assets/dice/die-face-2.png' },
+  { value: 3, label: 'Three', isAce: false, imageUrl: '/assets/dice/die-face-3.png' },
+  { value: 4, label: 'Four', isAce: false, imageUrl: '/assets/dice/die-face-4.png' },
+  { value: 5, label: 'Five', isAce: false, imageUrl: '/assets/dice/die-face-5.png' },
+  { value: 6, label: 'Six', isAce: false, imageUrl: '/assets/dice/die-face-6.png' },
 ];

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Perudo</string>
+    <string name="title_activity_main">Perudo</string>
+    <string name="package_name">com.perudo.app</string>
+    <string name="custom_url_scheme">com.perudo.app</string>
+</resources>

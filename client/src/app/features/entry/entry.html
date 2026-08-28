@@ -18,6 +18,13 @@
             </p>
           </div>
 
+          @if (store.sessionRestoreFailed()) {
+            <p class="entry__notice text-sm" role="status">
+              We couldn't restore your previous table — it may have ended, or the link has expired.
+              Start a new table or join with a code below.
+            </p>
+          }
+
           <form
             class="entry__form flex flex-col gap-4 pt-8"
             (submit)="$event.preventDefault(); submitNameStep()"
@@ -129,6 +136,28 @@
                 }
               </ion-button>
             </div>
+          </form>
+        }
+
+        @if (isNative) {
+          <form
+            class="entry__server flex items-center gap-2 pt-6"
+            (submit)="$event.preventDefault(); applyServerUrl()"
+          >
+            <ion-list class="entry__field-group flex-1" lines="none">
+              <ion-item>
+                <ion-input
+                  label="Server URL"
+                  labelPlacement="stacked"
+                  placeholder="https://your-tunnel.ngrok-free.app"
+                  inputmode="url"
+                  [value]="serverUrl()"
+                  (ionInput)="serverUrl.set($any($event.detail.value ?? ''))"
+                  (keydown.enter)="applyServerUrl()"
+                />
+              </ion-item>
+            </ion-list>
+            <ion-button fill="outline" size="small" type="submit">Connect</ion-button>
           </form>
         }
 

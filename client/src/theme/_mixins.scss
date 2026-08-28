@@ -165,7 +165,14 @@
 /// only the three colors that differ take arguments.
 @mixin pill-action-button($outline-border, $outline-color, $outline-hover-bg) {
   height: 56px;
-  font-family: var(--font-heading);
+  // Body/UI typeface, not --font-heading (Phase 4 typography guidance): a primary action label
+  // needs to be scanned and read precisely ("Start a table", "Place bid", "Call liar"), not
+  // admired — the decorative display face is reserved for the game title, major headings, and
+  // round-result banners. font-weight compensates explicitly since EB Garamond's own default
+  // weight (400) reads as too quiet for a primary CTA at this size, unlike the previous
+  // --font-heading stack's inherently heavy fallback family.
+  font-family: var(--font-body);
+  font-weight: 700;
   font-size: 1.0625rem;
   text-transform: none;
   --border-radius: var(--radius-pill);

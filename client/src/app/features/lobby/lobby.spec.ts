@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-import { GamePhase, RULES_CONFIG, type MatchState, type Player } from '@shared';
+import { GamePhase, RULES_CONFIG, type Player, type StateSnapshot } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
 import { Lobby } from './lobby';
@@ -9,7 +9,7 @@ function player(id: string, nickname: string, isReady: boolean): Player {
   return { id, nickname, isReady, diceCount: 5, dice: [], consecutivePureStalls: 0 };
 }
 
-function lobbyState(players: Player[]): MatchState {
+function lobbyState(players: Player[]): StateSnapshot {
   return {
     phase: GamePhase.LOBBY,
     roomId: 'TORTUGA',
@@ -18,6 +18,7 @@ function lobbyState(players: Player[]): MatchState {
     completedStartRoll: null,
     winnerId: null,
     round: null,
+    turnTimer: null,
   };
 }
 

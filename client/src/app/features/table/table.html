@@ -11,6 +11,9 @@
       <div class="table-mobile-header__chip table-mobile-header__chip--phase">
         {{ mobilePhaseLabel() }}
       </div>
+      @if (turnTimer(); as timer) {
+        <app-turn-timer [timer]="timer" [isMine]="timer.playerId === store.playerId()" />
+      }
     </div>
 
     <h2 class="table__heading hidden font-heading text-lg">

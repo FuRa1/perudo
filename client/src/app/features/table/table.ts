@@ -19,6 +19,7 @@ import { Die } from '../../ui/die/die';
 import { OpeningRollPanel } from '../../ui/opening-roll-panel/opening-roll-panel';
 import type { HandRollStatus, SeatSize } from '../../ui/seat-card/seat-card';
 import { CARD_WIDTH_PX, SeatCard } from '../../ui/seat-card/seat-card';
+import { TurnTimer } from '../../ui/turn-timer/turn-timer';
 import { BidControls } from '../bid-controls/bid-controls';
 import { RoundLossModal } from '../round-loss-modal/round-loss-modal';
 
@@ -131,6 +132,7 @@ function joinWithAnd(names: readonly string[]): string {
     OpeningRollPanel,
     BidControls,
     RoundLossModal,
+    TurnTimer,
   ],
   templateUrl: './table.html',
   styleUrl: './table.scss',
@@ -157,6 +159,9 @@ export class Table {
     const totalDiceCount = this.allPlayers().reduce((sum, p) => sum + p.diceCount, 0);
     return describeMobilePhase(state, totalDiceCount, this.store.isMyTurn());
   });
+
+  /** Server-authoritative turn timer (5.6/6.5) — null unless a BIDDING turn is currently active. */
+  protected readonly turnTimer = this.store.turnTimer;
 
   protected readonly opponents = computed<readonly Player[]>(() => {
     const myId = this.store.playerId();

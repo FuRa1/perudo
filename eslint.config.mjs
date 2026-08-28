@@ -16,6 +16,8 @@ export default tseslint.config(
       '**/.angular/**',
       '**/out-tsc/**',
       'client/public/**',
+      'client/android/**',
+      'client/ios/**',
       'eslint.config.mjs',
     ],
   },

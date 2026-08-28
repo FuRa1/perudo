@@ -91,6 +91,20 @@ export interface TurnTimedOutEvent {
   readonly dieLost: boolean;
 }
 
+/** Transport-level session events (section 7) — synthesized by the gateway/rooms layer, not the
+ * engine (GameEngine has no notion of sockets or connectivity, 6.3). Informational only: they
+ * never carry a reconnect token (4.5's "never expose tokens" applies here too) and never by
+ * themselves change game state. */
+export interface PlayerDisconnectedEvent {
+  readonly type: 'PLAYER_DISCONNECTED';
+  readonly playerId: string;
+}
+
+export interface PlayerReconnectedEvent {
+  readonly type: 'PLAYER_RECONNECTED';
+  readonly playerId: string;
+}
+
 export type ServerEvent =
   | PlayerJoinedEvent
   | PlayerReadyChangedEvent
@@ -106,4 +120,6 @@ export type ServerEvent =
   | PlayerLostDieEvent
   | PlayerEliminatedEvent
   | MatchWonEvent
-  | TurnTimedOutEvent;
+  | TurnTimedOutEvent
+  | PlayerDisconnectedEvent
+  | PlayerReconnectedEvent;

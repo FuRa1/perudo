@@ -8,6 +8,13 @@ Contains (see CLAUDE.md 3.2 for the full intent):
 - The game-phase state machine enum (CLAUDE.md 6.1) — added in Phase 2.
 - The single rules-constants module, [`rules.config.ts`](./src/rules.config.ts) (CLAUDE.md 3.4).
 - Pure functions with no side effects — bid legality, bid comparison with aces conversion, wild-aware counting (CLAUDE.md 5.4) — added in Phase 2. Imported by both client (instant pre-validation) and server (authoritative check), written once.
+- `types/timer.types.ts` (added in Phase 5) — `TurnTimerView`/`StateSnapshot`, the server-timer
+  metadata attached to the client-facing state snapshot. Deliberately kept separate from
+  `MatchState` itself: `GameEngine` has no clock and never needs to know timers exist (6.3); only
+  the transport layer (`selectPlayerView`, `/server`) attaches this.
+- The dice-face visual config, [`dice-faces.config.ts`](./src/dice-faces.config.ts) (CLAUDE.md 8.2)
+  — config-driven rendering data (label, wild flag, and now a real per-face `imageUrl`, added in
+  Phase 4) that `/client`'s `Die` component reads instead of hardcoding per-face behavior.
 
 ## Prerequisites
 

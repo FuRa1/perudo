@@ -15,7 +15,9 @@
 // texture the reference (mobile-lantern.dc.html, perudo-design-kit.dc.html §4) doesn't have —
 // confirmed live against both. Flat gradient only, matching the reference exactly.
 .bid-marker {
-  border-radius: var(--radius-tile);
+  // --radius-panel (20px), not --radius-tile (16px): mobile-lantern.dc.html's own wager-token
+  // literal is border-radius:20px, exact.
+  border-radius: var(--radius-panel);
   border: 1.5px solid var(--color-brass);
   background: linear-gradient(180deg, var(--color-parchment), var(--color-parchment-dark));
   box-shadow: var(--shadow-float);
@@ -23,7 +25,10 @@
 
 .bid-marker__quantity {
   color: var(--color-ink);
-  font-family: var(--font-heading);
+  // Body/UI typeface, not --font-heading: the current-bid badge's quantity must be read
+  // precisely at a glance, not admired (Phase 4 typography guidance).
+  font-family: var(--font-body);
+  font-weight: 700;
 }
 
 .bid-marker__times {

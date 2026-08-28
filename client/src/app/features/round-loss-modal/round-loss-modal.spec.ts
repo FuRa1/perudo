@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-import { GamePhase, type MatchState, type ServerEvent } from '@shared';
+import { GamePhase, type ServerEvent, type StateSnapshot } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { VISUAL_ASSETS_CONFIG } from '../../ui/visual-assets/visual-assets.config';
 import { RoundLossModal } from './round-loss-modal';
@@ -26,7 +26,7 @@ function setup() {
   return { fixture, store, instance: fixture.componentInstance };
 }
 
-function gameOverState(winnerId: string): MatchState {
+function gameOverState(winnerId: string): StateSnapshot {
   return {
     phase: GamePhase.GAME_OVER,
     roomId: 'room-1',
@@ -35,6 +35,7 @@ function gameOverState(winnerId: string): MatchState {
     completedStartRoll: null,
     round: null,
     winnerId,
+    turnTimer: null,
   };
 }
 
@@ -249,6 +250,7 @@ describe('RoundLossModal', () => {
         completedStartRoll: null,
         round: null,
         winnerId: null,
+        turnTimer: null,
       });
       fixture.detectChanges();
 
@@ -262,6 +264,85 @@ describe('RoundLossModal', () => {
   // IonModal doesn't stamp its <ng-template> content into jsdom (see the note above on the
   // CALLER_LOSES test) — so, like the rest of this file, this checks the field the template's
   // `@if (badgeImageUrl; as imageUrl)` actually binds to, not the DOM inside the modal.
+  // A pure timeout stall (5.7) has no reveal at all — without this, a player who simply ran out
+  // of time gets zero feedback that they lost a die and why.
+  describe('timeout loss notification (5.7)', () => {
+    it('opens for the local player when their own turn timed out and cost them a die', () => {
+      const { fixture, store, instance } = setup();
+      store.playerId.set('p1');
+      fixture.detectChanges();
+      store.lastTimeout.set({ type: 'TURN_TIMED_OUT', playerId: 'p1', dieLost: true });
+      fixture.detectChanges();
+
+      expect(instance['isOpen']()).toBe(true);
+      expect(instance['isTimeoutLoss']()).toBe(true);
+    });
+
+    it('does not open for another player timing out', () => {
+      const { fixture, store, instance } = setup();
+      store.playerId.set('p2');
+      fixture.detectChanges();
+      store.lastTimeout.set({ type: 'TURN_TIMED_OUT', playerId: 'p1', dieLost: true });
+      fixture.detectChanges();
+
+      expect(instance['isOpen']()).toBe(false);
+    });
+
+    it('auto-dismisses after 5 seconds, same as a reveal loss', () => {
+      const { fixture, store, instance } = setup();
+      store.playerId.set('p1');
+      fixture.detectChanges();
+      store.lastTimeout.set({ type: 'TURN_TIMED_OUT', playerId: 'p1', dieLost: true });
+      fixture.detectChanges();
+      expect(instance['isOpen']()).toBe(true);
+
+      vi.advanceTimersByTime(5000);
+      expect(instance['isOpen']()).toBe(false);
+    });
+
+    it('does not reopen for the same timeout event after a manual close', () => {
+      const { fixture, store, instance } = setup();
+      store.playerId.set('p1');
+      fixture.detectChanges();
+      const timeout = { type: 'TURN_TIMED_OUT' as const, playerId: 'p1', dieLost: true };
+      store.lastTimeout.set(timeout);
+      fixture.detectChanges();
+      instance['close']();
+      fixture.detectChanges();
+
+      store.lastTimeout.set(null);
+      fixture.detectChanges();
+      store.lastTimeout.set(timeout);
+      fixture.detectChanges();
+      expect(instance['isOpen']()).toBe(false);
+    });
+
+    it('a reveal loss after a shown timeout loss switches the modal back to the reveal branch', () => {
+      const { fixture, store, instance } = setup();
+      store.playerId.set('p1');
+      fixture.detectChanges();
+      store.lastTimeout.set({ type: 'TURN_TIMED_OUT', playerId: 'p1', dieLost: true });
+      fixture.detectChanges();
+      expect(instance['isTimeoutLoss']()).toBe(true);
+
+      store.lastReveal.set(reveal({ loserId: 'p1' }));
+      fixture.detectChanges();
+      expect(instance['isTimeoutLoss']()).toBe(false);
+    });
+
+    it('does not open for a timeout that arrives once the match is already GAME_OVER', () => {
+      const { fixture, store, instance } = setup();
+      store.playerId.set('p1');
+      store.setState(gameOverState('p2'));
+      fixture.detectChanges();
+
+      store.lastTimeout.set({ type: 'TURN_TIMED_OUT', playerId: 'p1', dieLost: true });
+      fixture.detectChanges();
+
+      expect(instance['isOpen']()).toBe(false);
+    });
+  });
+
   describe('outcome badge (decor/badge-lost.png)', () => {
     it('is configured with the real badge image by default', () => {
       const { instance } = setup();

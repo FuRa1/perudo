@@ -2,9 +2,13 @@
 **/coverage
 **/node_modules
 .claude
+.opencode
+QWEN3-CODER-PROMPT.md
 **/.angular
 **/out-tsc
 client/public
+client/android
+client/ios
 package-lock.json
 CLAUDE.md
 CLAUDE-RU-Reference.md

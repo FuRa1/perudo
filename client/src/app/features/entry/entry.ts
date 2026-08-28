@@ -1,4 +1,5 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
 import {
   IonButton,
   IonContent,
@@ -81,6 +82,12 @@ export class Entry {
   protected readonly pendingAction = signal<PendingAction>(null);
   protected readonly connected = this.store.connected;
 
+  /** The web build gets its server URL from the page's own origin/query string — nothing to edit
+   * in-app. The native shell (Capacitor) has neither, so it's the one platform where this field
+   * is shown at all (see SocketService.setServerUrl's doc comment). */
+  protected readonly isNative = Capacitor.isNativePlatform();
+  protected readonly serverUrl = signal(this.socket.getServerUrl());
+
   /** Both paths need a nickname before they can do anything real — gates Create directly, and
    * gates even navigating to the code step (no point typing an invitation code with nowhere to
    * attach it). */
@@ -151,5 +158,9 @@ export class Entry {
 
   protected submitCodeStep(): void {
     this.joinRoom();
+  }
+
+  protected applyServerUrl(): void {
+    this.socket.setServerUrl(this.serverUrl());
   }
 }

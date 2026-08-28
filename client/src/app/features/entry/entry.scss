@@ -328,7 +328,10 @@ ion-content {
   --min-width: 40px;
   display: block;
   width: 100%;
-  font-family: var(--font-heading);
+  // Body/UI typeface, not --font-heading: a room code needs to be read and typed precisely
+  // character-by-character, not admired (Phase 4 typography guidance).
+  font-family: var(--font-body);
+  font-weight: 700;
   font-size: clamp(1.25rem, 6vw, 1.625rem);
   text-transform: uppercase;
 
@@ -349,6 +352,18 @@ ion-content {
   background: rgba(179, 80, 63, 0.14);
   color: var(--color-ember-soft);
   padding: 0.5rem 0.75rem;
+}
+
+// A neutral/informational counterpart to .entry__error above — a failed session restore isn't
+// something the player did wrong, so it reads as a quiet explanation (brass, not ember/danger).
+.entry__notice {
+  border-radius: var(--radius-tile);
+  border: 1px solid var(--color-border-onboard-strong);
+  background: var(--color-fill-onboard-strong);
+  color: var(--color-cream-muted);
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.75rem;
+  text-align: center;
 }
 
 // Entry sits on the dark on-table surface, so its outline (secondary/quiet) state uses the same

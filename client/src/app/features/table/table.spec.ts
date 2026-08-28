@@ -1,6 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-import { GamePhase, type MatchState, type Player, type ServerEvent } from '@shared';
+import {
+  GamePhase,
+  type MatchState,
+  type Player,
+  type ServerEvent,
+  type StateSnapshot,
+} from '@shared';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
 import { Table } from './table';
@@ -32,7 +38,7 @@ function player(id: string, nickname: string, overrides: Partial<Player> = {}): 
   };
 }
 
-function biddingState(overrides: Partial<MatchState> = {}): MatchState {
+function biddingState(overrides: Partial<MatchState> = {}): StateSnapshot {
   return {
     phase: GamePhase.BIDDING,
     roomId: 'room-1',
@@ -49,12 +55,13 @@ function biddingState(overrides: Partial<MatchState> = {}): MatchState {
       pendingRolls: [],
     },
     ...overrides,
+    turnTimer: null,
   };
 }
 
 /** ROUND_ROLLING already has turnOrder/currentTurnIndex populated (they're decided as soon as
  * the round starts) — the state this task's fix has to distinguish from BIDDING. */
-function roundRollingState(overrides: Partial<MatchState> = {}): MatchState {
+function roundRollingState(overrides: Partial<MatchState> = {}): StateSnapshot {
   return {
     phase: GamePhase.ROUND_ROLLING,
     roomId: 'room-1',
@@ -71,10 +78,11 @@ function roundRollingState(overrides: Partial<MatchState> = {}): MatchState {
       pendingRolls: ['p1', 'p2'],
     },
     ...overrides,
+    turnTimer: null,
   };
 }
 
-function render(playerId: string, state: MatchState) {
+function render(playerId: string, state: StateSnapshot) {
   const store = TestBed.inject(GameStore);
   store.playerId.set(playerId);
   store.matchState.set(state);
@@ -524,7 +532,7 @@ describe('Table', () => {
   });
 
   describe('9-12 player stress case (Increment 5)', () => {
-    function manyPlayersState(totalPlayers: number): MatchState {
+    function manyPlayersState(totalPlayers: number): StateSnapshot {
       const players = Array.from({ length: totalPlayers }, (_, i) => player(`p${i}`, `Player${i}`));
       return biddingState({
         players,

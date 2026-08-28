@@ -8,6 +8,8 @@ import { Entry } from './entry';
 interface FakeSocket {
   connect: ReturnType<typeof vi.fn>;
   joinRoom: ReturnType<typeof vi.fn>;
+  getServerUrl: ReturnType<typeof vi.fn>;
+  setServerUrl: ReturnType<typeof vi.fn>;
 }
 
 function render() {
@@ -67,7 +69,12 @@ describe('Entry', () => {
   let socket: FakeSocket;
 
   beforeEach(() => {
-    socket = { connect: vi.fn(), joinRoom: vi.fn() };
+    socket = {
+      connect: vi.fn(),
+      joinRoom: vi.fn(),
+      getServerUrl: vi.fn(() => 'http://localhost:3000'),
+      setServerUrl: vi.fn(),
+    };
     TestBed.configureTestingModule({
       imports: [Entry],
       providers: [{ provide: SocketService, useValue: socket }],
@@ -330,6 +337,22 @@ describe('Entry', () => {
 
       expect(nativeElement.textContent ?? '').toContain('No table with that code.');
       expect((otp() as unknown as { value: string }).value).toBe('TORTU');
+    });
+  });
+
+  describe('reconnect session-restore failure (section 7 / Phase 4 error-state UX)', () => {
+    it('shows a friendly, non-alarming notice on the name step when a saved session could not be restored', () => {
+      const { fixture, store, nativeElement } = render();
+      store.setSessionRestoreFailed();
+      fixture.detectChanges();
+      expect(nativeElement.textContent ?? '').toContain("couldn't restore your previous table");
+      // Distinct from the generic error toast — never shown as a scary role="alert".
+      expect(nativeElement.querySelector('.entry__notice')?.getAttribute('role')).toBe('status');
+    });
+
+    it('does not show the notice by default', () => {
+      const { nativeElement } = render();
+      expect(nativeElement.querySelector('.entry__notice')).toBeNull();
     });
   });
 });

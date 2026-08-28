@@ -30,14 +30,18 @@
   }
 }
 
-// The quantity digit is the number the player is actually setting — the reference
-// (mobile-lantern.dc.html) sets it in the heading font at 40px, not the plain body font every
-// other run of text on the tray uses. Harmless on the face slot (the other consumer of this same
-// class), which holds only an <app-die>, no text.
+// The quantity digit is the number the player is actually setting. The static design reference
+// (mobile-lantern.dc.html) set this in the heading font at 40px — reasonable when "heading font"
+// meant a bold system sans fallback, but explicit Phase 4 typography guidance puts "bid
+// quantities" in the readable/UI category once a real (blackletter) display face is in play, and
+// this value needs to be read precisely, not admired. --font-body at a bold weight keeps the
+// same visual size/prominence the reference wanted, just in the legible face. Harmless on the
+// face slot (the other consumer of this same class), which holds only an <app-die>, no text.
 .bid-picker__value {
   @include mixins.focus-ring;
   color: var(--color-cream);
-  font-family: var(--font-heading);
+  font-family: var(--font-body);
+  font-weight: 700;
 }
 
 .bid-picker__separator {

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { GamePhase, type MatchState, type Player } from '@shared';
+import { GamePhase, type Player, type StateSnapshot } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { VISUAL_ASSETS_CONFIG } from '../../ui/visual-assets/visual-assets.config';
 import { Winner } from './winner';
@@ -8,7 +8,7 @@ function player(id: string, nickname: string): Player {
   return { id, nickname, isReady: true, diceCount: 5, dice: [], consecutivePureStalls: 0 };
 }
 
-function gameOverState(winnerId: string, players: Player[]): MatchState {
+function gameOverState(winnerId: string, players: Player[]): StateSnapshot {
   return {
     phase: GamePhase.GAME_OVER,
     roomId: 'room-1',
@@ -17,6 +17,7 @@ function gameOverState(winnerId: string, players: Player[]): MatchState {
     completedStartRoll: null,
     round: null,
     winnerId,
+    turnTimer: null,
   };
 }
 

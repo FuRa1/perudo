@@ -29,7 +29,9 @@
 }
 
 .bid-controls__waiting-avatar-initial {
-  font-family: var(--font-heading, inherit);
+  // Body/UI typeface, not --font-heading — same reasoning as arc-seat.scss's own identity
+  // initial (a single blackletter capital reads as a near-abstract shape, not a letter).
+  font-family: var(--font-body, inherit);
   font-size: 15px;
   font-weight: 700;
   color: var(--color-cream);

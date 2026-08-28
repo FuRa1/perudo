@@ -3,7 +3,7 @@
   class="round-loss-modal"
   [isOpen]="isOpen()"
   (didDismiss)="close()"
-  [style.--backdrop-opacity]="0.72"
+  [style.--backdrop-opacity]="1"
   [style.--background]="'transparent'"
   [style.--box-shadow]="'none'"
 >
@@ -15,32 +15,48 @@
         } @else {
           <div class="round-loss-badge" aria-hidden="true"></div>
         }
-        <h2 class="round-loss__title font-heading text-lg">You lost this round</h2>
+        @if (isTimeoutLoss()) {
+          <h2 class="round-loss__title font-heading text-lg">Time ran out</h2>
 
-        <span
-          class="round-loss__verdict text-xs font-semibold uppercase tracking-wide"
-          [class.round-loss__verdict--true]="lostBecauseBidWasTrue()"
-          [class.round-loss__verdict--false]="!lostBecauseBidWasTrue()"
-        >
-          {{ lostBecauseBidWasTrue() ? 'Bid true' : 'Bid false' }}
-        </span>
+          <span
+            class="round-loss__verdict round-loss__verdict--false text-xs font-semibold uppercase tracking-wide"
+          >
+            Turn timed out
+          </span>
 
-        @if (lostBecauseBidWasTrue()) {
           <p class="round-loss__body text-sm">
-            You called liar, but the bid was true. Exact matches count as true bids.
+            You didn't bid or call liar before your time ran out, so the round ended without you.
           </p>
         } @else {
-          <p class="round-loss__body text-sm">Your bid was false; the actual count was too low.</p>
-        }
+          <h2 class="round-loss__title font-heading text-lg">You lost this round</h2>
 
-        @if (claimedBid(); as bid) {
-          <div class="flex flex-col items-center gap-1">
-            <span class="round-loss__claimed-label text-xs">Claimed</span>
-            <app-bid-marker [bid]="bid" />
-          </div>
-        }
+          <span
+            class="round-loss__verdict text-xs font-semibold uppercase tracking-wide"
+            [class.round-loss__verdict--true]="lostBecauseBidWasTrue()"
+            [class.round-loss__verdict--false]="!lostBecauseBidWasTrue()"
+          >
+            {{ lostBecauseBidWasTrue() ? 'Bid true' : 'Bid false' }}
+          </span>
 
-        <p class="round-loss__body text-sm">Actual count: {{ actualQuantity() }}</p>
+          @if (lostBecauseBidWasTrue()) {
+            <p class="round-loss__body text-sm">
+              You called liar, but the bid was true. Exact matches count as true bids.
+            </p>
+          } @else {
+            <p class="round-loss__body text-sm">
+              Your bid was false; the actual count was too low.
+            </p>
+          }
+
+          @if (claimedBid(); as bid) {
+            <div class="flex flex-col items-center gap-1">
+              <span class="round-loss__claimed-label text-xs">Claimed</span>
+              <app-bid-marker [bid]="bid" />
+            </div>
+          }
+
+          <p class="round-loss__body text-sm">Actual count: {{ actualQuantity() }}</p>
+        }
         <p class="round-loss__final text-sm font-semibold">{{ lossSummary() }}</p>
 
         <ion-button (click)="close()">Close</ion-button>

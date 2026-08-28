@@ -1,0 +1,57 @@
+:host {
+  display: block;
+}
+
+.turn-timer {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-onboard);
+  background: var(--color-fill-onboard);
+  color: var(--color-cream-muted);
+  font-variant-numeric: tabular-nums;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.turn-timer__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.turn-timer__seconds {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.turn-timer--quiet {
+  color: var(--color-cream-muted);
+}
+
+.turn-timer--warning {
+  color: var(--color-warning);
+  border-color: var(--color-warning);
+  background: rgba(214, 154, 82, 0.14);
+}
+
+.turn-timer--bank {
+  color: var(--color-ember-soft);
+  border-color: var(--color-ember);
+  background: rgba(179, 80, 63, 0.16);
+}
+
+.turn-timer--expired {
+  color: var(--color-cream-faint);
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .turn-timer {
+    transition: none;
+  }
+}

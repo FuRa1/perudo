@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
-import { GamePhase, type MatchState, type Player } from '@shared';
+import { GamePhase, type MatchState, type Player, type StateSnapshot } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
 import { BidControls } from './bid-controls';
@@ -17,7 +17,7 @@ function player(id: string, nickname: string, overrides: Partial<Player> = {}): 
   };
 }
 
-function biddingState(overrides: Partial<MatchState> = {}): MatchState {
+function biddingState(overrides: Partial<MatchState> = {}): StateSnapshot {
   return {
     phase: GamePhase.BIDDING,
     roomId: 'room-1',
@@ -34,6 +34,7 @@ function biddingState(overrides: Partial<MatchState> = {}): MatchState {
       pendingRolls: [],
     },
     ...overrides,
+    turnTimer: null,
   };
 }
 
@@ -43,7 +44,7 @@ interface FakeSocket {
   declareSpecialRound: ReturnType<typeof vi.fn>;
 }
 
-function render(playerId: string, state: MatchState) {
+function render(playerId: string, state: StateSnapshot) {
   const store = TestBed.inject(GameStore);
   store.playerId.set(playerId);
   store.matchState.set(state);

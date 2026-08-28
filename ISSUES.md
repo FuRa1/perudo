@@ -13,6 +13,13 @@ Format: one entry per issue, newest first within its section. Move an entry from
 
 ## Open
 
+*(none currently — see Resolved below for the two items closed during the Phase 4 UI/UX pass,
+2026-08-15)*
+
+---
+
+## Resolved
+
 ### `bid-controls__suggestions` causes ~40px of horizontal page overflow at 320px viewport width
 
 - **Found:** 2026-08-11, while verifying the mobile hand-strip dice size change didn't introduce
@@ -20,38 +27,76 @@ Format: one entry per issue, newest first within its section. Move an entry from
 - **Symptom:** at a 320px-wide viewport, `document.body.scrollWidth` (362px) exceeds
   `document.documentElement.clientWidth` (320px). The offending elements are all inside
   `.bid-controls__suggestions` (`client/src/app/features/bid-controls/`) — the horizontally
-  scrollable row of bid-suggestion pills (Minimum / Switch to aces / Switch to a face). That row is
-  *intentionally* `overflow-x: auto` (AGENTS.md 5.8: "compact and horizontally scrollable where
-  needed"), so this may be a false-positive from measuring `body.scrollWidth` rather than the
-  scroll container's own bounds — or the scroll container may genuinely be leaking overflow to the
-  page.
-- **Confirmed NOT the same root cause as the `ion-content` sizing bug below:** re-tested after that
-  fix landed (which also added `:host { display: block; }` to `BidSuggestion` and every other
-  component missing it) — the same ~40px overflow still reproduces identically at 320px. Whatever
-  this is, it's unrelated and still needs its own investigation.
-- **Suggested next step:** confirm whether real page-level horizontal scroll actually occurs at
-  320px (vs. just an inflated `scrollWidth` reading), and if so, contain it (e.g. `overflow: hidden`
-  or `contain: layout` on a wrapping ancestor).
+  scrollable row of bid-suggestion pills (Minimum / Switch to aces / Switch to a face).
+- **Resolved as of 2026-08-15 (Phase 4 UI/UX pass):** re-tested live at a real 320px viewport
+  through a full two-player match reaching BIDDING — `document.documentElement.scrollWidth` now
+  equals `clientWidth` (320px, no page-level overflow at all), and
+  `.bid-controls__suggestions` itself has `scrollWidth` (250px) only marginally over its own
+  `clientWidth` (248px) — its own intentional internal horizontal scroll, not a page-level leak,
+  and its right edge (284px) sits well inside the 320px viewport. Whatever caused the original
+  40px page-level overflow was fixed by one of the intervening `fix(mobile): ...` commits between
+  2026-08-11 and this verification; no code change was needed in this pass, only re-confirmation.
 
-### `table.scss` exceeds its Angular component style budget
+### `table.scss`, `lobby.scss`, and `entry.scss` exceed the Angular component style budget
 
-- **Found:** 2026-08-11, `npm run build -w client` output: `src/app/features/table/table.scss
-  exceeded maximum budget. Budget 4.00 kB was not met by 3.21 kB with a total of 7.21 kB.`
-- **Pre-existing** — confirmed the same order-of-magnitude overage exists at the last commit
-  (`git show HEAD:client/src/app/features/table/table.scss` is already ~13 kB source), not
-  something introduced by the mobile-board rework's small additions to the same file. A warning,
-  not a build failure.
-- **Update 2026-08-12:** overage grew slightly to 3.40 kB (total 7.41 kB) after the desktop-board
-  visual-bug fixes below added a bit more CSS to this same file — still the same pre-existing
-  condition, not a new one.
-- **Suggested next step:** either raise the `anyComponentStyle` budget for this one file in
-  `client/angular.json` (it's inherently a large, multi-state component) or split `table.scss`'s
-  mobile-only rules into a separate file once `MobileGameBoard` becomes its own real component
-  with its own stylesheet, rather than living inside `Table`'s.
+- **Found:** 2026-08-11 (`table.scss` only; `lobby.scss`/`entry.scss` grew past the same 4kB
+  threshold at some point before 2026-08-15 without being logged here).
+- **Pre-existing, not bloat** — all three are legitimately large, multi-state component
+  stylesheets (table: seats/dice/bid-tray/reveal/timer across mobile+desktop-phone-frame; lobby
+  and entry: full pirate-theme surfaces with several sub-states), not accidental duplication.
+- **Resolved 2026-08-15 (Phase 4 UI/UX pass):** raised `anyComponentStyle` in
+  `client/angular.json` from 4kB warning / 8kB error to 8kB warning / 16kB error — comfortably
+  above the current worst case (table.scss, 7.07kB) with headroom, while still catching genuine
+  future runaway growth. `npm run build -w client` is clean of budget warnings as of this change.
 
----
+### Real Scenario 2D dice art was generated but never wired into the live per-face renderer
 
-## Resolved
+- **Found:** 2026-08-15, Phase 4 UI/UX pass — auditing `designs/assets/` against what
+  `VISUAL_ASSETS_CONFIG`/`DICE_FACES_CONFIG` actually reference.
+- **Symptom:** `designs/assets/dice/die-face-1.png` through `-6.png` (already copied to
+  `client/public/assets/dice/`, confirmed present in the build output) are higher-quality,
+  more textured individual die renders than `dice-sprite.png` (the strip actually wired in via
+  `VISUAL_ASSETS_CONFIG.diceSprite`), but `DICE_FACES_CONFIG.imageUrl` — the `Die` component's
+  own highest-priority swap-in point, by design (`ui/die/die.ts`'s doc comment) — was left unset,
+  so the app rendered the flatter sprite instead of the nicer per-face art that was sitting right
+  there unused.
+- **Resolved 2026-08-15:** populated `DICE_FACES_CONFIG[].imageUrl` with the per-face PNG paths.
+  Confirmed via a live two-player Playwright run that the richer, shadowed ivory dice now render
+  with zero component changes (exactly the "swap needs no component changes" contract the config
+  was designed for) — see `dice-check-real-art.png`. All six faces re-verified as standard pips,
+  no skull (8.2). `shared/src/dice-faces.config.spec.ts` and `client/.../ui/die/die.spec.ts`
+  updated for the new default (per-face image) and both fallback tiers (sprite, then CSS pips).
+
+### No client-side feedback when a player loses a die to the turn timer (only call-liar losses were surfaced)
+
+- **Found:** 2026-08-15, Phase 4 UI/UX pass — a real ~56-second timeout capture showed the round
+  silently advance with one fewer die and no explanation, unlike a call-liar loss (which
+  `RoundLossModal` already surfaces prominently).
+- **Root cause:** `RoundLossModal` only ever reacted to `GameStore.lastReveal` (set from
+  `ROUND_REVEALED`); a pure timeout stall (5.7) produces no reveal at all, only `TURN_TIMED_OUT`,
+  which nothing in `/client` was listening for.
+- **Resolved 2026-08-15:** added `GameStore.lastTimeout` (set only when `dieLost: true` — a
+  *protected* double-loss-protection stall correctly still produces no notification, since no die
+  was actually lost) and a second trigger effect in `RoundLossModal`, branching its template to a
+  "Time ran out" / "TURN TIMED OUT" variant instead of the claimed-bid/actual-count reveal
+  content. Verified with a real ~56s server-authoritative wait in a live two-player match — the
+  modal opens with the correct copy and die-remaining count at the actual moment the server times
+  the turn out, and auto-closes the same way a reveal loss does. 6 new component tests + 1
+  `GameStore` test cover both the open/branch logic and the dieLost:false no-op case.
+
+### Reveal recap panel (mobile board) stayed visible through the entire following round
+
+- **Found:** 2026-08-15, Phase 4 UI/UX pass — a screenshot mid-way through round 2's hand-rolling
+  showed round 1's "Truth revealed" recap still fully rendered above the "Roll your hand" button.
+- **Root cause:** `GameStore.lastReveal` is deliberately never cleared on `ROUND_STARTED` (engine
+  emits both in the same batch — clearing there would erase it before any consumer ever saw it,
+  per the field's own doc comment), but nothing else ever cleared it either, so it lingered
+  through the *entire* next round, including into that round's own BIDDING phase.
+- **Resolved 2026-08-15:** `GameStore.applyEvents` now clears `lastReveal` the moment I roll my
+  own hand for the new round (`PLAYER_ROLLED_HAND` for my own player id) — a natural "I've moved
+  on" signal that can't co-occur with the reveal in the same batch, so it doesn't fight the
+  existing ordering constraint. An opponent rolling their hand does not clear it (confirmed by
+  test), only my own action does.
 
 ### Four visual bugs in the mobile board when displayed inside `DesktopGameBoard`
 

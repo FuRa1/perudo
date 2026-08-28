@@ -94,6 +94,11 @@ ion-content {
 .lobby__code-value {
   color: var(--color-ink);
   font-size: clamp(1.75rem, 8vw, 2.25rem);
+  // Bold rather than font-heading (removed — a room code needs precise, readable characters,
+  // not the decorative display face; Phase 4 typography guidance keeps codes in the body/UI
+  // typeface). Explicit weight keeps it visually prominent now that it no longer inherits
+  // --font-heading's own inherently heavy family.
+  font-weight: 700;
   line-height: 1;
   letter-spacing: 0.1em;
 }
@@ -107,7 +112,9 @@ ion-content {
   margin: 0;
   --border-radius: var(--radius-pill);
   --box-shadow: 0 3px 0 var(--color-brass-deep);
-  font-family: var(--font-heading);
+  // Body/UI typeface, not --font-heading: this is a button label (Phase 4 typography guidance).
+  font-family: var(--font-body);
+  font-weight: 700;
   font-size: 0.9375rem;
   text-transform: none;
 
@@ -295,7 +302,10 @@ ion-content {
   &::part(native) {
     min-height: 56px;
     border-radius: var(--radius-pill);
-    font-family: var(--font-heading);
+    // Matches the pill-action-button mixin's own --font-body choice above (Phase 4 typography
+    // guidance) — this ::part(native) override would otherwise win back to --font-heading.
+    font-family: var(--font-body);
+    font-weight: 700;
     font-size: 1.0625rem;
     line-height: 1;
   }

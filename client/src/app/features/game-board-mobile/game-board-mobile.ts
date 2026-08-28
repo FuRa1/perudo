@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Table } from '../table/table';
+import { Table } from '@client/app/features/table/table';
 
 /** Canonical MVP board. All viewport sizes ultimately render this mobile composition. */
 @Component({

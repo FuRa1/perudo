@@ -1,0 +1,14 @@
+@if (display(); as d) {
+  <div
+    class="turn-timer flex items-center gap-1.5"
+    [class.turn-timer--quiet]="d.phase === 'quiet'"
+    [class.turn-timer--warning]="d.phase === 'warning'"
+    [class.turn-timer--bank]="d.phase === 'bank'"
+    [class.turn-timer--expired]="d.phase === 'expired'"
+    role="timer"
+    [attr.aria-label]="'Turn timer: ' + secondsRemaining() + ' seconds remaining'"
+  >
+    <span class="turn-timer__dot" aria-hidden="true"></span>
+    <span class="turn-timer__seconds">{{ secondsRemaining() }}s</span>
+  </div>
+}

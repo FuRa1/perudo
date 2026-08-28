@@ -17,11 +17,11 @@
 
         <div class="lobby__code-card flex flex-col gap-3 mt-4">
           <span class="lobby__code-label text-xs">Room code</span>
-          <div class="lobby__code-value font-heading">{{ roomId() }}</div>
+          <div class="lobby__code-value">{{ roomId() }}</div>
           <div class="flex items-center gap-2">
             <ion-button class="lobby__code-share" fill="solid" (click)="shareRoomCode()">
               <svg lucideShare2 slot="start" aria-hidden="true"></svg>
-              Share invite
+               Share invite
             </ion-button>
             <button
               type="button"
@@ -89,12 +89,10 @@
               </span>
             </li>
           }
-          @for (seatNumber of openSeatNumbers(); track seatNumber) {
             <li class="lobby__seat--open flex items-center gap-3 p-3">
               <div class="lobby__seat--open-avatar flex-none" aria-hidden="true"></div>
-              <span class="text-sm">Seat {{ seatNumber }} &mdash; open</span>
+              <span class="text-sm">Open Seat</span>
             </li>
-          }
         </ul>
 
         @if (allReady()) {
@@ -110,7 +108,6 @@
             [fill]="me()?.isReady ? 'outline' : 'solid'"
             (click)="toggleReady()"
           >
-            <svg lucideCheck slot="start" aria-hidden="true"></svg>
             {{ me()?.isReady ? 'Cancel ready' : "I'm ready" }}
           </ion-button>
           <p class="lobby__ready-caption text-center text-xs">

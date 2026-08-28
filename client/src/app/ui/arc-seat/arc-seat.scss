@@ -119,7 +119,12 @@
 }
 
 .arc-seat__initial {
-  font-family: var(--font-heading, inherit);
+  // Body/UI typeface, not --font-heading: a single blackletter capital reads as a near-abstract
+  // shape rather than a recognizable letter (confirmed visually) — the whole point of this
+  // monogram is quick identification, which a genuine display face actively works against here.
+  // The player's full nickname (rendered separately, already --font-body) stays the actual
+  // readable identity; this is just its quick-glance initial.
+  font-family: var(--font-body, inherit);
   font-size: 18px;
   font-weight: 700;
   color: var(--color-cream);
@@ -138,7 +143,11 @@
   .arc-seat--active & {
     font-size: 14px;
     font-weight: 700;
-    color: var(--color-cream);
+    // --color-ivory (near-white), not --color-cream: mobile-lantern.dc.html renders the active
+    // bidder's own name in pure white, distinctly brighter than every other seat's cream — an
+    // emphasis cue on top of the existing size/weight bump, not a replacement for it (guardrail:
+    // "turn = solid ring + heavier name, never hue alone" still holds — hue is additive here).
+    color: var(--color-ivory);
   }
 
   .arc-seat--eliminated & {
@@ -155,7 +164,9 @@
 }
 
 .arc-seat__status--rolled {
-  color: var(--color-sage);
+  // --color-success, not --color-sage: mobile-lantern.dc.html's own "rolled" status text is a
+  // lighter, more desaturated sage than --color-sage's more saturated badge role elsewhere.
+  color: var(--color-success);
   font-weight: 700;
 }
 

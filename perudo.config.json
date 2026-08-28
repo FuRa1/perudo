@@ -1,0 +1,11 @@
+{
+  "turnTimer": {
+    "quietPhaseEndMs": 15000,
+    "audiblePhaseEndMs": 25000,
+    "baseTurnMs": 25000,
+    "personalBankMs": 30000
+  },
+  "specialRoundBonusTimerMs": 7000,
+  "reconnectWaitWindowMs": 60000,
+  "enabled": true
+}

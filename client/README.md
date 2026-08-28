@@ -20,14 +20,24 @@ Opens the dev server at `http://localhost:4200/`, reloading on source changes.
 
 ## Scripts
 
-| Script      | What it does                                                                                |
-| ----------- | ------------------------------------------------------------------------------------------- |
-| `start`     | `ng serve` — dev server with live reload.                                                   |
-| `build`     | `ng build` — production build to `dist/`.                                                   |
-| `watch`     | `ng build --watch --configuration development` — dev-mode build, watching.                  |
-| `typecheck` | `tsc --noEmit` against both the app and spec tsconfigs.                                     |
-| `lint`      | Lints this package (including `.html` templates) with the repo's single root ESLint config. |
-| `test`      | `ng test` — runs unit tests with Vitest.                                                    |
+| Script       | What it does                                                                                                                                                                             |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `start`      | `ng serve` — dev server with live reload.                                                                                                                                                |
+| `build`      | `ng build` — production build to `dist/`.                                                                                                                                                |
+| `watch`      | `ng build --watch --configuration development` — dev-mode build, watching.                                                                                                               |
+| `typecheck`  | `tsc --noEmit` against both the app and spec tsconfigs.                                                                                                                                  |
+| `lint`       | Lints this package (including `.html` templates) with the repo's single root ESLint config.                                                                                              |
+| `test`       | `ng test` — runs unit tests with Vitest.                                                                                                                                                 |
+| `e2e`        | Real-browser Playwright suite (`e2e/*.e2e.mjs`) against a live client+server — starts one itself if none is already running. Covers lobby/ready-up, a full bidding round, and reconnect. |
+| `e2e:render` | Captures reference screenshots of the running app at key UI states into `e2e/.screenshots/` (gitignored) — a visual-inspection aid, not a pass/fail check.                               |
+
+## Fonts
+
+Self-hosted, never a remote/CDN font load (CLAUDE.md 8.1) — `public/assets/fonts/` holds Pirata
+One (headings, banners, the wordmark) and EB Garamond (everything else: buttons, bids, room
+codes, timers). Both SIL Open Font License 1.1, sourced from the Google Fonts repository; see
+that directory's own `README.md` for the exact files, license text, and which CSS token
+(`--font-heading` / `--font-body` in `src/theme/_tokens.scss`) each backs.
 
 ## Notes
 

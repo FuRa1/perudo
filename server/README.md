@@ -4,6 +4,13 @@ NestJS backend — orchestration only. Holds room state, applies intents via `Ga
 
 Match state lives in server memory (a `Map` keyed by `roomId`) — no database in the MVP; restarting the server drops active matches by design (CLAUDE.md 3.3).
 
+`GameGateway` (`src/game/game.gateway.ts`) is the only file touching Socket.io — it translates
+socket messages into `GameEngine` intents and broadcasts the results, holding no game rules of
+its own. `TurnTimerService` (`src/game/turn-timer.service.ts`, added in Phase 5) owns all
+server-authoritative turn timing (the 15s/25s/30s-bank sequence, 5.6/5.7) and reconnect-session
+bookkeeping lives on `RoomsService`'s per-room `sessionsByToken` map (`src/game/rooms.service.ts`)
+— a random token handed back to the client on join, never included in any broadcast state.
+
 ## Prerequisites
 
 Node.js 22.12+, npm 11+. Installed as part of the root workspace install (`npm install` at the repo root) — there is no separate install step here.

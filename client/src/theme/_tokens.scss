@@ -1,72 +1,101 @@
-// Perudo design tokens — values extracted from designs/perudo-design-kit.dc.html and
-// designs/perudo-graphics-spec.dc.html (Design Implementation Task 1). Every color, radius,
-// shadow and font used anywhere in the app must come from one of these custom properties —
-// never a raw hex value in a template or component stylesheet.
+// Perudo design tokens — derived from the approved Claude design HTML references under
+// /designs, above all designs/mobile-lantern.dc.html (the canonical "lantern cabin" table scene
+// — literal inline hex/rgba values there were read directly off the markup and cross-checked
+// against designs/perudo-design-kit.dc.html / perudo-graphics-spec.dc.html for the wider
+// palette). Figma was never used for this project — there is no Figma file, and none of these
+// values came from one. Every color, radius, shadow and font used anywhere in the app must come
+// from one of these custom properties — never a raw hex value in a template or component
+// stylesheet.
 //
-// Two surface families, matching the kit:
+// Two surface families, matching the design references:
 //  - "off-table" (light, cream) — entry/lobby/winner and any card floating over the table.
 //  - "on-table" (dark cabin) — the table screen itself, lit by one warm lantern.
 //
-// Swapping the "pirate lantern tavern" look for a future theme means editing only the values in
-// this file. Component-scoped stylesheets consume these exclusively via var(--token-name), never
-// a literal color/size — see theme/_mixins.scss and theme/_variables.scss for the shared
-// building blocks built on top of them.
-//
-// Deliberately a plain :root block, not a Tailwind `@theme` block: Tailwind v4 tree-shakes
-// `@theme` custom properties per compiled file, keeping only the ones a utility class in that
-// SAME file's own output actually resolves to. Since every component now owns its presentation
-// in its own co-located .scss file (compiled separately from this one), a token used only by,
-// say, table.scss would get silently pruned from this file's output before table.scss's
-// `var(--color-table-center)` ever had anything to resolve against. A plain :root block is
-// ordinary CSS to Tailwind — passed through untouched, regardless of where it's referenced.
+// Requested-semantic-name -> actual token cross-reference (Phase 4 token-audit pass): most of
+// the names below already existed under a matching or near-matching name pre-audit; rather than
+// add a second, purely-aliased property for every one of them (a competing name for the exact
+// same value, with no real consumer), the ones that were already exact or equivalent are
+// documented here instead — parchment = --color-parchment, ink/ink-muted =
+// --color-ink/--color-ink-muted, border = --color-border/--color-border-onboard (off-/on-table
+// variants), focus = --color-focus, danger = --color-ember/--color-danger, surface =
+// --color-surface, gold = --color-brass (the design's one warm metallic accent, already used
+// pervasively), shadow = the four --shadow-* tiers below. The remainder were genuinely missing
+// or had drifted from the design's actual values and are added/corrected below.
 :root {
   // Off-table surfaces (light)
   --color-page: #e7e0d3; // overall app canvas
   --color-surface: #fffdf7; // light card/panel background
   --color-surface-alt: #f5ead8; // lobby "ground" surface, stat tiles
   --color-sand: #ebddc5; // secondary fill, chips, flat outcome-card bg
-  --color-parchment: #f6ecd8; // cream card / wager-token gradient start
-  --color-parchment-dark: #e4d5b8; // cream card / wager-token gradient end
-  --color-ivory: #fffaf0; // die body, always — on or off the table
-  --color-identity-start: #c99657; // generic per-player identity tile (design-kit avatar swatch)
-  --color-identity-end: #6b4526; // — gradient end; distinguishes a roster entry without a real avatar
+  --color-parchment: #f6ecd8; // cream card / wager-token gradient start (mobile-lantern.dc.html's wager-token bg, exact)
+  --color-parchment-dark: #e4d5b8; // cream card / wager-token gradient end (exact)
+  // "parchment-muted" (requested name): the same value/role as --color-parchment-dark above —
+  // documented rather than duplicated as a second property with nothing new to say.
+  --color-ivory: #fffaf0; // die body, always — on or off the table (exact match, mobile-lantern.dc.html's larger dice)
+  // The per-player identity tile was previously a brighter/more saturated brass-toned gradient
+  // that didn't actually match any color in the approved design. mobile-lantern.dc.html's own
+  // opponent seat/cup avatars use a distinct muted wood-brown gradient — corrected to that exact
+  // pair (a real token-mismatch fix, not a re-theme) and now also exposed under the requested
+  // "wood"/"wood-dark" names, since both concepts are genuinely the same color pair.
+  --color-wood: #6b4f31; // mobile-lantern.dc.html opponent seat/cup gradient start, exact
+  --color-wood-dark: #33261a; // — gradient end, exact
+  --color-identity-start: var(--color-wood); // generic per-player identity tile
+  --color-identity-end: var(--color-wood-dark); // — distinguishes a roster entry without a real avatar
 
   // On-table surfaces (dark cabin)
   --color-cabin: #241d16; // dark panel background (rail, dice-kit style boxes)
-  --color-table-center: #5a462d; // radial centre / "lamplit wood"
-  --color-table-mid: #33281c; // table gradient mid-tone
-  --color-table-edge: #1e1811; // table gradient / vignette edge
+  --color-table-center: #5a462d; // radial centre / "lamplit wood" (exact, mobile-lantern.dc.html phone-frame bg)
+  --color-table-mid: #33281c; // table gradient mid-tone (exact)
+  --color-table-edge: #1e1811; // table gradient / vignette edge (mobile-lantern.dc.html's own end-stop, #211a13, is a hair lighter — close enough to treat as the same vignette-edge value rather than a third near-duplicate token)
   --color-fill-onboard: rgba(242, 231, 211, 0.06); // quiet panel fill on the table
-  --color-fill-onboard-strong: rgba(242, 231, 211, 0.1); // control fill on the table
-  --color-fill-onboard-hover: rgba(242, 231, 211, 0.2); // hover/active on-table fill
-  --color-border-onboard: rgba(242, 231, 211, 0.16); // quiet border on the table
+  --color-fill-onboard-strong: rgba(242, 231, 211, 0.1); // control fill on the table (exact — mobile-lantern.dc.html's stepper button fill)
+  --color-fill-onboard-hover: rgba(242, 231, 211, 0.2); // hover/active on-table fill (exact — mobile-lantern.dc.html's stepper button border, reused here as the hover fill)
+  --color-border-onboard: rgba(242, 231, 211, 0.16); // quiet border on the table (exact, mobile-lantern.dc.html's header chips)
   --color-border-onboard-strong: rgba(242, 231, 211, 0.28); // control border on the table
+  // The warm lantern-glow highlight that washes the table's lit center and edges the bid tray in
+  // mobile-lantern.dc.html (radial mat glow, tray border-top) — previously only ever inlined at
+  // its point of use, never named. Alpha is supplied per-use (glow gradients and hairlines use
+  // different strengths in the design itself), so this token holds the base RGB triplet only.
+  --color-lantern-glow-rgb: 255, 224, 176; // mobile-lantern.dc.html's own glow rgb, exact
 
   // Ink & text
-  --color-ink: #2e2b25; // primary text on light surfaces
+  --color-ink: #2e2b25; // primary text on light surfaces (exact, mobile-lantern.dc.html title)
   --color-ink-muted: #474238; // narration/body text on light surfaces
-  --color-meta: #645c50; // labels/meta text on light surfaces
-  --color-cream: #f2e7d3; // primary text on dark surfaces
-  --color-cream-muted: #c0b6a5; // secondary text on dark surfaces
+  --color-meta: #645c50; // labels/meta text on light surfaces (exact, mobile-lantern.dc.html subtitle)
+  --color-cream: #f2e7d3; // primary text on dark surfaces (exact, mobile-lantern.dc.html status bar/names)
+  --color-cream-muted: #c0b6a5; // secondary text on dark surfaces (exact)
   --color-cream-faint: #a19786; // uppercase labels on dark surfaces
 
-  // Brass — active/focus accent
-  --color-brass: #d69a52;
-  --color-brass-deep: #8c491a; // link hover, kicker text, badge text on light
+  // Brass/gold — active/focus accent (mobile-lantern.dc.html's current-bid badge border, active-cup border)
+  --color-brass: #d69a52; // exact
+  --color-brass-deep: #8c491a; // link hover, kicker text, badge text on light (exact, mobile-lantern.dc.html's "×" separator on the wager token)
+  // A brighter warm-gold highlight, distinct from --color-brass — mobile-lantern.dc.html uses
+  // this specifically for the "you open the round" turn-order callout, a punchier tone than the
+  // brass border/accent color. Requested by name ("gold-highlight").
+  --color-gold-highlight: #f0c98d; // exact, mobile-lantern.dc.html's turn-order kicker text
 
   // Terracotta — primary action
-  --color-terracotta: #c67139;
+  --color-terracotta: #c67139; // exact, mobile-lantern.dc.html's primary button fill
   --color-terracotta-shade: #b2622d; // hover/active
 
   // Ember — danger / call-liar / loss
-  --color-ember: #b3503f;
-  --color-ember-soft: #e08a78; // ember label on dark
+  --color-ember: #b3503f; // exact, mobile-lantern.dc.html's "Call liar" button border
+  --color-ember-soft: #e08a78; // ember label on dark (exact, mobile-lantern.dc.html's "Call liar" text)
   --color-danger: #8c2f24; // deep danger text/stat on light
 
-  // Sage — success / waiting-positive
-  --color-sage: #7a8a5e;
+  // Sage — a muted, slightly desaturated variant used for positive/affirming status text
+  // (mobile-lantern.dc.html's "rolled" status under each seat is a lighter sage than the
+  // existing --color-sage below, which serves a different, more saturated badge role
+  // elsewhere) — requested by name ("success").
+  --color-success: #aebf92; // exact, mobile-lantern.dc.html's "rolled" status text
+  --color-sage: #7a8a5e; // waiting-positive badge fill/text elsewhere (unchanged, still a real design-kit value)
   --color-sage-deep: #4a5735; // text on sage-soft
   --color-sage-soft: #e2e8d5; // badge bg on light
+  // The turn timer's warning/yellow phase (5.6) already used --color-brass directly; named here
+  // as its own semantic alias (same value, not a new hue — the lantern palette has no separate
+  // "traffic-light yellow", and inventing one would clash with the rest of the warm accent
+  // language) so timer.scss can reference something named for what it means.
+  --color-warning: var(--color-brass);
 
   // Neutral — "medium"/disabled/out
   --color-neutral: #7d7466;
@@ -79,6 +108,31 @@
 
   // Focus ring — brass, everywhere
   --color-focus: #d69a52;
+
+  // Modal/overlay backdrop tint — previously an unnamed literal opacity set inline
+  // (round-loss-modal.html's [style.--backdrop-opacity]) with no color of its own (Ionic's
+  // default backdrop is plain black). Derived from the design's own darkest on-table hue
+  // (--color-table-edge) rather than a generic black, so a scrim reads as "the lantern going out"
+  // instead of an unrelated neutral overlay.
+  --color-overlay: rgba(30, 24, 17, 0.72);
+
+  // "surface-raised" (requested name): the parchment gradient (--color-parchment /
+  // --color-parchment-dark above) *is* this role already — bid-marker.scss's own doc comment
+  // calls the current-bid badge "the only light object on the table", i.e. the one surface that
+  // visually lifts off the dark table rather than sitting flush with it. Named explicitly so any
+  // future "raised card on the table" component has an obvious token to reach for instead of
+  // re-deriving the same gradient.
+  --color-surface-raised: var(--color-parchment);
+
+  // "sea"/"sea-dark" (requested names): the approved Claude design (mobile-lantern.dc.html, and
+  // the wider perudo-design-kit.dc.html/perudo-graphics-spec.dc.html palette) contains no blue or
+  // navy tone anywhere — it is a warm lantern-and-wood palette throughout, confirmed by scanning
+  // every literal hex value across both reference files. Rather than invent an unapproved hue to
+  // fill a name on a checklist, these alias the existing dark on-table ambience (the closest
+  // real analog: a deep, cool-toned surface behind the warm foreground) so the semantic slot
+  // exists without fabricating a color no design reference actually shows.
+  --color-sea: var(--color-table-mid);
+  --color-sea-dark: var(--color-table-edge);
 
   // Radii
   --radius-pip: 8px;
@@ -95,13 +149,45 @@
   --shadow-overlay: 0 24px 54px rgba(0, 0, 0, 0.5);
   --shadow-button: 0 6px 16px rgba(198, 113, 57, 0.42);
 
-  // Type — local/system fallbacks only (CLAUDE.md 8.1: no remote web-font loading, no invented
-  // font files). These stacks approximate the kit's Caprasimo (display headings) / Figtree
-  // (body) pairing with fonts already available on the platform; swap in the real families here
-  // once licensed webfont files are added to the repo — no template or component-style changes
-  // needed.
-  --font-heading: 'Segoe UI Black', 'Arial Black', ui-rounded, system-ui, sans-serif;
-  --font-body: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  // Type (Phase 4) — self-hosted local files under client/public/assets/fonts/ (see the
+  // @font-face block below), never a remote/CDN font load (CLAUDE.md 8.1's decision is about
+  // *loading*, not about having no real font files at all — once files exist, self-hosting them
+  // is exactly what "swap in the real families here" meant). Both are SIL Open Font License 1.1
+  // (full text alongside each file, *-OFL.txt) pulled from the Google Fonts repository, which
+  // co-locates every font with its actual license: github.com/google/fonts/tree/main/ofl/.
+  //  - Display: Pirata One — a single-weight pirate-themed blackletter face (its own upstream
+  //    "Reserved Font Name" is literally 'Pirata'), used only for the game title, major
+  //    headings, and round-result banners (5.4/8's decorative-label list) — never for anything
+  //    that needs to be read precisely (room codes, quantities, timers — see --font-body below).
+  //  - Body/UI: EB Garamond — a variable font (weight 400-800 in one file), classic and highly
+  //    legible at small sizes, used for everything else: buttons, nicknames, room codes, bid
+  //    quantities, the current-bid badge, dice counts, timer values, error/accessibility text.
+  // System fallbacks are kept as the second/third stack entries so a failed font load (or a
+  // build that hasn't copied the files) never breaks layout, only softens the theme.
+  --font-heading: 'Pirata One', 'Segoe UI Black', 'Arial Black', ui-rounded, system-ui, sans-serif;
+  --font-body: 'EB Garamond', 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+}
+
+// font-display: swap — text renders immediately in the fallback stack and re-flows to the real
+// face once it loads, rather than an invisible-text flash (FOIT); at these weights/sizes the
+// metric difference from the system fallback is small enough that the swap itself doesn't cause
+// a jarring layout shift. Both files are woff2-free TrueType — small enough (Pirata One ~55KB,
+// EB Garamond's whole variable weight range ~830KB) that a single non-CDN request each is fine
+// for this MVP; revisit with woff2 conversion only if that ever shows up as a real load-time cost.
+@font-face {
+  font-family: 'Pirata One';
+  src: url('/assets/fonts/PirataOne-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('/assets/fonts/EBGaramond-Variable.ttf') format('truetype-variations');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
 }
 
 // Single page-edge gutter system for the whole app — every screen's <ion-content> gets this,
