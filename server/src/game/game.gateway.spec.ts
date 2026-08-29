@@ -57,9 +57,14 @@ async function setupBiddingRoom(
   rooms: RoomsService,
   roomId: string,
   sequence: readonly DiceValue[],
+  // Distinct ids only matter when a test keeps two rooms alive at once and still needs to route
+  // handler calls into a *specific* one afterward — the gateway maps sockets to rooms by client
+  // id, so two rooms both defaulting to 'p1'/'p2' would have the second join silently steal the
+  // first's routing.
+  playerIds: readonly [string, string] = ['p1', 'p2'],
 ): Promise<{ s1: MockSocket; s2: MockSocket }> {
-  const s1 = makeSocket('p1');
-  const s2 = makeSocket('p2');
+  const s1 = makeSocket(playerIds[0]);
+  const s2 = makeSocket(playerIds[1]);
   await gateway.handleJoinRoom(s1.socket, { roomId, nickname: 'P1' });
   await gateway.handleJoinRoom(s2.socket, { roomId, nickname: 'P2' });
 
@@ -90,7 +95,7 @@ describe('GameGateway — server-authoritative round resolution (transport bound
     jest.useFakeTimers();
     rooms = new RoomsService();
     timers = new TurnTimerService(rooms, new TimerConfigService());
-    gateway = new GameGateway(rooms, timers, new TimerConfigService());
+    gateway = new GameGateway(rooms, timers);
     mockServer = makeServer();
     (gateway as unknown as { server: Server }).server = mockServer.server;
   });
@@ -305,7 +310,7 @@ describe('GameGateway — Phase 5: reconnect sessions and server-authoritative t
     jest.setSystemTime(0);
     rooms = new RoomsService();
     timers = new TurnTimerService(rooms, new TimerConfigService());
-    gateway = new GameGateway(rooms, timers, new TimerConfigService());
+    gateway = new GameGateway(rooms, timers);
     mockServer = makeServer();
     (gateway as unknown as { server: Server }).server = mockServer.server;
   });
@@ -573,5 +578,87 @@ describe('GameGateway — Phase 5: reconnect sessions and server-authoritative t
     expect(room.state.round?.bidHistory).toHaveLength(1);
     expect(room.state.players.find((p) => p.id === 'p1')?.diceCount).toBe(5); // the bid won, not the timeout
     expect(room.timer?.playerId).toBe('p2'); // a fresh timer, not the stale one
+  });
+});
+
+describe('GameGateway — setTimerMode: per-room timer toggle', () => {
+  let rooms: RoomsService;
+  let timers: TurnTimerService;
+  let gateway: GameGateway;
+  let mockServer: ReturnType<typeof makeServer>;
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(0);
+    rooms = new RoomsService();
+    timers = new TurnTimerService(rooms, new TimerConfigService());
+    gateway = new GameGateway(rooms, timers);
+    mockServer = makeServer();
+    (gateway as unknown as { server: Server }).server = mockServer.server;
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("disabling timers cancels the room's active timer and blocks new ones from starting, without touching another room", async () => {
+    const sequence: DiceValue[] = [6, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4];
+    const { s1 } = await setupBiddingRoom(gateway, rooms, 'toggle-room', sequence);
+    // Distinct ids so this room's join doesn't steal 'toggle-room' socket routing (see
+    // setupBiddingRoom's doc comment).
+    await setupBiddingRoom(gateway, rooms, 'other-room', sequence, ['op1', 'op2']);
+
+    const toggleRoom = rooms.find('toggle-room') as RoomRuntime;
+    const otherRoom = rooms.find('other-room') as RoomRuntime;
+    expect(toggleRoom.timer).not.toBeNull();
+    expect(otherRoom.timer).not.toBeNull();
+
+    await gateway.handleSetTimerMode(s1.socket, { enabled: false });
+
+    expect(toggleRoom.timer).toBeNull(); // cancelled immediately, no restart needed
+    expect(otherRoom.timer).not.toBeNull(); // a different room's timer is never touched
+
+    // A fresh bid in the disabled room must not re-arm a timer.
+    await gateway.handlePlaceBid(s1.socket, { bid: normalBid(1, 2) });
+    expect(toggleRoom.timer).toBeNull();
+  });
+
+  it('re-enabling timers starts a fresh one for the current turn', async () => {
+    const sequence: DiceValue[] = [6, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4];
+    const { s1 } = await setupBiddingRoom(gateway, rooms, 'reenable-room', sequence);
+    await gateway.handleSetTimerMode(s1.socket, { enabled: false });
+    const room = rooms.find('reenable-room') as RoomRuntime;
+    expect(room.timer).toBeNull();
+
+    await gateway.handleSetTimerMode(s1.socket, { enabled: true });
+    expect(room.timer).not.toBeNull();
+    expect(room.timer?.playerId).toBe('p1'); // still p1's turn, nothing else happened
+  });
+
+  it('broadcasts timerModeChanged to the whole room', async () => {
+    const sequence: DiceValue[] = [6, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4];
+    const { s1 } = await setupBiddingRoom(gateway, rooms, 'broadcast-room', sequence);
+
+    await gateway.handleSetTimerMode(s1.socket, { enabled: false });
+
+    expect(mockServer.emit).toHaveBeenCalledWith('timerModeChanged', { enabled: false });
+  });
+
+  it('rejects a non-boolean payload without mutating any room state', async () => {
+    const sequence: DiceValue[] = [6, 3, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4];
+    const { s1 } = await setupBiddingRoom(gateway, rooms, 'invalid-room', sequence);
+    const room = rooms.find('invalid-room') as RoomRuntime;
+    const timerBefore = room.timer;
+
+    await gateway.handleSetTimerMode(s1.socket, { enabled: 'nope' });
+
+    expect(lastEmitted<GameError>(s1.emit, 'error')?.code).toBe(ErrorCode.WRONG_PHASE);
+    expect(room.timer).toBe(timerBefore);
+  });
+
+  it('rejects the message from a socket that has not joined a room yet', async () => {
+    const stray = makeSocket('stray');
+    await gateway.handleSetTimerMode(stray.socket, { enabled: false });
+    expect(lastEmitted<GameError>(stray.emit, 'error')?.code).toBe(ErrorCode.ROOM_NOT_FOUND);
   });
 });

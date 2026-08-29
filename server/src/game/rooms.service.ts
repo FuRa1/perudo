@@ -38,6 +38,10 @@ export interface RoomRuntime {
   readonly sessionsByToken: Map<string, string>;
   /** The single active BIDDING-turn timer for this room, if any (5.6/5.7). */
   timer: ActiveTurnTimer | null;
+  /** Per-room override of the server's default timer enablement (`setTimerMode`), `null` until a
+   * player in this room explicitly toggles it — falls back to `TimerConfigService`'s process-wide
+   * default. Scoped to this room only; toggling it never affects any other room. */
+  timerEnabled: boolean | null;
 }
 
 /** Sufficiently random reconnect/session token (section 4.5/7) — 256 bits from Node's CSPRNG,
@@ -64,6 +68,7 @@ export class RoomsService {
       queue: Promise.resolve(),
       sessionsByToken: new Map(),
       timer: null,
+      timerEnabled: null,
     };
     this.rooms.set(roomId, room);
     return room;

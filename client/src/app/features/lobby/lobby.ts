@@ -1,6 +1,6 @@
 import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
-import { LucideCheck, LucideCopy, LucideDices, LucideShare2 } from '@lucide/angular';
+import { LucideCopy, LucideDices, LucideShare2 } from '@lucide/angular';
 import { RULES_CONFIG } from '@shared';
 import { GameStore } from '../../core/game-store';
 import { SocketService } from '../../core/socket.service';
@@ -13,7 +13,7 @@ type ShareStatus = 'idle' | 'success' | 'unavailable' | 'failure';
 @Component({
   selector: 'app-lobby',
   standalone: true,
-  imports: [IonContent, IonButton, LucideCheck, LucideCopy, LucideDices, LucideShare2],
+  imports: [IonContent, IonButton, LucideCopy, LucideDices, LucideShare2],
   templateUrl: './lobby.html',
   styleUrl: './lobby.scss',
 })

@@ -52,8 +52,10 @@ export class TurnTimerService {
    * turn begins (e.g. they were made the next round's first bidder while offline), the timer
    * starts directly in the disconnected/fallback state. */
   startTimer(room: RoomRuntime, playerId: string): void {
-    // Check if timers are disabled before starting timer
-    if (!this.timerConfig.enabled) {
+    // room.timerEnabled (set via `setTimerMode`) overrides the process-wide default for this
+    // room only; null means no room-level override has been made yet.
+    const enabled = room.timerEnabled ?? this.timerConfig.enabled;
+    if (!enabled) {
       return;
     }
     this.cancelTimer(room);

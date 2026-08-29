@@ -13,12 +13,66 @@ Format: one entry per issue, newest first within its section. Move an entry from
 
 ## Open
 
-*(none currently — see Resolved below for the two items closed during the Phase 4 UI/UX pass,
-2026-08-15)*
+_(none currently — see Resolved below for the two items closed during the Phase 4 UI/UX pass,
+2026-08-15)_
 
 ---
 
 ## Resolved
+
+### Server crashed on startup — `TimerConfigService` was never registered in `GameModule`
+
+- **Found:** 2026-08-29, while running the full verification suite (lint/typecheck/test/build)
+  after committing a large batch of previously-uncommitted work (Phases 4-6 plus an
+  out-of-spec configurable-timer feature, see `TIMING_CONFIG.md`).
+- **Symptom:** `npm run dev` / `nest start` threw `UnknownDependenciesException` immediately at
+  boot — `TurnTimerService` injects `TimerConfigService`, but `game.module.ts`'s `providers`
+  array never listed it. All tests still passed, because each spec file manually constructs
+  `new TimerConfigService()` and passes it in by hand, masking the missing DI registration in
+  the real app. Confirmed live: `npx ts-node src/main.ts` crashed before the fix and started
+  cleanly after.
+- **Resolved 2026-08-29:** added `TimerConfigService` to `GameModule`'s `providers`
+  (`server/src/game/game.module.ts`).
+
+### `setTimerMode` was a broken, global, cross-room timer kill-switch
+
+- **Found:** 2026-08-29, same verification pass — auditing the newly-committed configurable-timer
+  feature (`TIMING_CONFIG.md`, `TimerConfigService`, `perudo.config.json`) for correctness.
+- **Symptom:** any connected socket, in any room, could call `setTimerMode` and it would disable
+  turn timers for **every room on the server**, not just the caller's own — a global on-disk file
+  write with no room scoping. Worse, the write had **no live effect**: `TimerConfigService` loads
+  `perudo.config.json` once in its constructor and the handler never triggered a reload, so the
+  change only took effect after a full server restart, while still emitting a false-positive
+  `timerModeChanged` success acknowledgment. There was also no client UI for it — only reachable
+  by hand-crafting a raw socket message. Separately, the config file itself lived at the repo
+  root, but `TimerConfigService` resolves it via `process.cwd()`, which is always `server/` for
+  every way this project actually starts the server (`npm run start:dev -w server`, `npm run
+dev`) — so it was silently ignored either way.
+- **Resolved 2026-08-29 (user's explicit choice: fix properly, scoped per-room, over
+  removing it or leaving the cross-room behavior in place):** `RoomRuntime` gained a
+  `timerEnabled: boolean | null` field (`server/src/game/rooms.service.ts`) — an in-memory,
+  per-room override, `null` until a player in that room toggles it, falling back to
+  `TimerConfigService`'s process-wide default otherwise. `TurnTimerService.startTimer` now checks
+  `room.timerEnabled ?? this.timerConfig.enabled`. `handleSetTimerMode`
+  (`server/src/game/game.gateway.ts`) no longer touches the filesystem at all — it mutates only
+  the caller's own room, cancels/starts that room's timer immediately (no restart needed), and
+  broadcasts `timerModeChanged` + a fresh `state` snapshot to that room only. `perudo.config.json`
+  moved to `server/perudo.config.json` (where the server actually looks for it) and now stays a
+  static, server-operator-set startup default only — never client-writable. 5 new gateway
+  integration tests cover cancel-on-disable, restart-on-enable, room-scoped broadcast, invalid
+  payload rejection, and cross-room isolation (`game.gateway.spec.ts`).
+
+### Lobby "open seat" placeholders — computed but never rendered in a loop
+
+- **Found:** 2026-08-29, from 2 pre-existing failing tests surfaced by the same verification pass
+  (`lobby.spec.ts`'s "open-seat placeholders" suite).
+- **Symptom:** `Lobby.openSeatNumbers` (`client/src/app/features/lobby/lobby.ts`) correctly
+  computed one entry per remaining table seat, but `lobby.html` never iterated over it — it
+  rendered exactly one hardcoded "Open Seat" `<li>` regardless of how many seats were actually
+  open, or none at all at full capacity.
+- **Resolved 2026-08-29:** wired an `@for` loop over `openSeatNumbers()` into the roster list,
+  each row reading "Seat N — open". Also removed an unused `LucideCheck` import from the same
+  component flagged by the Angular compiler (`NG8113`) during this pass.
 
 ### `bid-controls__suggestions` causes ~40px of horizontal page overflow at 320px viewport width
 
@@ -76,7 +130,7 @@ Format: one entry per issue, newest first within its section. Move an entry from
   `ROUND_REVEALED`); a pure timeout stall (5.7) produces no reveal at all, only `TURN_TIMED_OUT`,
   which nothing in `/client` was listening for.
 - **Resolved 2026-08-15:** added `GameStore.lastTimeout` (set only when `dieLost: true` — a
-  *protected* double-loss-protection stall correctly still produces no notification, since no die
+  _protected_ double-loss-protection stall correctly still produces no notification, since no die
   was actually lost) and a second trigger effect in `RoundLossModal`, branching its template to a
   "Time ran out" / "TURN TIMED OUT" variant instead of the claimed-bid/actual-count reveal
   content. Verified with a real ~56s server-authoritative wait in a live two-player match — the
@@ -91,7 +145,7 @@ Format: one entry per issue, newest first within its section. Move an entry from
 - **Root cause:** `GameStore.lastReveal` is deliberately never cleared on `ROUND_STARTED` (engine
   emits both in the same batch — clearing there would erase it before any consumer ever saw it,
   per the field's own doc comment), but nothing else ever cleared it either, so it lingered
-  through the *entire* next round, including into that round's own BIDDING phase.
+  through the _entire_ next round, including into that round's own BIDDING phase.
 - **Resolved 2026-08-15:** `GameStore.applyEvents` now clears `lastReveal` the moment I roll my
   own hand for the new round (`PLAYER_ROLLED_HAND` for my own player id) — a natural "I've moved
   on" signal that can't co-occur with the reveal in the same batch, so it doesn't fight the
@@ -169,7 +223,7 @@ Format: one entry per issue, newest first within its section. Move an entry from
   `app-root`'s child (the exact structure already committed before the `GameBoard` split) — so it
   predated that work.
 - **Root cause:** `ion-content`'s own `:host` CSS (`@ionic/core/.../content/content.css`) is
-  `flex: 1; height: 100%; contain: size style;` — it depends on a parent with a *definite* height
+  `flex: 1; height: 100%; contain: size style;` — it depends on a parent with a _definite_ height
   to resolve `height: 100%` against, which is normally supplied by Ionic's standard
   `ion-app > ion-page` scaffolding. This app has neither. Every ancestor instead used
   `min-height: 100dvh` (`MobileGameBoard`, `DesktopGameBoard`'s phone frame) — `min-height` never
@@ -177,7 +231,7 @@ Format: one entry per issue, newest first within its section. Move an entry from
   to `0`, and `contain: size` blocked the usual content-based auto-sizing fallback that would
   otherwise rescue a plain block element from that. `ion-content`'s shadow-DOM scroll wrapper
   (`.inner-scroll`, itself `position: absolute` + `overflow: hidden`) collapsed to zero height too
-  and clipped everything inside it — even though `.table-surface`'s *own* CSS (`min-height: 100dvh`)
+  and clipped everything inside it — even though `.table-surface`'s _own_ CSS (`min-height: 100dvh`)
   still reported a correct `getBoundingClientRect()` in isolation, which is what made this so
   confusing to diagnose (every individual element "looked right" on inspection).
 - **Fix, first pass (scoped, incomplete):** `features/table/table.scss` initially set

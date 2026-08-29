@@ -21,9 +21,6 @@ import {
 } from '@shared';
 import { createReconnectToken, RoomsService, type RoomRuntime } from './rooms.service';
 import { TurnTimerService } from './turn-timer.service';
-import { TimerConfigService } from './timer-config.service';
-import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
 
 interface JoinRoomPayload {
   roomId: string;
@@ -33,18 +30,6 @@ interface JoinRoomPayload {
 interface ReconnectPayload {
   roomId: string;
   token: string;
-}
-
-interface PersistedTimerConfigFile {
-  turnTimer: {
-    quietPhaseEndMs: number;
-    audiblePhaseEndMs: number;
-    baseTurnMs: number;
-    personalBankMs: number;
-  };
-  specialRoundBonusTimerMs: number;
-  reconnectWaitWindowMs: number;
-  enabled: boolean;
 }
 
 /** Which room/player a connected socket belongs to, once it has joined (bookkeeping only —
@@ -105,7 +90,6 @@ export class GameGateway implements OnGatewayDisconnect {
   constructor(
     private readonly rooms: RoomsService,
     private readonly timers: TurnTimerService,
-    private readonly timerConfigService: TimerConfigService,
   ) {
     this.timers.setTimeoutHandler((room, playerId) => this.handleTurnTimerFired(room, playerId));
   }
@@ -209,8 +193,15 @@ export class GameGateway implements OnGatewayDisconnect {
     });
   }
 
+  /** Toggles turn timers on/off for the caller's own room only — an in-memory override on that
+   * room's `RoomRuntime` (3.3: room state lives in server memory, never a shared file), so one
+   * room's setting can never leak into another's. Falls back to `TimerConfigService`'s
+   * process-wide default (`RoomRuntime.timerEnabled === null`) until explicitly toggled here. */
   @SubscribeMessage('setTimerMode')
-  handleSetTimerMode(@ConnectedSocket() client: Socket, @MessageBody() payload: unknown): void {
+  async handleSetTimerMode(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: unknown,
+  ): Promise<void> {
     const isTimersEnabled = (payload as { enabled?: unknown } | undefined)?.enabled;
     if (typeof isTimersEnabled !== 'boolean') {
       client.emit('error', gameError(ErrorCode.WRONG_PHASE, 'enabled must be a boolean.'));
@@ -226,36 +217,16 @@ export class GameGateway implements OnGatewayDisconnect {
       return;
     }
 
-    // For this MVP version, we'll just update the config directly for demonstration
-    // In a real implementation, this would be saved to room state or configuration storage
-    try {
-      const configFile = join(process.cwd(), 'perudo.config.json');
-      let existingConfig: PersistedTimerConfigFile = {
-        turnTimer: {
-          quietPhaseEndMs: 15000,
-          audiblePhaseEndMs: 25000,
-          baseTurnMs: 25000,
-          personalBankMs: 30000,
-        },
-        specialRoundBonusTimerMs: 7000,
-        reconnectWaitWindowMs: 60000,
-        enabled: true,
-      };
-
-      if (existsSync(configFile)) {
-        const configContent = readFileSync(configFile, 'utf8');
-        existingConfig = JSON.parse(configContent) as PersistedTimerConfigFile;
+    await this.rooms.runExclusive(context.roomId, (room) => {
+      room.timerEnabled = isTimersEnabled;
+      if (isTimersEnabled) {
+        this.startTimerForCurrentTurn(room);
+      } else {
+        this.timers.cancelTimer(room);
       }
-
-      existingConfig.enabled = isTimersEnabled;
-
-      writeFileSync(configFile, JSON.stringify(existingConfig, null, 2));
-
-      client.emit('timerModeChanged', { enabled: isTimersEnabled });
-    } catch (error) {
-      this.logger.error('Failed to update timer mode', error);
-      client.emit('error', gameError(ErrorCode.WRONG_PHASE, 'Failed to update timer mode.'));
-    }
+      this.server.to(context.roomId).emit('timerModeChanged', { enabled: isTimersEnabled });
+      this.broadcast(context.roomId, room, []);
+    });
   }
 
   @SubscribeMessage('setReady')
@@ -389,11 +360,8 @@ export class GameGateway implements OnGatewayDisconnect {
   }
 
   private startTimerForCurrentTurn(room: RoomRuntime): void {
-    // Check if timers are disabled before starting timer
-    if (!this.timerConfigService.isTimerEnabled()) {
-      return;
-    }
-
+    // Enablement (room override, falling back to the process-wide default) is TurnTimerService's
+    // own call — it no-ops internally if disabled, so there's nothing to check here.
     const round = room.state.round;
     const playerId = round?.turnOrder[round.currentTurnIndex];
     if (playerId) {
