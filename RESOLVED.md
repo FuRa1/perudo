@@ -316,3 +316,36 @@ dev`) — so it was silently ignored either way.
   Playwright in this environment. Given the root cause is a genuine CSS sizing bug (not a
   Chromium-specific quirk) that made the Entry screen render as entirely blank, it's reasonable to
   expect it affected real users too, but that's inference, not direct observation.
+
+### Two approved design files disagreed on the player-identity colour
+
+- **Found:** 2026-09-04, during the design-parity pass. `perudo-lobby-lantern.dc.html` gave each
+  roster seat its own avatar gradient (brass for "you", sage for the next player) while
+  `mobile-lantern.dc.html` made every arc seat a uniform wood-brown, and the app followed the
+  second. Phase 4's token audit had recorded that "the old brass-toned identity gradient matched no
+  colour in the approved design" — a claim made having checked only one of the two files.
+- **Resolved 2026-09-04** by the user naming `perudo-mobile-consolidated.dc.html` as the basis for
+  the design. It settles the question outright: the lobby roster avatar is a **38px circle**
+  coloured by _role_, not identity — solid terracotta for the local player, translucent cream for
+  everyone else. The wood `--color-identity-*` pair belongs to the table's cup silhouettes; the two
+  are different objects, which the earlier cross-file comparison had conflated. The entry-screen
+  brand badge (same gradient, but a logo mark rather than an identity tile) became the canonical
+  file's lit terracotta circle in the same pass.
+
+### Reveal verdict block, bid wording, round chip and roster subline — all four settled by the canonical file
+
+- **Found:** 2026-09-04, logged as four separate "the reference and internal consistency point
+  different ways" judgment calls.
+- **Resolved 2026-09-04**, again by `perudo-mobile-consolidated.dc.html` being named the basis.
+  Its panel "08 Reveal" answers all four directly:
+  - **Verdict block** — a large display-face word with the reasoning inline beside it, not a small
+    caps label stacked in a pill. The "false" variant is a warm rust (`#8c491a`, exactly
+    `--color-brass-deep`), not an alarm red: losing a die is the game working, not an error. The
+    loser sentence folds into that inline text, replacing a separate bold line that had been saying
+    the same thing twice.
+  - **Bid wording** — "4 × fives", plural face names, not "4 × face 5".
+  - **Round chip** — "Round 3 · revealed" during a reveal, not the dice count (which has already
+    changed to reflect the loss the player is still reading about).
+  - **Roster subline** — the canonical lobby row has none, so the "Host · set the rules" /
+    "Joined a moment ago" second line is simply not part of the design. This also retires the
+    concern that the `Player` model has no timestamp to render it truthfully.

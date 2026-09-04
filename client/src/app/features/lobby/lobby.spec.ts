@@ -177,41 +177,29 @@ describe('Lobby', () => {
   });
 
   describe('open-seat placeholders', () => {
-    // Only the first few open seats are drawn as rows; the rest are summarised. At the 12-player
-    // max an empty room would otherwise be ten identical dashed rows, burying the primary
-    // "I'm ready" action a full screen below the fold.
-    it('draws only the first few open seats as rows, starting after the seated players', () => {
+    // Exactly one generic row while seats remain, never one per free seat: the canonical design
+    // draws a single "Open seat", and the "N of M" count directly above it already states how many
+    // are left. A row per seat is redundant, and at the 12-player maximum it was ten identical
+    // dashed lines burying the primary "I'm ready" action below the fold.
+    it('draws exactly one generic open-seat row however many seats are free', () => {
       const { nativeElement } = render('p1', [
         player('p1', 'Alice', false),
         player('p2', 'Bob', false),
       ]);
       const openSeats = nativeElement.querySelectorAll('.lobby__seat--open');
-      expect(openSeats.length).toBeLessThan(RULES_CONFIG.players.max - 2);
-      expect(openSeats[0].textContent ?? '').toContain('Seat 3');
+      expect(openSeats).toHaveLength(1);
+      expect(openSeats[0].textContent ?? '').toContain('Open seat');
     });
 
-    it('summarises the open seats it did not draw, so the real remaining capacity is still stated', () => {
-      const { nativeElement } = render('p1', [
-        player('p1', 'Alice', false),
-        player('p2', 'Bob', false),
-      ]);
-      const drawn = nativeElement.querySelectorAll('.lobby__seat--open').length;
-      const summary = nativeElement.querySelector('.lobby__seat--more');
-      expect(summary?.textContent ?? '').toContain(
-        `${RULES_CONFIG.players.max - 2 - drawn} more seats open`,
-      );
-    });
-
-    it('renders no summary line when every open seat is already drawn', () => {
+    it('still draws exactly one row when only a single seat is left', () => {
       const players = Array.from({ length: RULES_CONFIG.players.max - 1 }, (_, i) =>
         player(`p${i}`, `Player${i}`, false),
       );
       const { nativeElement } = render('p0', players);
       expect(nativeElement.querySelectorAll('.lobby__seat--open')).toHaveLength(1);
-      expect(nativeElement.querySelector('.lobby__seat--more')).toBeNull();
     });
 
-    it('renders no placeholders once the table is at max capacity', () => {
+    it('renders no placeholder once the table is at max capacity', () => {
       const players = Array.from({ length: RULES_CONFIG.players.max }, (_, i) =>
         player(`p${i}`, `Player${i}`, false),
       );

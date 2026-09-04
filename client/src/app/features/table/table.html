@@ -256,20 +256,25 @@
               {{ nicknameFor(r.bidderId) }} claimed {{ describeBid(r.claimedBid) }} — actual count
               {{ r.actualQuantity }}.
             </p>
+            <!-- The verdict reads as one line: the call itself set large in the display face, with
+                 the reasoning and who it cost inline beside it (canonical panel "08 Reveal"). The
+                 loser sentence lives here rather than in a separate bold line below, which used to
+                 say the same thing twice. -->
             <div
-              class="mobile-reveal__verdict flex flex-col gap-0.5"
+              class="mobile-reveal__verdict flex items-center gap-3"
               [class.mobile-reveal__verdict--true]="r.outcome === 'CALLER_LOSES'"
               [class.mobile-reveal__verdict--false]="r.outcome === 'BIDDER_LOSES'"
             >
-              <strong class="text-xs uppercase tracking-wide">
+              <strong class="mobile-reveal__verdict-word font-heading">
                 {{ r.outcome === 'CALLER_LOSES' ? 'Bid true' : 'Bid false' }}
               </strong>
-              <span class="text-xs">
+              <span class="mobile-reveal__verdict-text flex-1">
                 {{
                   r.outcome === 'CALLER_LOSES'
-                    ? 'The actual count met the claim. An exact match is still true.'
+                    ? 'The actual count met the claim — an exact match still counts.'
                     : 'The actual count was below the claim.'
                 }}
+                {{ revealLossSentence(r) }}
               </span>
             </div>
             <ul class="mobile-reveal__rows flex flex-col gap-1.5">
@@ -297,9 +302,6 @@
                   store.lastRevealWasSpecialRound() ? '' : ' — aces are wild'
                 }}.
               </span>
-            </p>
-            <p class="mobile-reveal__outcome text-sm font-semibold">
-              {{ revealOutcomeText(r) }}
             </p>
             @if (nextRoundSummary(); as summary) {
               <p class="mobile-reveal__next text-xs">{{ summary }}</p>

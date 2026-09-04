@@ -45,24 +45,11 @@ export class Lobby implements OnDestroy {
   /** "Seat N — open" placeholders for the rest of the table's capacity (5.1's 2-12 player range) —
    * turns the empty space below a small roster into real information about how many more can
    * join, instead of blank space (design reference §2a). */
-  protected readonly openSeatNumbers = computed(() => {
-    const seated = this.players().length;
-    return Array.from({ length: Math.max(0, this.maxPlayers - seated) }, (_, i) => seated + i + 1);
-  });
-
-  /** The roster only ever draws the first few open seats. At the 12-player maximum an empty room
-   * otherwise renders ten identical dashed rows, which buries the primary "I'm ready" action a
-   * full screen below the fold and reads as a wall of nothing rather than as the "how many more
-   * can join" cue the placeholders exist for. The remainder is summarised in one line instead. */
-  private static readonly VISIBLE_OPEN_SEATS = 4;
-
-  protected readonly visibleOpenSeatNumbers = computed(() =>
-    this.openSeatNumbers().slice(0, Lobby.VISIBLE_OPEN_SEATS),
-  );
-
-  protected readonly hiddenOpenSeatCount = computed(() =>
-    Math.max(0, this.openSeatNumbers().length - Lobby.VISIBLE_OPEN_SEATS),
-  );
+  /** One generic "Open seat" row while the table isn't full, never a numbered row per free seat.
+   * designs/perudo-mobile-consolidated.dc.html draws exactly one, and the "N of M" count directly
+   * above it already states how many remain — so a row per seat is both redundant and, at the
+   * 12-player maximum, ten identical dashed lines burying the primary action below the fold. */
+  protected readonly hasOpenSeat = computed(() => this.players().length < this.maxPlayers);
 
   /** Idle until a real tap/click; never set on load (a genuine user action is required — see
    * copyRoomCode). 'failure' distinguishes a real clipboard error from the ordinary idle state so

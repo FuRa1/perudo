@@ -88,15 +88,10 @@
               </span>
             </li>
           }
-          @for (seatNumber of visibleOpenSeatNumbers(); track seatNumber) {
+          @if (hasOpenSeat()) {
             <li class="lobby__seat--open flex items-center gap-3 p-3">
               <div class="lobby__seat--open-avatar flex-none" aria-hidden="true"></div>
-              <span class="text-sm">Seat {{ seatNumber }} — open</span>
-            </li>
-          }
-          @if (hiddenOpenSeatCount(); as hidden) {
-            <li class="lobby__seat--more text-center text-xs">
-              + {{ hidden }} more {{ hidden === 1 ? 'seat' : 'seats' }} open
+              <span class="text-sm">Open seat</span>
             </li>
           }
         </ul>

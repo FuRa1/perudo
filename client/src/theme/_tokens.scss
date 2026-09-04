@@ -73,6 +73,11 @@
   --color-ink-muted: #474238; // narration/body text on light surfaces
   --color-meta: #645c50; // labels/meta text on light surfaces (exact, mobile-lantern.dc.html subtitle)
   --color-cream: #f2e7d3; // primary text on dark surfaces (exact, mobile-lantern.dc.html status bar/names)
+  // Same value as --color-cream, as an rgb triplet so a consumer can supply its own alpha (same
+  // convention as --color-lantern-glow-rgb below). The design references lean on translucent cream
+  // constantly — every on-table fill and hairline is some rgba(242,231,211,·) — at alphas that
+  // don't all map onto the named --color-fill-onboard-* steps.
+  --color-cream-rgb: 242, 231, 211;
   --color-cream-muted: #c0b6a5; // secondary text on dark surfaces (exact)
   --color-cream-faint: #a19786; // uppercase labels on dark surfaces
 

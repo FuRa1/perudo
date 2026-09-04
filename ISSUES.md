@@ -12,62 +12,52 @@ reference material, and doesn't belong in front of the open work.
 
 ---
 
+## The canonical design reference
+
+**`designs/perudo-mobile-consolidated.dc.html` is the basis for the design** (confirmed by the
+user, 2026-09-04). Its eight panels — nickname, room code, lobby, opening cast, hand roll, waiting,
+your bid, reveal — cover the whole flow, and where it disagrees with any other file under
+`/designs`, it wins.
+
+This settled five questions that had been open here as "two approved files disagree". It also means
+`designs/mobile-lantern.dc.html`, which CLAUDE.md's Phase 4 note calls "the canonical lantern cabin
+table scene", is **not** the authority it was treated as — several earlier token decisions were
+made against it alone. Anything still traced to that file is worth re-checking.
+
+Compare against it with `npm run design:compare -w client` (see `client/README.md`); render the
+`.dc.html` panels rather than reading hex values out of the markup.
+
+---
+
 ## Open
 
-### Two approved design files disagree on the player-identity colour
-
-- **Logged:** 2026-09-04, during the design-parity pass.
-- `designs/perudo-lobby-lantern.dc.html` gives each roster seat its own avatar gradient — brass
-  (`#e3bd7e→#8a5c26`) for "you", sage (`#8e9c6c→#4b5730`) for the next player.
-  `designs/mobile-lantern.dc.html` makes every arc seat a uniform wood-brown. The app follows the
-  second: one `--color-identity-start/end` gradient for every seat (`lobby.scss`'s
-  `.lobby__avatar`).
-- Phase 4's token audit chose wood-brown and recorded that "the old brass-toned identity gradient
-  matched no colour in the approved design" — but it had only checked `mobile-lantern.dc.html`.
-  That note is wrong as written; the two files genuinely conflict.
-- **Needs a decision on which file wins for identity tiles.** None of the lobby design's per-seat
-  colours are current tokens, so following it means adding some.
-- Not blocking: the entry-screen brand badge, which shared the same gradient, was changed to brass
-  on 2026-09-04 — it is the app's logo mark, not an identity tile, and only one reference draws it
-  (the wood version also had almost no contrast on the dark backdrop). That fix does **not** settle
-  the question above.
-
-### Reveal verdict block — reference and internal consistency point different ways
+### Reveal is a panel inside the table; the canonical draws it as its own screen
 
 - **Logged:** 2026-09-04.
-- `screens/Screenshot 2026-08-16 002742.png` renders the verdict as a large Pirata One word ("Bid
-  false") with the explanation inline beside it on a peach fill. The app uses a small
-  letter-spaced caps label stacked above the explanation in a full-radius pill.
-- The app's treatment is not an accident: it deliberately matches `round-loss-modal.scss`'s
-  `.round-loss__verdict`. Changing one alone reintroduces an inconsistency; changing both is a
-  design-system decision, not a parity fix.
-- The reference only ever shows the loss ("false") variant. The app's "true" variant (sage) has no
-  reference at all.
+- Canonical panel "08 Reveal" puts the recap card at the **top** of the screen, on the dimmed
+  table, with a "Next round" primary action pinned at the bottom. The app renders it as a panel in
+  the table's normal flow, below the "Roll your hand" button, with no CTA of its own (the roll
+  button doubles as one — a deliberate earlier choice, see CLAUDE.md 2026-09-04).
+- Everything _inside_ the card now matches the canonical (verdict, wording, rows, caption, closing
+  summary). This is the remaining structural difference, and it is a real rework of how the reveal
+  state is composed — not a token change.
 
-### `describeBid` face wording — "N × face M" vs "N × fives"
+### Not yet aligned to the canonical file
 
-- **Logged:** 2026-09-04.
-- A pure display string (`table.ts`), but shared across three table templates plus the desktop
-  banner, and asserted by two `table.spec.ts` cases.
-- The design system contradicts itself on it: `perudo-mobile-board.dc.html` says "4 × five"
-  (singular), `screens/Screenshot 2026-08-16 002742.png` says "4 × fives" (plural).
-- Needs a decided wording before touching shared display code and tests.
+Straightforward work, listed so it isn't rediscovered. None of it is blocked on a decision:
 
-### Lobby roster subline and header back-affordance
-
-- **Logged:** 2026-09-04.
-- The design shows a secondary line per roster row ("Host · set the rules", "Joined a moment ago")
-  and a back-arrow where the app shows the wordmark.
-- The `Player` model carries no timestamp, so "joined N ago" cannot be rendered truthfully (already
-  noted in `lobby.scss`), and the header change is structural navigation. Both are added content,
-  not a token nudge.
-
-### Round chip wording during reveal
-
-- **Logged:** 2026-09-04. Minor.
-- Design pill reads "Round N · revealed"; the app's reads "Round N · M dice", the same
-  `describeMobilePhase` format it uses in every non-your-turn phase. The helper is shared, so a
-  reveal-specific branch is a small but real behaviour change.
+- **Arc seat shape.** Canonical draws each opponent as a wood **cup silhouette** (dome top, flat
+  base, no letter). The app uses a rounded square carrying the player's initial.
+- **Wager caption.** Canonical: "Mateo's bid — your turn" in terracotta, sentence case. The app:
+  uppercase, muted grey.
+- **Hint chips.** Canonical: compact text, "Min · 5×5" / "Aces · 3×1". The app: "Min: 1 × [die]"
+  with a rendered die.
+- **Turn timer.** Canonical shows "0:07" (mm:ss). The app shows "0s".
+- **Entry nickname field.** Canonical: a "NICKNAME" kicker label _above_ a pill-shaped field. The
+  app uses Ionic's floating in-field label in a rounded rect — an Ionic-pattern choice, so this one
+  has a real tradeoff against the framework's defaults.
+- **Entry actions.** Canonical bottom-anchors "Start a table" / "Join with a code"; the app puts
+  them directly under the field.
 
 ### Open question — true game save/restore across a server restart
 

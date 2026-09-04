@@ -453,10 +453,25 @@ $table-photo-overlay: linear-gradient(
   color: var(--color-ink-muted);
 }
 
+// The canonical reveal card sets the call itself large in the display face with the reasoning
+// inline beside it, not as a small caps label stacked over a paragraph in a full-radius pill. The
+// "false" verdict there is a warm rust, not an alarm red — losing a die is the game working, not
+// an error — which is why the word uses --color-brass-deep (the reference's own #8c491a).
 .mobile-reveal__verdict {
   margin: 0.75rem 0;
-  padding: 0.6rem 0.75rem;
-  border-radius: var(--radius-pill);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-panel);
+}
+
+.mobile-reveal__verdict-word {
+  font-size: 1.375rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.mobile-reveal__verdict-text {
+  font-size: 0.75rem;
+  line-height: 1.45;
 }
 
 .mobile-reveal__verdict--true {
@@ -465,9 +480,9 @@ $table-photo-overlay: linear-gradient(
 }
 
 .mobile-reveal__verdict--false {
-  border: 1px solid var(--color-ember);
+  border: 1px solid var(--color-brass);
   background: var(--color-sand);
-  color: var(--color-danger);
+  color: var(--color-brass-deep);
 }
 
 .mobile-reveal__name {

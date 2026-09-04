@@ -105,8 +105,16 @@ const MOBILE_ARC_FLAT_HEIGHT_PX = 104;
 const MOBILE_ARC_STRESS_THRESHOLD = 8;
 const MOBILE_ARC_STRESS_ROW_SIZE = 6;
 
+/** Plural face names, as the canonical design writes them ("4 × fives", not "4 × face 5") —
+ * indexed by face value, so index 0 is unused (there is no face 0; face 1 is aces, which
+ * describeBid handles separately since it is a distinct bid kind, not a numbered face). */
+const FACE_WORDS = ['', 'ones', 'twos', 'threes', 'fours', 'fives', 'sixes'] as const;
+
 function describeBid(bid: Bid): string {
-  return bid.kind === 'ACE' ? `${bid.quantity} aces` : `${bid.quantity} × face ${bid.face}`;
+  if (bid.kind === 'ACE') {
+    return `${bid.quantity} aces`;
+  }
+  return `${bid.quantity} × ${FACE_WORDS[bid.face] ?? `face ${bid.face}`}`;
 }
 
 /** Plain-language stand-in for the mobile header's phase chip (Increment 1) — never surfaces a
@@ -116,12 +124,19 @@ function describeMobilePhase(
   state: { readonly phase: GamePhase; readonly round: { readonly roundNumber: number } | null },
   totalDiceCount: number,
   isMyTurn: boolean,
+  isRevealed: boolean,
 ): string {
   if (!state.round) {
     return 'Before round 1';
   }
   if (state.phase === GamePhase.BIDDING && isMyTurn) {
     return 'Your turn';
+  }
+  // The canonical design labels the reveal explicitly ("Round 3 · revealed"). The dice count is
+  // the wrong thing to show there — it has already changed to reflect the loss the player is still
+  // reading about.
+  if (isRevealed) {
+    return `Round ${state.round.roundNumber} · revealed`;
   }
   return `Round ${state.round.roundNumber} · ${totalDiceCount} dice`;
 }
@@ -206,7 +221,15 @@ export class Table {
       return '';
     }
     const totalDiceCount = this.allPlayers().reduce((sum, p) => sum + p.diceCount, 0);
-    return describeMobilePhase(state, totalDiceCount, this.store.isMyTurn());
+    // `reveal()` truthy is the only usable "a reveal is on screen" signal — state.phase never
+    // rests at REVEAL/ROUND_END (game-engine.ts), which is why the reveal panel itself keys off
+    // the same thing rather than off the phase.
+    return describeMobilePhase(
+      state,
+      totalDiceCount,
+      this.store.isMyTurn(),
+      this.reveal() !== null,
+    );
   });
 
   /** Server-authoritative turn timer (5.6/6.5) — null unless a BIDDING turn is currently active. */
@@ -418,6 +441,15 @@ export class Table {
     return isLocalLoser
       ? 'Your bid was false — you lose a die.'
       : `${this.nicknameFor(reveal.loserId)}'s bid was false — they lose a die.`;
+  }
+
+  /** Just who it cost, with no restatement of why — the canonical reveal card sets this directly
+   * after the verdict's own explanation ("The actual count was below the claim. Mateo loses a
+   * die."), so the fuller revealOutcomeText above would repeat the reasoning inline. */
+  protected revealLossSentence(reveal: RoundRevealedEvent): string {
+    return reveal.loserId === this.store.playerId()
+      ? 'You lose a die.'
+      : `${this.nicknameFor(reveal.loserId)} loses a die.`;
   }
 
   /** Closing summary line for the mobile reveal panel — "<loser> drops to N dice · next round

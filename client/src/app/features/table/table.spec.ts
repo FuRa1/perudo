@@ -370,14 +370,20 @@ describe('Table', () => {
       const text = nativeElement.textContent ?? '';
       expect(text).toContain('Truth revealed');
       expect(text).toContain('Bid true');
-      expect(text).toContain('An exact match is still true');
-      expect(text).toContain('Bob called liar — the bid was true, so they lose a die.');
+      expect(text).toContain('an exact match still counts');
+      // The verdict carries who it cost, inline, with no restatement of the reasoning — the
+      // separate bold line that used to repeat it below is gone (canonical panel "08 Reveal").
+      // Scoped to the mobile panel: the desktop banner is still in the DOM (hidden) and keeps its
+      // own fuller sentence.
+      const mobilePanelText = nativeElement.querySelector('.mobile-reveal')?.textContent ?? '';
+      expect(mobilePanelText).toContain('Bob loses a die.');
+      expect(mobilePanelText).not.toContain('called liar — the bid was true');
       expect(nativeElement.querySelector('.mobile-reveal__verdict--true')).not.toBeNull();
       expect(
-        fixture.componentInstance['revealOutcomeText'](
+        fixture.componentInstance['revealLossSentence'](
           reveal({ outcome: 'CALLER_LOSES', loserId: 'p1' }),
         ),
-      ).toBe('You called liar — the bid was true, so you lose a die.');
+      ).toBe('You lose a die.');
     });
 
     it('labels a short count as a false bid and assigns the bidder as loser', () => {
@@ -396,7 +402,7 @@ describe('Table', () => {
       const text = nativeElement.textContent ?? '';
       expect(text).toContain('Bid false');
       expect(text).toContain('The actual count was below the claim.');
-      expect(text).toContain("Bob's bid was false — they lose a die.");
+      expect(text).toContain('Bob loses a die.');
       expect(nativeElement.querySelector('.mobile-reveal__verdict--false')).not.toBeNull();
     });
   });
@@ -430,7 +436,7 @@ describe('Table', () => {
       const { nativeElement } = render('p2', state);
       const summary = nativeElement.querySelector('.table-rail__summary');
       expect(summary?.textContent ?? '').toContain('Alice claimed');
-      expect(summary?.textContent ?? '').toContain('4 × face 5');
+      expect(summary?.textContent ?? '').toContain('4 × fives');
     });
 
     it('does not render the rail summary or bid-controls outside the BIDDING phase', () => {
@@ -587,12 +593,12 @@ describe('Table', () => {
       const panel = (fixture.nativeElement as HTMLElement).querySelector('.mobile-reveal');
       expect(panel).not.toBeNull();
       const text = panel?.textContent ?? '';
-      expect(text).toContain('4 × face 5');
+      expect(text).toContain('4 × fives');
       expect(text).toContain('2');
       expect(text).toContain('You'); // p1 is the local player here
       expect(text).toContain('Bob');
       expect(panel?.querySelectorAll('app-die').length).toBe(10);
-      expect(text).toContain('bid was false');
+      expect(text).toContain('Bid false');
     });
 
     // nicknameFor renders the local player as "You", which takes a plural verb — the summary read

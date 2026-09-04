@@ -75,19 +75,22 @@ ion-content {
   color: var(--color-cream-muted);
 }
 
-// The room-code hero card (design reference §2a) — same cream/brass "verdict surface" language as
-// the winner screen and round-loss modal (theme/_mixins.scss's outcome-card), reused here rather
-// than duplicated: this card is the other place in the app where something needs to read as
-// unambiguously important against the dark table.
+// The room-code hero card. Not outcome-card('win'): that mixin is the *end-card* treatment (a
+// 1.5px brass edge), and borrowing it here gave the invite card the visual weight of a match
+// result. designs/perudo-mobile-consolidated.dc.html draws it as a plain flat panel with no border
+// at all — it is a place to read a code from, not a verdict.
 .lobby__code-card {
-  @include mixins.outcome-card('win');
+  border-radius: var(--radius-card);
+  background: var(--color-surface-alt);
   padding: 1.1rem 1.25rem;
 }
 
+// A quiet meta label, not the rust brass-deep this used to be — the canonical file sets it in a
+// muted warm grey, the same role --color-meta already names for labels on light surfaces.
 .lobby__code-label {
-  color: var(--color-brass-deep);
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  color: var(--color-meta);
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -162,16 +165,17 @@ ion-content {
   }
 }
 
-// Sits on the light cream hero card, so failure uses the light-surface danger token
-// (--color-danger) rather than the dark-surface --color-ember-soft the rest of the app uses —
-// text alone already carries success vs. failure ("Copied" vs. "Couldn't copy..."), this is
-// reinforcement, matching the ready chip's own "never color alone" reasoning above.
-// One shared status line for copy/share (see lobby.html). No `min-height` reservation: the element
-// is only rendered when it has something to say, so an empty line costs nothing — the two
-// permanently-reserved lines this replaced left ~56px of blank card under the share row, which the
-// design reference doesn't have.
+// One shared status line for copy/share (see lobby.html), rendered only when it has something to
+// say — the two permanently-reserved lines it replaced left ~56px of blank card under the share
+// row, which no reference shows.
+//
+// Success reads green in the canonical file ("Code copied" is #4b5a30), not brass: brass is the
+// accent, and using it for a confirmation made a success look like just another label. Failure
+// uses the light-surface --color-danger rather than the dark-surface --color-ember-soft, since
+// this sits on the cream card. Colour is reinforcement either way — the text already says which
+// happened ("Copied" vs. "Couldn't copy...").
 .lobby__code-status {
-  color: var(--color-brass-deep);
+  color: var(--color-sage-deep);
   font-weight: 600;
 
   &:empty {
@@ -211,17 +215,24 @@ ion-content {
   }
 }
 
-// 38px at --radius-die (12px), matching the reference's roster avatar exactly. At the previous
-// 36px/--radius-tile (16px) the corners left only a 4px flat edge, so the tile read as a plain
-// circle rather than as the same rounded-square identity mark the table's arc seats use.
+// designs/perudo-mobile-consolidated.dc.html (the canonical flow) draws the roster avatar as a
+// 38px *circle*, and colours it by role rather than by identity: the local player's is a solid
+// terracotta accent, everyone else's a quiet translucent cream. The wood --color-identity-*
+// gradient belongs to the table's cup silhouettes, not here — the two are different objects, which
+// is what the older cross-file comparison had conflated.
 .lobby__avatar {
   flex: none;
   width: 38px;
   height: 38px;
-  border-radius: var(--radius-die);
-  background: linear-gradient(160deg, var(--color-identity-start), var(--color-identity-end));
-  color: var(--color-ivory);
-  border: 1px solid var(--color-border-onboard-strong);
+  border-radius: var(--radius-pill);
+  background: rgba(var(--color-cream-rgb), 0.14);
+  color: var(--color-cream);
+  font-weight: 800;
+
+  .lobby__row--me & {
+    background: var(--color-terracotta);
+    color: var(--color-ivory);
+  }
 }
 
 .lobby__name {
@@ -274,21 +285,13 @@ ion-content {
   color: var(--color-cream-faint);
 }
 
-// Matches .lobby__avatar's size/radius above so a filled seat and an open one read as the same
-// slot in two states, exactly as the reference draws them.
+// Matches .lobby__avatar's size/shape above so a filled seat and an open one read as the same slot
+// in two states, exactly as the canonical reference draws them.
 .lobby__seat--open-avatar {
   width: 38px;
   height: 38px;
-  border-radius: var(--radius-die);
-  border: 1.5px dashed var(--color-border-onboard);
-}
-
-// The "+ N more seats open" summary standing in for the open-seat rows past the visible few
-// (Lobby.VISIBLE_OPEN_SEATS) — deliberately a quiet line, not another dashed row, so it reads as a
-// count rather than as one more empty seat.
-.lobby__seat--more {
-  color: var(--color-cream-faint);
-  padding: 0.25rem 0 0.125rem;
+  border-radius: var(--radius-pill);
+  border: 1px dashed rgba(var(--color-cream-rgb), 0.3);
 }
 
 // Keeps the primary action in reach on a tall roster (see lobby.html). The gradient fade stops the

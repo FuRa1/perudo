@@ -68,18 +68,22 @@ ion-content {
   color: var(--color-brass);
 }
 
-// The brand mark, not a player identity tile — so it does not share --color-identity-* (the muted
-// wood pair the table's arc seats use). designs/perudo-lobby-lantern.dc.html, the reference this
-// screen is built from, draws it as a lit brass-gold sweep, and it is the first thing on the
-// screen; against this dark backdrop the wood gradient had so little contrast that the tile barely
-// read at all, leaving the lamp glyph floating in a faint outline.
+// The brand mark, not a player identity tile — so it does not share --color-identity-* (the wood
+// pair belonging to the table's cup silhouettes). designs/perudo-mobile-consolidated.dc.html, the
+// canonical flow, draws it as a 78px *circle* lit from above: a radial gold-to-terracotta core
+// with a wide warm halo and no border at all. It is the first thing on the screen, and the wood
+// gradient it used to carry had so little contrast on this dark backdrop that the glyph read as
+// floating in an empty outline.
 .entry__badge {
-  width: 64px;
-  height: 64px;
-  border-radius: var(--radius-seat);
-  background: linear-gradient(160deg, var(--color-gold-highlight), var(--color-brass-deep));
-  border: 1.5px solid var(--color-brass);
-  box-shadow: var(--shadow-float);
+  width: 78px;
+  height: 78px;
+  border-radius: var(--radius-pill);
+  background: radial-gradient(
+    60% 60% at 50% 32%,
+    var(--color-gold-highlight),
+    var(--color-terracotta)
+  );
+  box-shadow: 0 0 46px rgba(var(--color-lantern-glow-rgb), 0.42);
   display: flex;
   align-items: center;
   justify-content: center;
