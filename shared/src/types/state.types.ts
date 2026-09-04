@@ -23,6 +23,11 @@ export interface Player {
   readonly dice: readonly DiceValue[];
   /** Consecutive rounds lost by pure timeout stall (no bid, no liar call) — 5.7 double-loss protection. */
   readonly consecutivePureStalls: number;
+  /** The round this player lost their last die in — null while diceCount > 0, and once set never
+   * changes (a match has no reinstatement). Only meaningful alongside diceCount === 0; nothing
+   * derives one from the other, so both are set together wherever a player is eliminated. Exists
+   * so the client can say "out in round N" without inventing a timestamp the model never had. */
+  readonly eliminatedInRound: number | null;
 }
 
 /** 5.2 — the openly-rolled single die used to decide who bids first in round 1. */

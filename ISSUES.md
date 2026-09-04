@@ -95,8 +95,8 @@ Compare against it with `npm run design:compare -w client` (see `client/README.m
 - Design brief: [`designs/perudo-spectator-claude-prompt.md`](designs/perudo-spectator-claude-prompt.md).
   Panel `13 Eliminated` currently assumes they leave and needs reworking into the _moment_ of
   elimination handing off to a persistent spectator state.
-- **No server, engine or shared change is needed — verified, not assumed.** The flow cannot be
-  blocked by a spectator because:
+- **The turn/timer/visibility flow needs no server, engine or shared change — verified, not
+  assumed.** The flow cannot be blocked by a spectator because:
   - `buildTurnOrder` filters on `diceCount > 0`, so an eliminated player is never in `turnOrder`,
     and every turn guard compares against `turnOrder[currentTurnIndex]` — their intents are already
     refused with `NOT_YOUR_TURN`.
@@ -105,14 +105,32 @@ Compare against it with `npm run design:compare -w client` (see `client/README.m
     unless the disconnecting player owns the timer — so an eliminated player dropping does nothing.
   - `selectPlayerView` keeps them in `players` and only blanks _other_ people's dice, so they keep
     receiving the same filtered snapshot as anyone else.
-- **The work is client presentation only**, and the reason it is needed: the arc draws _opponents
-  only_, so the local player's whole on-screen presence is their hand strip and bid tray. Remove
-  both — which is what elimination does — and the player disappears from their own screen. Today an
-  eliminated player sees a bare table, a dead rule line where the hand was, and a waiting bar
-  reading "Mateo answers next", about a turn order they are no longer in.
+- **One shared change turned out to be needed after all, and is now built.** Claude Design's brief
+  came back asking for "out in round N" on both the spectator plinth and the end card (`12`/`13`) —
+  the app had nowhere to get that from. Added `Player.eliminatedInRound: number | null`
+  (`shared/src/types/state.types.ts`), stamped in `finishRoundAfterLoss` (`game-engine.ts`) — the
+  one place both loss paths (reveal and timeout) funnel through — using the round that was current
+  when the last die was lost, not the round about to start. 3 new engine tests cover both loss
+  paths and confirm the field stays `null` for a loss that doesn't eliminate.
+- **The work is client presentation only** beyond that one field, and the reason it is needed: the
+  arc draws _opponents only_, so the local player's whole on-screen presence is their hand strip and
+  bid tray. Remove both — which is what elimination does — and the player disappears from their own
+  screen. Today an eliminated player sees a bare table, a dead rule line where the hand was, and a
+  waiting bar reading "Mateo answers next", about a turn order they are no longer in.
+- **A related bug found while checking the design's timer answer, fixed alongside this.** The brief
+  assumed "the chip only pulses/beeps/banks for your own clock" was already true and just needed to
+  stay true for a spectator. It wasn't: `TurnTimer`'s `isMine` input was accepted and never read, so
+  the warning beep fired for every connected client on every turn, not just the turn's owner. Fixed
+  by gating the beep effect on `isMine()` (`client/src/app/ui/turn-timer/turn-timer.ts`); 2 tests
+  added covering both the owner and non-owner case. This was already wrong for every player at the
+  table, not spectator-specific — a spectator would just have been one more unaffected listener.
 - Known copy to revisit when this is built: `RoundLossModal.lossSummary` already says "You lost your
   last die — you're out.", but the canonical decision removes that modal from mobile, so panel `13`
   has to carry the line instead.
+- Not yet built: the panel rework itself (`13` reworked, the spectator board states, the plinth,
+  leave affordance) — Claude Design's answers are recorded above and in
+  `designs/perudo-spectator-claude-prompt.md`, but the `.dc.html` file has not been updated with
+  them yet.
 
 ### Not yet aligned to the canonical file
 

@@ -38,6 +38,7 @@ function makePlayer(id: string, overrides: Partial<Player> = {}): Player {
     diceCount: 5,
     dice: [],
     consecutivePureStalls: 0,
+    eliminatedInRound: null,
     ...overrides,
   };
 }
@@ -439,8 +440,44 @@ describe('CALL_LIAR -> reveal -> round end (5.3, 4.5)', () => {
     expect(events.some((e) => e.type === 'PLAYER_ELIMINATED' && e.playerId === 'p2')).toBe(true);
     const updatedP2 = after.players.find((p) => p.id === 'p2');
     expect(updatedP2?.diceCount).toBe(0);
+    expect(updatedP2?.eliminatedInRound).toBe(1); // the round that was in progress when the last die was lost
     // p2 is eliminated, seating order is p1,p2,p3 -> next active player after p2 is p3.
     expect(after.round?.turnOrder[0]).toBe('p3');
+  });
+
+  it('leaves eliminatedInRound null for a loser who still has dice left', () => {
+    const p1 = makePlayer('p1', { dice: [2, 3, 4, 6, 6] }); // no fives, no aces
+    const p2 = makePlayer('p2', { dice: [5, 2, 3, 4, 6] }); // 5 dice, will drop to 4 — not eliminated
+    const bidHistory: BidRecord[] = [{ playerId: 'p2', bid: normalBid(4, 5) }]; // claims 4 fives; only 1 exists
+    const state = makeBiddingState([p1, p2], {
+      turnOrder: ['p2', 'p1'],
+      currentTurnIndex: 1,
+      bidHistory,
+    });
+
+    const { state: after } = expectOk(
+      applyIntent(state, { type: 'CALL_LIAR', playerId: 'p1' }, deps([])),
+    );
+    const updatedP2 = after.players.find((p) => p.id === 'p2');
+    expect(updatedP2?.diceCount).toBe(4);
+    expect(updatedP2?.eliminatedInRound).toBeNull();
+  });
+
+  it('stamps eliminatedInRound on a timeout loss too — the round that was current, not the next one', () => {
+    const p1 = makePlayer('p1', { diceCount: 1, dice: [], consecutivePureStalls: 0 }); // about to time out with no protection
+    const p2 = makePlayer('p2', { dice: [1, 2, 3, 4, 5] });
+    const state = makeBiddingState([p1, p2], {
+      roundNumber: 7,
+      turnOrder: ['p1', 'p2'],
+      currentTurnIndex: 0,
+      bidHistory: [],
+    });
+
+    const { state: after, events } = expectOk(applyTimeout(state, 'p1'));
+    expect(events.some((e) => e.type === 'PLAYER_ELIMINATED' && e.playerId === 'p1')).toBe(true);
+    const updatedP1 = after.players.find((p) => p.id === 'p1');
+    expect(updatedP1?.diceCount).toBe(0);
+    expect(updatedP1?.eliminatedInRound).toBe(7);
   });
 });
 

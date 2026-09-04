@@ -7,7 +7,15 @@ import { VISUAL_ASSETS_CONFIG } from '../../ui/visual-assets/visual-assets.confi
 import { Winner } from './winner';
 
 function player(id: string, nickname: string): Player {
-  return { id, nickname, isReady: true, diceCount: 5, dice: [], consecutivePureStalls: 0 };
+  return {
+    id,
+    nickname,
+    isReady: true,
+    diceCount: 5,
+    dice: [],
+    consecutivePureStalls: 0,
+    eliminatedInRound: null,
+  };
 }
 
 function gameOverState(winnerId: string, players: Player[]): StateSnapshot {

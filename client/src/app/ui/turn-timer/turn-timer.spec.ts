@@ -72,13 +72,14 @@ describe('TurnTimer', () => {
     expect(badge?.className).toContain('turn-timer--quiet');
   });
 
-  it('renders the warning phase and plays the beep exactly once for that turn', () => {
+  it('renders the warning phase and plays the beep exactly once for that turn, for the acting player', () => {
     const original = (window as unknown as { AudioContext?: unknown }).AudioContext;
     FakeAudioContext.constructionCount = 0;
     (window as unknown as { AudioContext: unknown }).AudioContext = FakeAudioContext;
     try {
       const startedAt = Date.now() - 16_000; // already 16s in — past the 15s quiet boundary
       const { fixture, nativeElement } = render({
+        isMine: true,
         timer: timer({
           turnStartedAt: startedAt,
           quietPhaseEndsAt: startedAt + 15_000,
@@ -95,6 +96,31 @@ describe('TurnTimer', () => {
       // A further tick while still in the warning phase for the SAME turn must not beep again.
       fixture.detectChanges();
       expect(FakeAudioContext.constructionCount).toBe(1);
+    } finally {
+      (window as unknown as { AudioContext: unknown }).AudioContext = original;
+    }
+  });
+
+  it("never beeps for a turn that is not the local player's own (5.6 — the signal is per-player, not per-table)", () => {
+    const original = (window as unknown as { AudioContext?: unknown }).AudioContext;
+    FakeAudioContext.constructionCount = 0;
+    (window as unknown as { AudioContext: unknown }).AudioContext = FakeAudioContext;
+    try {
+      const startedAt = Date.now() - 16_000;
+      const { fixture, nativeElement } = render({
+        isMine: false,
+        timer: timer({
+          turnStartedAt: startedAt,
+          quietPhaseEndsAt: startedAt + 15_000,
+          warningPhaseEndsAt: startedAt + 25_000,
+          bankDeadlineAt: startedAt + 55_000,
+        }),
+      });
+      fixture.detectChanges();
+      expect(nativeElement.querySelector('.turn-timer')?.className).toContain(
+        'turn-timer--warning',
+      );
+      expect(FakeAudioContext.constructionCount).toBe(0);
     } finally {
       (window as unknown as { AudioContext: unknown }).AudioContext = original;
     }

@@ -253,6 +253,7 @@ describe('GameGateway — server-authoritative round resolution (transport bound
           diceCount: 1,
           dice: [2],
           consecutivePureStalls: 0,
+          eliminatedInRound: null,
         },
         {
           id: 'p2',
@@ -261,6 +262,7 @@ describe('GameGateway — server-authoritative round resolution (transport bound
           diceCount: 3,
           dice: [6, 6, 6],
           consecutivePureStalls: 0,
+          eliminatedInRound: null,
         },
       ],
       startRoll: null,
@@ -468,6 +470,7 @@ describe('GameGateway — Phase 5: reconnect sessions and server-authoritative t
         diceCount: 1,
         dice: [2],
         consecutivePureStalls: 0,
+        eliminatedInRound: null,
       },
       {
         id: 'p2',
@@ -476,6 +479,7 @@ describe('GameGateway — Phase 5: reconnect sessions and server-authoritative t
         diceCount: 4,
         dice: [3, 3, 3, 3],
         consecutivePureStalls: 0,
+        eliminatedInRound: null,
       },
     ];
     const s1 = makeSocket('p1');

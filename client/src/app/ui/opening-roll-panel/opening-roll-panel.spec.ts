@@ -3,7 +3,15 @@ import type { CompletedStartRoll, Player, StartRollState } from '@shared';
 import { OpeningRollPanel } from './opening-roll-panel';
 
 function player(id: string, nickname = id): Player {
-  return { id, nickname, isReady: true, diceCount: 5, dice: [], consecutivePureStalls: 0 };
+  return {
+    id,
+    nickname,
+    isReady: true,
+    diceCount: 5,
+    dice: [],
+    consecutivePureStalls: 0,
+    eliminatedInRound: null,
+  };
 }
 
 function render(

@@ -6,7 +6,15 @@ import { SocketService } from '../../core/socket.service';
 import { Lobby } from './lobby';
 
 function player(id: string, nickname: string, isReady: boolean): Player {
-  return { id, nickname, isReady, diceCount: 5, dice: [], consecutivePureStalls: 0 };
+  return {
+    id,
+    nickname,
+    isReady,
+    diceCount: 5,
+    dice: [],
+    consecutivePureStalls: 0,
+    eliminatedInRound: null,
+  };
 }
 
 function lobbyState(players: Player[]): StateSnapshot {

@@ -10,6 +10,7 @@ function player(id: string, dice: number[]): MatchState['players'][number] {
     diceCount: dice.length || 5,
     dice: dice as MatchState['players'][number]['dice'],
     consecutivePureStalls: 0,
+    eliminatedInRound: null,
   };
 }
 

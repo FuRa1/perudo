@@ -10,6 +10,7 @@ function player(overrides: Partial<Player> = {}): Player {
     diceCount: 5,
     dice: [],
     consecutivePureStalls: 0,
+    eliminatedInRound: null,
     ...overrides,
   };
 }

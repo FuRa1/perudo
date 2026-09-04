@@ -13,6 +13,7 @@ function player(id: string, nickname: string, overrides: Partial<Player> = {}): 
     diceCount: 5,
     dice: [1, 2, 3, 4, 5],
     consecutivePureStalls: 0,
+    eliminatedInRound: null,
     ...overrides,
   };
 }

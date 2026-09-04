@@ -15,6 +15,7 @@ function snapshot(): StateSnapshot {
         diceCount: 5,
         dice: [],
         consecutivePureStalls: 0,
+        eliminatedInRound: null,
       },
     ],
     startRoll: null,

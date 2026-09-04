@@ -36,10 +36,14 @@ export class TurnTimer implements OnDestroy {
   });
 
   constructor() {
+    // 5.6 describes the warning beep as the acting player's own signal that their time is running
+    // out — not a broadcast to the whole table. isMine was previously accepted as an input and
+    // never read, so every connected client played the beep on every turn, including for a player
+    // (or an eliminated spectator, 2026-09-04) who has no clock of their own to be warned about.
     effect(() => {
       const timer = this.timer();
       const display = this.display();
-      if (!timer || display?.phase !== 'warning') {
+      if (!timer || !this.isMine() || display?.phase !== 'warning') {
         return;
       }
       if (this.lastBeepedTurnStartedAt === timer.turnStartedAt) {

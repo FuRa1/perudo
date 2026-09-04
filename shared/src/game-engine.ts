@@ -82,6 +82,7 @@ function applyJoinRoom(
     diceCount: RULES_CONFIG.startingDicePerPlayer,
     dice: [],
     consecutivePureStalls: 0,
+    eliminatedInRound: null,
   };
   const newState: MatchState = { ...state, players: [...state.players, newPlayer] };
   return ok(newState, [
@@ -366,17 +367,27 @@ function finishRoundAfterLoss(
 ): EngineResult {
   const events = [...precedingEvents];
   const loser = updatedPlayers.find((p) => p.id === loserId) as Player;
-  if (loser.diceCount === 0) {
+  // eliminatedInRound is stamped here, the one place both loss paths (reveal and timeout) funnel
+  // through, rather than at either call site — the round that is finishing (state.round, not yet
+  // incremented to nextRoundNumber below) is the round this loss happened in.
+  const isEliminated = loser.diceCount === 0;
+  const withElimination = isEliminated
+    ? updatePlayer(updatedPlayers, loserId, (p) => ({
+        ...p,
+        eliminatedInRound: (state.round as RoundState).roundNumber,
+      }))
+    : updatedPlayers;
+  if (isEliminated) {
     events.push({ type: 'PLAYER_ELIMINATED', playerId: loserId });
   }
 
-  const survivors = updatedPlayers.filter((p) => p.diceCount > 0);
+  const survivors = withElimination.filter((p) => p.diceCount > 0);
   if (survivors.length <= 1) {
     const winnerId = survivors[0]?.id ?? loserId;
     events.push({ type: 'MATCH_WON', winnerId });
     const finalState: MatchState = {
       ...state,
-      players: updatedPlayers,
+      players: withElimination,
       phase: GamePhase.GAME_OVER,
       // The round-1 opening-roll debug view (if this was still round 1) has no more round to be
       // debugging once the match is over.
@@ -387,9 +398,9 @@ function finishRoundAfterLoss(
     return ok(finalState, events);
   }
 
-  const nextFirstPlayerId = determineNextFirstPlayer(state.players, loserId, updatedPlayers);
+  const nextFirstPlayerId = determineNextFirstPlayer(state.players, loserId, withElimination);
   const nextRoundNumber = (state.round?.roundNumber ?? 0) + 1;
-  const clearedPlayers = updatedPlayers.map((p) => (p.diceCount > 0 ? { ...p, dice: [] } : p));
+  const clearedPlayers = withElimination.map((p) => (p.diceCount > 0 ? { ...p, dice: [] } : p));
   const round = createRoundState(clearedPlayers, nextFirstPlayerId, nextRoundNumber);
   events.push({
     type: 'ROUND_STARTED',
