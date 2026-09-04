@@ -9,6 +9,22 @@ made it; this file is the narrative around those. Newest first.
 
 ---
 
+### Two surfaces narrated one loss; the reveal now owns it (2026-09-04)
+
+The mobile board showed both the reveal panel and `RoundLossModal` for the same event. Settled in
+`designs/perudo-mobile-consolidated.dc.html` §3: on mobile the reveal card is the single loss
+surface, and the modal's unique "Time ran out" branch became its own panel in the same shape. The
+modal stays for desktop. The rework of how the reveal is composed is tracked as open work, not as
+a question.
+
+### Tokens were being read out of markup; they are now published (2026-09-04)
+
+There is no `_ds` bundle beside the design files, so developers inferred values from inline styles —
+which produced a near-invisible wood-brown brand badge, a room-code card wearing the end-card
+treatment, and dice with 30% dead padding. All three were plausible readings of markup that never
+said what a value was _for_. `00 Tokens` in the canonical file now names every value's role, marks
+the one-offs, and explains the deliberately near-identical pairs.
+
 ### Dice rendered with a ring of dead space and a phantom second border
 
 - **Found:** 2026-09-04, reported by the user during the design-parity pass ("each dice has some

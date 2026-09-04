@@ -18,11 +18,195 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-700)}
 
   <div style="max-width:900px;display:flex;flex-direction:column;gap:12px">
     <div style="font-family:var(--font-heading);font-size:42px;line-height:1.04">Perudo mobile &mdash; the whole flow, one board</div>
-    <div style="font-size:15px;line-height:1.65;color:#474238">Every mobile state from nickname to reveal, in the lantern-cabin language: one dark cabin ground, one warm pool of light, cream dice loudest. 390&times;844. One bid sheet, one action area, one primary action per screen &mdash; no duplicated bidding UI anywhere.</div>
+    <div style="font-size:15px;line-height:1.65;color:#474238">Every mobile state a player can reach &mdash; arrival, the round, every way a round ends, palifico, a dropped connection, a refused tap, twelve cups &mdash; in the lantern-cabin language: one dark cabin ground, one warm pool of light, cream dice loudest. 390&times;844, holding at 320. One bid sheet, one action area, one primary action per screen, and exactly one surface per event.</div>
+    <div style="font-size:13.5px;line-height:1.6;color:#5a5347;padding:12px 15px;border-radius:16px;background:#f5ead8">This file is the basis for the Perudo design: where it disagrees with anything else under <code>/designs</code>, it wins. Build from it without opening another file &mdash; and take values from <a href="#tokens">&sect;0 Tokens</a> rather than reading them out of this markup. Nothing on this page uses a colour, radius, shadow or type size that isn't published there.</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;padding-top:4px">
       <div style="display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:#e7ecdc;border:1px solid #a9b98a;font-size:12.5px;font-weight:700;color:#4b5a30"><span style="width:8px;height:8px;border-radius:50%;background:#7a8a5e"></span>Built in client</div>
       <div style="display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:#f7e9d3;border:1px solid #d9ab6d;font-size:12.5px;font-weight:700;color:#7d5417"><span style="width:8px;height:8px;border-radius:50%;background:#c9903c"></span>Built, needs design pass</div>
       <div style="display:flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;background:#f6dfd0;border:1px solid #d59a70;font-size:12.5px;font-weight:700;color:#8c491a"><span style="width:8px;height:8px;border-radius:50%;background:#c67139"></span>To build</div>
+    </div>
+  </div>
+
+  <div id="tokens" style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:12px"><div style="font-family:var(--font-heading);font-size:24px">0 &middot; Tokens</div><div style="font-size:13px;color:#645c50">every value this file uses, and the job it does &mdash; nothing outside this panel</div></div>
+
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+
+      <div style="width:474px;border-radius:24px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);padding:22px;display:flex;flex-direction:column;gap:16px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+        <div style="display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--font-heading);font-size:19px">Surfaces</div><div style="font-size:12px;color:#8c7f6c">Four, and only four: the dark table, the light card, the on-table translucent fill, the scrim.</div></div>
+        <div style="display:flex;flex-direction:column;gap:13px">
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;border-radius:11px;background:radial-gradient(112% 58% at 50% 19%,#5a462d 0%,#33281c 52%,#211a13 100%)"></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">cabin ground &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">#5a462d &rarr; #33281c &rarr; #211a13</span></div><div style="font-size:12px;line-height:1.45;color:#5a5347">One gradient, one recipe, every screen: <span style="font-family:ui-monospace,monospace;font-size:11px">radial-gradient(112% 58% at 50% 19%, &hellip;)</span>. The lamp is at 19% from the top, so the light always falls from above and behind the table. Stops move only for the lobby (46% / 12%, a taller cabin because there is no arc).</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;border-radius:11px;background:#2b231b"></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">sheet &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">#2b231b</span></div><div style="font-size:12px;line-height:1.45;color:#5a5347">The one opaque dark surface that sits <em>above</em> the table: the fixed bid sheet, and the connection-lost card. Flat, never gradient &mdash; that is how you tell &ldquo;furniture&rdquo; from &ldquo;table&rdquo;.</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;border-radius:11px;background:#f5ead8"></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">card cream &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">#f5ead8</span></div><div style="font-size:12px;line-height:1.45;color:#5a5347">A lifted patch of paper on the table. Used for exactly three things: the room-code card, the wager token, the reveal / outcome recap. If something is on card cream, it is the thing the player is meant to read right now. Never a full-screen background on mobile.</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;border-radius:11px;background:#211a13;position:relative;overflow:hidden"><div style="position:absolute;inset:6px;border-radius:7px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.16)"></div></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">on-table fill &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">rgba(242,231,211,.05 / .06 / .07 / .09 / .11)</span></div><div style="font-size:12px;line-height:1.45;color:#5a5347">Cream at low alpha, the only way a container is drawn <em>on</em> the cabin without lifting off it. Read the alpha as loudness: <strong>.05</strong> another player's roster row, <strong>.06&ndash;.07</strong> a field or sub-panel inside the sheet, <strong>.09</strong> a chip or stepper, <strong>.11</strong> a row that belongs to you. Borders are the same cream at <strong>.10&ndash;.20</strong>. Cream at alpha is <em>always</em> a fill or a border &mdash; never text.</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;border-radius:11px;background:#f5ead8;position:relative;overflow:hidden"><div style="position:absolute;inset:0;background:rgba(20,14,8,.62)"></div></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">scrim &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">rgba(20,14,8,.62)</span></div><div style="font-size:12px;line-height:1.45;color:#5a5347">Warm-black, not neutral black. Two uses only: behind the connection-lost card, and dimming the table under the reveal recap. One scrim on screen at a time &mdash; if you need a second, the first surface was wrong.</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;border-radius:11px;background:#fffdf7;border:1px solid rgba(46,43,37,.14)"></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">paper &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">#fffdf7</span> <span style="font-weight:700;color:#8c491a">not in the app</span></div><div style="font-size:12px;line-height:1.45;color:#5a5347">This document's own annotation cards, plus the <span style="font-family:ui-monospace,monospace;font-size:11px">#e7e0d3</span> page behind them. Neither ships. Do not implement either.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:474px;border-radius:24px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);padding:22px;display:flex;flex-direction:column;gap:16px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+        <div style="display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--font-heading);font-size:19px">Identity is not the same as role</div><div style="font-size:12px;color:#8c7f6c">The wood browns draw an <em>object</em>. Terracotta marks <em>you</em>, and marks the <em>action</em>. They are never interchangeable.</div></div>
+        <div style="display:flex;flex-direction:column;gap:13px">
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;display:flex;align-items:center;justify-content:center;border-radius:11px;background:#2b231b"><div style="width:40px;height:29px;border-radius:20px 20px 5px 5px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">cup wood &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">linear-gradient(180deg,#6b4f31,#33261a)</span></div><div style="font-size:12px;line-height:1.45;color:#5a5347">The material an opponent's overturned cup is made of. It is scenery, not a brand colour and not a player colour: every cup on the table is this same wood, because a cup is a cup. Rim highlight <span style="font-family:ui-monospace,monospace;font-size:11px">rgba(255,224,176,.20)</span>. <strong>Never</strong> use it for a badge, a button, or text &mdash; on the cabin it is nearly invisible, which is exactly how a closed cup should read.</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;display:flex;align-items:center;justify-content:center;border-radius:11px;background:#2b231b"><div style="width:40px;height:29px;border-radius:20px 20px 5px 5px;background:linear-gradient(180deg,#8a663d,#3d2d1c);border:1px solid rgba(255,224,176,.34)"></div></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">cup wood, lit &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">linear-gradient(180deg,#8a663d,#3d2d1c)</span></div><div style="font-size:12px;line-height:1.45;color:#5a5347">The same cup with the lamp on it &mdash; the active bidder's seat, and nothing else. Rim goes to <span style="font-family:ui-monospace,monospace;font-size:11px">.34</span>. Deliberately near-identical to the unlit cup: the seat halo does the shouting, the wood only agrees with it.</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;border-radius:11px;background:#c67139"></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">terracotta &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">#c67139</span></div><div style="font-size:12px;line-height:1.45;color:#5a5347">Three jobs, one meaning &mdash; <em>this is yours, or this is the move</em>: (1) the single primary button on any screen, (2) the local player's lobby avatar disc, (3) the 2px ring on a reveal die that counted toward the claim. Opponent avatars are <strong>never</strong> terracotta and never coloured per player &mdash; they are translucent cream. One terracotta fill per screen; if you want a second action, it is outlined.</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;border-radius:11px;background:#2b231b;display:flex;align-items:center;justify-content:center;color:#f0c98d;font-size:13px;font-weight:800">0:07</div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">brass &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">#f0c98d</span></div><div style="font-size:12px;line-height:1.45;color:#5a5347">Attention on the dark ground, always as <strong>ink or a hairline &mdash; never a fill</strong>: the live timer numerals, &ldquo;it is your turn&rdquo; captions, the HOST pill, the text caret, the BIDDING label, the palifico chip's edge. If brass appears, the player is being asked to look. Borders use it at <span style="font-family:ui-monospace,monospace;font-size:11px">.34&ndash;.60</span> alpha.</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;border-radius:11px;background:#2b231b;display:flex;align-items:center;justify-content:center"><div style="width:30px;height:30px;border-radius:50%;background:radial-gradient(60% 60% at 50% 32%,#f7d69b,#c67139);box-shadow:0 0 20px rgba(247,214,155,.42)"></div></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">lamp core &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">#f7d69b</span> <span style="font-weight:700;color:#8c491a">one-off</span></div><div style="font-size:12px;line-height:1.45;color:#5a5347">Appears once in the whole product: the lit disc of the brand mark on the nickname screen, as <span style="font-family:ui-monospace,monospace;font-size:11px">radial-gradient(60% 60% at 50% 32%,#f7d69b,#c67139)</span> with a <span style="font-family:ui-monospace,monospace;font-size:11px">0 0 46px rgba(247,214,155,.42)</span> bloom. It is the lamp. Do not reuse it as an accent &mdash; that is what brass is for.</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;border-radius:11px;background:#f6dfd0;border:1px solid #d59a70;display:flex;align-items:center;justify-content:center;color:#8c491a;font-family:var(--font-heading);font-size:14px">lost</div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">outcome tint &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">#f6dfd0</span> fill / <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">#d59a70</span> border / <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">#8c491a</span> ink</div><div style="font-size:12px;line-height:1.45;color:#5a5347">The verdict band inside a recap card, on card cream. <span style="font-family:ui-monospace,monospace;font-size:11px">#8c491a</span> is <strong>text only</strong> &mdash; it exists because terracotta itself is too light to read at 12px on cream. Never fill anything with <span style="font-family:ui-monospace,monospace;font-size:11px">#8c491a</span>; never set 12px body copy in <span style="font-family:ui-monospace,monospace;font-size:11px">#c67139</span>.</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;border-radius:11px;background:#2b231b;display:flex;align-items:center;justify-content:center"><div style="padding:5px 11px;border-radius:999px;border:1.5px solid #d98a6a;color:#f0b393;font-size:11px;font-weight:700">Call liar</div></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">challenge pair &mdash; <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">#d98a6a</span> edge / <span style="font-family:ui-monospace,monospace;font-weight:600;color:#8c7f6c">#f0b393</span> label <span style="font-weight:700;color:#8c491a">one-off</span></div><div style="font-size:12px;line-height:1.45;color:#5a5347">Terracotta lifted until it reads on the dark sheet, for the one destructive-adjacent control: <strong>Call liar</strong>, and the inline &ldquo;not a legal raise&rdquo; message that shares its row. Outlined, never filled &mdash; a challenge must cost a deliberate look.</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:46px 1fr;gap:13px;align-items:start">
+            <div style="height:46px;border-radius:11px;background:#211a13;position:relative;overflow:hidden"><div style="position:absolute;left:-20%;right:-20%;top:40%;height:100%;border-radius:50%;background:radial-gradient(70% 60% at 50% 22%,rgba(255,214,150,.2),rgba(255,214,150,0) 72%);border-top:1px solid rgba(255,224,176,.16)"></div></div>
+            <div style="display:flex;flex-direction:column;gap:3px"><div style="font-size:12.5px;font-weight:800;color:#2e2b25">the four glows &mdash; each has one owner</div><div style="font-size:12px;line-height:1.45;color:#5a5347"><span style="font-family:ui-monospace,monospace;font-size:11px">rgba(255,214,150,.20)</span> the pool of light on the table (with a <span style="font-family:ui-monospace,monospace;font-size:11px">rgba(255,224,176,.16)</span> lip). <span style="font-family:ui-monospace,monospace;font-size:11px">rgba(247,214,155,.13)</span> fill + <span style="font-family:ui-monospace,monospace;font-size:11px">.34</span> ring + <span style="font-family:ui-monospace,monospace;font-size:11px">.18</span> bloom the active seat halo. <span style="font-family:ui-monospace,monospace;font-size:11px">rgba(247,214,155,.42)</span> the lamp only. <span style="font-family:ui-monospace,monospace;font-size:11px">rgba(198,113,57,.44)</span> the primary button's own warm shadow &mdash; it is a shadow, not a glow, and it is the only coloured shadow in the product.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:474px;border-radius:24px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);padding:22px;display:flex;flex-direction:column;gap:16px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+        <div style="display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--font-heading);font-size:19px">Text, and which creams are not text</div><div style="font-size:12px;color:#8c7f6c">Five steps down on the dark ground, three on the light. Solid hex = ink. Alpha = fill.</div></div>
+        <div style="border-radius:16px;background:radial-gradient(112% 90% at 50% 8%,#5a462d,#211a13);padding:15px 16px;display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="color:#fffaf0;font-size:16px;font-weight:700">#fffaf0 &mdash; display</span><span style="color:#c0b6a5;font-size:11px;font-family:ui-monospace,monospace">headings, the live quantity, a lit name</span></div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="color:#f2e7d3;font-size:14.5px;font-weight:700">#f2e7d3 &mdash; body</span><span style="color:#c0b6a5;font-size:11px;font-family:ui-monospace,monospace">names, chips, status bar, most UI</span></div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="color:#c0b6a5;font-size:13px">#c0b6a5 &mdash; secondary</span><span style="color:#8d8474;font-size:11px;font-family:ui-monospace,monospace">supporting sentences</span></div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="color:#a29684;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700">#a29684 &mdash; kicker / tertiary</span><span style="color:#8d8474;font-size:11px;font-family:ui-monospace,monospace">labels, captions, quiet timer</span></div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="color:#8d8474;font-size:11.5px">#8d8474 &mdash; quiet / disabled</span><span style="color:#8d8474;font-size:11px;font-family:ui-monospace,monospace">helper lines, empty seat, off state</span></div>
+          <div style="display:flex;align-items:center;gap:8px;padding-top:3px"><span style="width:22px;height:14px;border-radius:4px;background:rgba(242,231,211,.11);border:1px solid rgba(242,231,211,.2)"></span><span style="color:#a29684;font-size:11.5px;line-height:1.4">The swatch is <span style="font-family:ui-monospace,monospace">rgba(242,231,211,&middot;)</span> &mdash; same cream family, but it only ever fills. Don't set text in it.</span></div>
+        </div>
+        <div style="border-radius:16px;background:#f5ead8;padding:15px 16px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="color:#2e2b25;font-size:15px;font-weight:800">#2e2b25 &mdash; primary on light</span><span style="color:#8c7f6c;font-size:11px;font-family:ui-monospace,monospace">card headings, dice pips, room code</span></div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="color:#5a5347;font-size:13.5px">#5a5347 &mdash; body on light</span><span style="color:#8c7f6c;font-size:11px;font-family:ui-monospace,monospace">recap sentences, row names</span></div>
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><span style="color:#8c7f6c;font-size:12px">#8c7f6c &mdash; tertiary on light</span><span style="color:#8c7f6c;font-size:11px;font-family:ui-monospace,monospace">kickers, the &times; between bid parts</span></div>
+          <div style="font-size:11.5px;line-height:1.45;color:#5a5347;padding-top:2px">Dice pips are <span style="font-family:ui-monospace,monospace">#2e2b25</span> on a card and <span style="font-family:ui-monospace,monospace">#302a23</span> on the table. Two values, deliberately: the table's pips sit in warmer light, and matching them exactly made the hand strip look pasted on. Nothing else uses <span style="font-family:ui-monospace,monospace">#302a23</span>.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:12.5px;font-weight:800;color:#2e2b25">Die faces &mdash; two creams that are not the same cream</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;border:1px solid #c0b6a5;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:2/2;width:8px;height:8px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+            <div style="width:44px;height:44px;border-radius:11px;background:#fffaf0;border:1px solid #c0b6a5"></div>
+            <div style="flex:1;font-size:12px;line-height:1.45;color:#5a5347"><span style="font-family:ui-monospace,monospace;font-size:11px">#fffcf5</span> is a die face on the table &mdash; the loudest object in the product, by rule. <span style="font-family:ui-monospace,monospace;font-size:11px">#fffaf0</span> is the same face when it is a <em>control</em> in the bid sheet, plus display text. The pair is intentional and one step apart; a <span style="font-family:ui-monospace,monospace;font-size:11px">#c0b6a5</span> hairline goes on a die only when it sits on card cream and would otherwise dissolve.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:474px;border-radius:24px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);padding:22px;display:flex;flex-direction:column;gap:16px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+        <div style="display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--font-heading);font-size:19px">Sage &mdash; status, never action</div><div style="font-size:12px;color:#8c7f6c">The second voice. It means &ldquo;this is settled&rdquo;: ready, rolled, connected, copied. It is never tappable.</div></div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center">
+          <div style="padding:6px 12px;border-radius:999px;background:#e7ecdc;border:1px solid #a9b98a;color:#4b5a30;font-size:12px;font-weight:700">#e7ecdc fill &middot; #a9b98a edge &middot; #4b5a30 ink</div>
+          <div style="padding:6px 12px;border-radius:999px;background:#2b231b;color:#aebf92;font-size:12px;font-weight:700">#aebf92 caption on dark</div>
+          <div style="padding:6px 12px;border-radius:999px;background:#2b231b;color:#a9b98a;font-size:12px;font-weight:700">#a9b98a &middot; ready pill edge</div>
+          <div style="padding:6px 12px;border-radius:999px;background:#2b231b;display:flex;align-items:center;gap:6px;color:#f2e7d3;font-size:12px;font-weight:700"><span style="width:8px;height:8px;border-radius:50%;background:#8fa06a"></span>#8fa06a &middot; connected dot</div>
+          <div style="padding:6px 12px;border-radius:999px;background:#f5ead8;color:#4b5a30;font-size:12px;font-weight:700">#4b5a30 &middot; &ldquo;Code copied&rdquo;</div>
+        </div>
+        <div style="font-size:12px;line-height:1.45;color:#5a5347"><span style="font-family:ui-monospace,monospace;font-size:11px">#7a8a5e</span> is the base sage and appears only as the legend dot in this document and as the source of the tints above. <span style="font-family:ui-monospace,monospace;font-size:11px">#aebf92</span> / <span style="font-family:ui-monospace,monospace;font-size:11px">#a9b98a</span> / <span style="font-family:ui-monospace,monospace;font-size:11px">#8fa06a</span> are three steps of the same green for three grounds &mdash; caption ink on the cabin, a pill hairline, and a solid dot. Use the one that matches the job rather than picking by eye.</div>
+        <div style="height:1px;background:rgba(46,43,37,.12)"></div>
+        <div style="display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--font-heading);font-size:19px">Radius</div><div style="font-size:12px;color:#8c7f6c">Six steps. Each one means a kind of thing, so a reader can tell what something is from its corner.</div></div>
+        <div style="display:flex;flex-direction:column;gap:9px;font-size:12px;color:#5a5347">
+          <div style="display:flex;align-items:center;gap:11px"><div style="width:52px;height:26px;flex:none;border-radius:999px;background:#c67139"></div><div><strong>999px</strong> &mdash; every button, chip, pill and text field. If it is tappable and not a die, it is a pill.</div></div>
+          <div style="display:flex;align-items:center;gap:11px"><div style="width:52px;height:26px;flex:none;border-radius:26px 26px 0 0;background:#2b231b"></div><div><strong>28px top-only</strong> &mdash; the bid sheet, the one surface that slides up from the bottom edge.</div></div>
+          <div style="display:flex;align-items:center;gap:11px"><div style="width:52px;height:26px;flex:none;border-radius:24px;background:#f5ead8;border:1px solid rgba(46,43,37,.12)"></div><div><strong>26px / 24px</strong> &mdash; a lifted card. 26 on the table (reveal, wager, outcome), 24 in the lobby.</div></div>
+          <div style="display:flex;align-items:center;gap:11px"><div style="width:52px;height:26px;flex:none;border-radius:18px;background:rgba(46,43,37,.1)"></div><div><strong>20px / 18px</strong> &mdash; a row or a sub-panel inside something else: roster rows, seat halo, code tiles, sheet fields.</div></div>
+          <div style="display:flex;align-items:center;gap:11px"><div style="width:52px;height:26px;flex:none;border-radius:11px;background:#fffcf5;border:1px solid #c0b6a5"></div><div><strong>13 / 12 / 11 / 9 / 8px</strong> &mdash; a die, scaled with its own size: 58px face &rarr; 13, 50 &rarr; 12, 44 &rarr; 11, 34 &rarr; 9, 30 &rarr; 8. Keep the ratio near <strong>0.23&times;</strong> the face; the 88px public die is the exception at 20px.</div></div>
+          <div style="display:flex;align-items:center;gap:11px"><div style="width:52px;height:26px;flex:none;border-radius:14px;background:rgba(46,43,37,.06);border:1px dashed rgba(46,43,37,.3)"></div><div><strong>44px</strong> &mdash; the phone bezel in this document. Documentation only; the app has no such corner.</div></div>
+        </div>
+        <div style="border-radius:14px;background:#f6dfd0;border:1px solid #d59a70;padding:12px 14px;font-size:12px;line-height:1.5;color:#7d4d2c"><strong style="color:#8c491a">Dice padding.</strong> A die's pip grid uses padding &asymp; <strong>0.16&times;</strong> the face and a pip &asymp; <strong>0.19&times;</strong> the face &mdash; 44px face, 7px padding, 8px pip. Larger padding is what produced the dead-space dice in the build; the pips should almost touch the corners.</div>
+      </div>
+
+      <div style="width:474px;border-radius:24px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);padding:22px;display:flex;flex-direction:column;gap:16px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+        <div style="display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--font-heading);font-size:19px">Type</div><div style="font-size:12px;color:#8c7f6c">Caprasimo for anything the player is told; Figtree for everything they read or operate. No third face, no italics.</div></div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;align-items:baseline;gap:12px"><div style="width:74px;flex:none;font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">34 / 1.05</div><div style="font-family:var(--font-heading);font-size:34px;line-height:1.05;color:#2e2b25">Take a seat</div></div>
+          <div style="font-size:11.5px;color:#8c7f6c;margin-top:-6px;padding-left:86px">Screen title, arrival screens only. 27px is the same role on the lobby, where a card follows it.</div>
+          <div style="display:flex;align-items:baseline;gap:12px"><div style="width:74px;flex:none;font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">26 / 1.1</div><div style="font-family:var(--font-heading);font-size:26px;line-height:1.1;color:#2e2b25">Truth revealed</div></div>
+          <div style="display:flex;align-items:baseline;gap:12px"><div style="width:74px;flex:none;font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">22</div><div style="font-family:var(--font-heading);font-size:22px;color:#8c491a">Bid false</div></div>
+          <div style="font-size:11.5px;color:#8c7f6c;margin-top:-6px;padding-left:86px">The verdict word inside an outcome band. Two words maximum, ever.</div>
+          <div style="display:flex;align-items:baseline;gap:12px"><div style="width:74px;flex:none;font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">18</div><div style="font-family:var(--font-heading);font-size:18px;color:#2e2b25">Place bid</div></div>
+          <div style="font-size:11.5px;color:#8c7f6c;margin-top:-6px;padding-left:86px">Every primary button label is Caprasimo 18. Secondary buttons are Figtree 16/700 &mdash; the face is the hierarchy, not the size.</div>
+          <div style="display:flex;align-items:baseline;gap:12px"><div style="width:74px;flex:none;font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">44 / .14em</div><div style="font-family:var(--font-heading);font-size:38px;letter-spacing:.14em;line-height:1;color:#2e2b25">K7RQ9</div></div>
+          <div style="font-size:11.5px;color:#8c7f6c;margin-top:-6px;padding-left:86px">Room code, 44px with .14em tracking &mdash; shown here at 38 to fit. The live bid quantity is the same face at 38 with no tracking; the 30px variant is for the compact wager token at 9+ players.</div>
+        </div>
+        <div style="height:1px;background:rgba(46,43,37,.12)"></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:12.5px;font-weight:800;color:#2e2b25">Figtree, the working scale</div>
+          <div style="display:grid;grid-template-columns:64px 1fr;gap:7px 12px;font-size:12px;color:#5a5347;align-items:baseline">
+            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">17 / 600</div><div>The nickname the player is typing &mdash; the only 17px in the product.</div>
+            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">16 / 700</div><div>Secondary button label.</div>
+            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">14.5 / 700</div><div>A player's name in a row you can act on.</div>
+            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">14 / 400</div><div>Supporting sentence under a title.</div>
+            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">13.5 / 400</div><div>Recap body inside a card.</div>
+            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">12.5 / 700</div><div>Chips, pills, timer, roster status. The workhorse.</div>
+            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">12 / 400</div><div>Caption under the table, field hints.</div>
+            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">11.5 / 400</div><div>Helper line under a button. The floor for anything a player must read.</div>
+            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">10.5&ndash;11.5 / 700&ndash;800</div><div>Uppercase kicker, tracking <strong>.06em</strong> (labels) to <strong>.09em</strong> (section kickers). Uppercase never runs longer than three words.</div>
+            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#8c7f6c">10 / 800</div><div>The seat's BIDDING flag. Nothing else may be this small.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:474px;border-radius:24px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);padding:22px;display:flex;flex-direction:column;gap:16px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+        <div style="display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--font-heading);font-size:19px">Shadow &mdash; elevation is meaning</div><div style="font-size:12px;color:#8c7f6c">How far off the table something sits says how much it matters. Seven values, each owned.</div></div>
+        <div style="display:flex;flex-direction:column;gap:10px;font-size:12px;color:#5a5347">
+          <div><span style="font-family:ui-monospace,monospace;font-size:11px;color:#2e2b25">0 16px 40px rgba(0,0,0,.44)</span> &mdash; the reveal / outcome recap. The highest thing on the table.</div>
+          <div><span style="font-family:ui-monospace,monospace;font-size:11px;color:#2e2b25">0 -16px 34px rgba(0,0,0,.42)</span> &mdash; the bid sheet, cast <em>upward</em>; the only negative-Y shadow.</div>
+          <div><span style="font-family:ui-monospace,monospace;font-size:11px;color:#2e2b25">0 14px 34px rgba(0,0,0,.46)</span> &mdash; the roll cup. Heavy because it is a physical object.</div>
+          <div><span style="font-family:ui-monospace,monospace;font-size:11px;color:#2e2b25">0 12px 30px rgba(0,0,0,.34)</span> &mdash; the room-code card in the lobby.</div>
+          <div><span style="font-family:ui-monospace,monospace;font-size:11px;color:#2e2b25">0 10px 26px rgba(0,0,0,.40)</span> &mdash; the wager token (8px 22px .36 in its compact form).</div>
+          <div><span style="font-family:ui-monospace,monospace;font-size:11px;color:#2e2b25">0 3px 8px rgba(0,0,0,.34)</span> &mdash; one die in your hand strip. Barely lifted, but not flat.</div>
+          <div><span style="font-family:ui-monospace,monospace;font-size:11px;color:#2e2b25">0 8px 26px rgba(0,0,0,.44), 0 0 40px rgba(247,214,155,.20)</span> &mdash; the 88px public opening die: a shadow <em>and</em> a lamp bloom, because it is the one die the whole table is looking at.</div>
+          <div><span style="font-family:ui-monospace,monospace;font-size:11px;color:#2e2b25">0 6px 18px rgba(198,113,57,.44)</span> &mdash; under the primary button only.</div>
+          <div style="color:#8c7f6c"><span style="font-family:ui-monospace,monospace;font-size:11px">0 24px 60px rgba(46,43,37,.34)</span> and <span style="font-family:ui-monospace,monospace;font-size:11px">0 3px 10px rgba(46,43,37,.07)</span> are this document's phone bezel and annotation cards. Not app values.</div>
+        </div>
+        <div style="height:1px;background:rgba(46,43,37,.12)"></div>
+        <div style="display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--font-heading);font-size:19px">Geometry and touch</div></div>
+        <div style="display:flex;flex-direction:column;gap:9px;font-size:12px;color:#5a5347">
+          <div><strong>56px</strong> &mdash; primary and destructive actions, full width or in a 1.4 / 1 pair.</div>
+          <div><strong>48px</strong> &mdash; the lobby's share row (button + 48px round icon).</div>
+          <div><strong>44&ndash;50px</strong> &mdash; a die in the hand strip; 50 at 2&ndash;8 players, 44 when the sheet is open.</div>
+          <div><strong>36px</strong> &mdash; header chips. Not tappable, so below the 44 floor on purpose.</div>
+          <div><strong>Screen padding</strong> 24px on arrival screens, 20px on the table and lobby, 26px for the status bar's own inset.</div>
+          <div><strong>Status bar</strong> 54px; the bid sheet's bottom padding carries the home indicator at 26&ndash;34px.</div>
+          <div><strong>Gaps</strong> follow 5 / 6 / 7 / 8 / 10 / 12 / 14 / 16px. Anything larger is <span style="font-family:ui-monospace,monospace;font-size:11px">margin-top:auto</span> doing the work instead.</div>
+        </div>
+        <div style="border-radius:14px;background:#f6dfd0;border:1px solid #d59a70;padding:12px 14px;font-size:12px;line-height:1.5;color:#7d4d2c"><strong style="color:#8c491a">Two things to fix, not to copy.</strong> The room-code screen's back circle is drawn <strong>42px</strong> &mdash; below the 44 floor; build it at 44. And <strong>320px</strong>: at that width the five code tiles and the five-die hand strip are the tightest rows in the product. Both are flex-sized rather than fixed, so they compress rather than scroll &mdash; hold the gap and let the tile shrink, never the reverse.</div>
+      </div>
+
     </div>
   </div>
 
@@ -486,9 +670,614 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-700)}
     </div>
   </div>
 
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:12px"><div style="font-family:var(--font-heading);font-size:24px">3 &middot; Round outcomes</div><div style="font-size:13px;color:#645c50">one event, one surface &mdash; the recap card carries every loss</div></div>
+
+    <div style="border-radius:24px;background:#f6dfd0;border:1px solid #d59a70;padding:20px 22px;display:flex;flex-direction:column;gap:10px;max-width:980px">
+      <div style="font-family:var(--font-heading);font-size:19px;color:#8c491a">Decision: RoundLossModal is retired on mobile</div>
+      <div style="font-size:13px;line-height:1.55;color:#7d4d2c">The reveal card is the loss surface. It already carries strictly more than the modal does &mdash; every hand, the ringed counted dice, the verdict and the closing summary, where the modal shows only claimed vs actual &mdash; and it needs no dismissal before the player can move on. Two surfaces narrating one event also means two shadows, two scrims and a tap that buys nothing.<br><br>The modal's one unique job was the <strong>&ldquo;Time ran out&rdquo;</strong> case, which has no reveal behind it. Panel <strong>10</strong> below gives that its own card in the same shape, so nothing is lost by removing the modal from the mobile board. Keep <code>RoundLossModal</code> mounted for desktop; on mobile, don't present it.</div>
+    </div>
+
+    <div style="display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start">
+
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <div data-screen-label="09 Round lost" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:radial-gradient(112% 58% at 50% 19%,#5a462d 0%,#33281c 52%,#211a13 100%)">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.035) 0 2px,transparent 2px 7px)"></div>
+          <div style="position:absolute;inset:0;background:rgba(20,14,8,.62)"></div>
+          <div style="position:relative;height:100%;display:flex;flex-direction:column">
+            <div style="height:54px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;color:#f2e7d3;font-size:14px;font-weight:600"><span>9:41</span><div style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:10px;border-radius:2px;background:#f2e7d3;opacity:.85"></span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid rgba(242,231,211,.85)"></span></div></div>
+            <div style="flex:none;padding:6px 20px 0">
+              <div style="height:36px;display:inline-flex;align-items:center;padding:0 14px;border-radius:999px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.16);color:#f2e7d3;font-size:12.5px;font-weight:700">Round 3 &middot; revealed</div>
+            </div>
+
+            <div style="flex:none;margin:16px 16px 0;border-radius:26px;background:#f5ead8;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 16px 40px rgba(0,0,0,.44)">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="font-family:var(--font-heading);font-size:26px;line-height:1.1;color:#2e2b25">Truth revealed</div>
+                <div style="font-size:13.5px;line-height:1.5;color:#5a5347">You claimed 5 &times; fives &mdash; actual count 4.</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:18px;background:#f6dfd0;border:1px solid #d59a70">
+                <div style="font-family:var(--font-heading);font-size:22px;color:#8c491a">Bid false</div>
+                <div style="flex:1;font-size:12px;line-height:1.45;color:#7d4d2c">The count fell short of your claim. You lose a die.</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:58px;flex:none;font-size:12px;font-weight:700;color:#5a5347;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Mateo</div>
+                  <div style="display:flex;gap:5px">
+                    <div style="width:30px;height:30px;border-radius:8px;background:#fffcf5;border:2px solid #c67139;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:5px"><span style="grid-area:1/1;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:2/2;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                    <div style="width:30px;height:30px;border-radius:8px;background:#fffcf5;border:1px solid #ddd0b8;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:5px"><span style="grid-area:2/2;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                    <div style="width:30px;height:30px;border-radius:8px;background:#fffcf5;border:1px solid #ddd0b8;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:5px"><span style="grid-area:1/1;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div style="width:58px;flex:none;font-size:12px;font-weight:700;color:#5a5347;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Isabel</div>
+                  <div style="display:flex;gap:5px">
+                    <div style="width:30px;height:30px;border-radius:8px;background:#fffcf5;border:2px solid #c67139;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:5px"><span style="grid-area:1/1;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:2/2;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                    <div style="width:30px;height:30px;border-radius:8px;background:#fffcf5;border:2px solid #c67139;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:5px"><span style="grid-area:2/2;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                    <div style="width:30px;height:30px;border-radius:8px;background:#fffcf5;border:1px solid #ddd0b8;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:5px"><span style="grid-area:1/1;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;margin:0 -8px;padding:7px 8px;border-radius:14px;background:rgba(198,113,57,.12)">
+                  <div style="width:58px;flex:none;font-size:12px;font-weight:800;color:#8c491a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ you }}</div>
+                  <div style="display:flex;gap:5px;align-items:center">
+                    <div style="width:30px;height:30px;border-radius:8px;background:#fffcf5;border:2px solid #c67139;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:5px"><span style="grid-area:1/1;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:2/2;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                    <div style="width:30px;height:30px;border-radius:8px;background:#fffcf5;border:1px solid #ddd0b8;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:5px"><span style="grid-area:2/2;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                    <div style="width:30px;height:30px;border-radius:8px;background:#fffcf5;border:1px solid #ddd0b8;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:5px"><span style="grid-area:1/1;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                    <div style="width:30px;height:30px;border-radius:8px;background:#fffcf5;border:1px solid #ddd0b8;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:5px"><span style="grid-area:1/1;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:2/2;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:5px;height:5px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                    <div style="width:30px;height:30px;flex:none;border-radius:8px;border:1px dashed #b9a68c;display:flex;align-items:center;justify-content:center;color:#8c7f6c;font-size:15px;line-height:1">&minus;</div>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;padding-top:2px"><span style="width:18px;height:18px;border-radius:50%;border:2px solid #c67139;flex:none"></span><span style="font-size:11.5px;color:#5a5347">Ringed dice counted toward the claim &mdash; aces are wild</span></div>
+            </div>
+
+            <div style="margin-top:auto;flex:none;display:flex;flex-direction:column;gap:10px;padding:0 20px 34px">
+              <div style="font-size:13px;color:#c0b6a5;text-align:center">You drop to 4 dice &middot; next round opens with you</div>
+              <div style="height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(198,113,57,.44)">Next round</div>
+            </div>
+          </div>
+        </div>
+        <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:15px 17px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+            <div style="display:flex;align-items:center;gap:8px"><span style="padding:4px 10px;border-radius:999px;background:#f6dfd0;color:#8c491a;font-size:10.5px;font-weight:800;letter-spacing:.04em">TO BUILD</span><span style="font-size:13.5px;font-weight:700">The loss is the same screen, aimed at you</span></div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5a5347">Panel 08 with the verdict pointed at the local player &mdash; that is the whole point of retiring the modal. Three additions over 08: your row gets a <code>rgba(198,113,57,.12)</code> wash and <code>#8c491a</code> name so the eye lands on it first; the die being taken is drawn as a sixth dashed slot with a minus, so the count visibly goes 5&nbsp;&rarr;&nbsp;4 rather than just being asserted in the closing line; and the table behind is under the scrim. Copy stays second-person and never says &ldquo;you lost&rdquo; twice.</div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <div data-screen-label="10 Timed out" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:radial-gradient(112% 58% at 50% 19%,#5a462d 0%,#33281c 52%,#211a13 100%)">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.035) 0 2px,transparent 2px 7px)"></div>
+          <div style="position:absolute;inset:0;background:rgba(20,14,8,.62)"></div>
+          <div style="position:relative;height:100%;display:flex;flex-direction:column">
+            <div style="height:54px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;color:#f2e7d3;font-size:14px;font-weight:600"><span>9:41</span><div style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:10px;border-radius:2px;background:#f2e7d3;opacity:.85"></span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid rgba(242,231,211,.85)"></span></div></div>
+            <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 0">
+              <div style="height:36px;display:flex;align-items:center;padding:0 14px;border-radius:999px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.16);color:#f2e7d3;font-size:12.5px;font-weight:700">Round 4 &middot; time up</div>
+              <div style="height:36px;display:flex;align-items:center;gap:8px;padding:0 13px;border-radius:999px;border:1px solid rgba(242,231,211,.16);color:#8d8474;font-size:12.5px;font-weight:700"><span style="width:9px;height:9px;border-radius:50%;background:#8d8474"></span>0:00</div>
+            </div>
+
+            <div style="flex:none;margin:16px 16px 0;border-radius:26px;background:#f5ead8;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 16px 40px rgba(0,0,0,.44)">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="font-family:var(--font-heading);font-size:26px;line-height:1.1;color:#2e2b25">Time ran out</div>
+                <div style="font-size:13.5px;line-height:1.5;color:#5a5347">Your 25 seconds and your 30-second bank are both spent.</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:18px;background:#f6dfd0;border:1px solid #d59a70">
+                <div style="font-family:var(--font-heading);font-size:22px;color:#8c491a">Timed out</div>
+                <div style="flex:1;font-size:12px;line-height:1.45;color:#7d4d2c">You lose a die and the round ends. No bid was resolved.</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#8c7f6c">Your hand</div>
+                <div style="display:flex;gap:5px;align-items:center">
+                  <div style="width:34px;height:34px;border-radius:9px;background:#fffcf5;border:1px solid #ddd0b8;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px"><span style="grid-area:2/2;width:6px;height:6px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                  <div style="width:34px;height:34px;border-radius:9px;background:#fffcf5;border:1px solid #ddd0b8;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px"><span style="grid-area:1/1;width:6px;height:6px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:6px;height:6px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                  <div style="width:34px;height:34px;border-radius:9px;background:#fffcf5;border:1px solid #ddd0b8;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px"><span style="grid-area:1/1;width:6px;height:6px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:6px;height:6px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:6px;height:6px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                  <div style="width:34px;height:34px;flex:none;border-radius:9px;border:1px dashed #b9a68c;display:flex;align-items:center;justify-content:center;color:#8c7f6c;font-size:16px;line-height:1">&minus;</div>
+                </div>
+                <div style="font-size:11.5px;line-height:1.45;color:#8c7f6c">No cup was opened &mdash; nobody's dice are shown, including yours from the round that did not resolve.</div>
+              </div>
+            </div>
+
+            <div style="margin-top:auto;flex:none;display:flex;flex-direction:column;gap:10px;padding:0 20px 34px">
+              <div style="font-size:13px;color:#c0b6a5;text-align:center">You drop to 2 dice &middot; next round opens with Isabel</div>
+              <div style="height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(198,113,57,.44)">Next round</div>
+            </div>
+          </div>
+        </div>
+        <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:15px 17px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+            <div style="display:flex;align-items:center;gap:8px"><span style="padding:4px 10px;border-radius:999px;background:#f6dfd0;color:#8c491a;font-size:10.5px;font-weight:800;letter-spacing:.04em">TO BUILD</span><span style="font-size:13.5px;font-weight:700">Rule 5.7 &mdash; the stall that costs a die</span></div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5a5347">Same card shape as 09, so a loss always looks like a loss &mdash; but there is <strong>no reveal</strong>, so the claimed/actual line and the other players' rows are absent by rule, not by omission. Privacy holds: an unresolved round opens no cup. The timer chip is drawn spent (<code>0:00</code>, quiet grey, not pulsing) so the cause is legible after the fact. This is what the old modal's &ldquo;Time ran out&rdquo; branch becomes.</div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <div data-screen-label="11 Stall protected" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:radial-gradient(112% 58% at 50% 19%,#5a462d 0%,#33281c 52%,#211a13 100%)">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.035) 0 2px,transparent 2px 7px)"></div>
+          <div style="position:relative;height:100%;display:flex;flex-direction:column">
+            <div style="height:54px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;color:#f2e7d3;font-size:14px;font-weight:600"><span>9:41</span><div style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:10px;border-radius:2px;background:#f2e7d3;opacity:.85"></span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid rgba(242,231,211,.85)"></span></div></div>
+            <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 0">
+              <div style="height:36px;display:flex;align-items:center;padding:0 14px;border-radius:999px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.16);color:#f2e7d3;font-size:12.5px;font-weight:700">Round 4 &middot; 9 dice</div>
+              <div style="height:36px;display:flex;align-items:center;gap:8px;padding:0 13px;border-radius:999px;border:1px solid rgba(242,231,211,.16);color:#c0b6a5;font-size:12.5px;font-weight:700"><span style="width:9px;height:9px;border-radius:50%;background:#8d8474"></span>0:25</div>
+            </div>
+
+            <div style="flex:none;margin:12px 20px 0;border-radius:20px;background:rgba(247,214,155,.13);box-shadow:0 0 0 1px rgba(247,214,155,.34);padding:13px 15px;display:flex;align-items:center;gap:12px">
+              <div style="width:34px;height:34px;flex:none;border-radius:50%;border:1.5px solid rgba(240,201,141,.5);color:#f0c98d;display:flex;align-items:center;justify-content:center;font-size:17px;line-height:1">&#8635;</div>
+              <div style="min-width:0;display:flex;flex-direction:column;gap:2px">
+                <div style="color:#f0c98d;font-size:13.5px;font-weight:800">Turn passed &mdash; no die lost</div>
+                <div style="color:#c0b6a5;font-size:12px;line-height:1.4">Two stalls in a row are protected once. Isabel bids next.</div>
+              </div>
+            </div>
+
+            <div style="flex:none;position:relative;height:170px;margin-top:10px">
+              <div style="position:absolute;left:-30px;right:-30px;top:138px;height:280px;border-radius:50%;background:radial-gradient(70% 60% at 50% 22%,rgba(255,214,150,.2),rgba(255,214,150,0) 72%);border-top:1px solid rgba(255,224,176,.16)"></div>
+              <div style="position:absolute;left:20%;top:118px;transform:translateX(-50%);width:80px;display:flex;flex-direction:column;align-items:center;gap:6px">
+                <div style="width:40px;height:29px;border-radius:20px 20px 5px 5px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div>
+                <div style="color:#f2e7d3;font-size:12.5px;font-weight:600">Mateo</div>
+                <div style="display:flex;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#e6d8bd"></span><span style="width:6px;height:6px;border-radius:50%;background:#e6d8bd"></span></div>
+              </div>
+              <div style="position:absolute;left:50%;top:52px;transform:translateX(-50%);width:80px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 4px;border-radius:18px;background:rgba(247,214,155,.13);box-shadow:0 0 0 1px rgba(247,214,155,.34),0 0 26px rgba(247,214,155,.18)">
+                <div style="width:40px;height:29px;border-radius:20px 20px 5px 5px;background:linear-gradient(180deg,#8a663d,#3d2d1c);border:1px solid rgba(255,224,176,.34)"></div>
+                <div style="color:#fffaf0;font-size:12.5px;font-weight:700">Isabel</div>
+                <div style="display:flex;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#e6d8bd"></span><span style="width:6px;height:6px;border-radius:50%;background:#e6d8bd"></span><span style="width:6px;height:6px;border-radius:50%;background:#e6d8bd"></span><span style="width:6px;height:6px;border-radius:50%;background:#e6d8bd"></span></div>
+                <div style="font-size:10px;color:#f0c98d;font-weight:800;letter-spacing:.05em">BIDDING</div>
+              </div>
+              <div style="position:absolute;left:80%;top:118px;transform:translateX(-50%);width:80px;display:flex;flex-direction:column;align-items:center;gap:6px">
+                <div style="width:40px;height:29px;border-radius:20px 20px 5px 5px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div>
+                <div style="color:#f2e7d3;font-size:12.5px;font-weight:600">Anne</div>
+                <div style="display:flex;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#e6d8bd"></span><span style="width:6px;height:6px;border-radius:50%;background:#e6d8bd"></span><span style="width:6px;height:6px;border-radius:50%;background:#e6d8bd"></span></div>
+              </div>
+            </div>
+
+            <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:9px;margin-top:6px">
+              <div style="display:flex;align-items:center;gap:12px;padding:11px 20px;border-radius:22px;background:#f5ead8;box-shadow:0 10px 26px rgba(0,0,0,.4)">
+                <div style="font-family:var(--font-heading);font-size:38px;line-height:1;color:#2e2b25">3</div>
+                <div style="font-size:19px;color:#8c7f6c">&times;</div>
+                <div style="width:46px;height:46px;border-radius:11px;background:#fffcf5;border:1px solid #c0b6a5;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:1/1;width:9px;height:9px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:9px;height:9px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:9px;height:9px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:9px;height:9px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+              </div>
+              <div style="font-size:12px;color:#a29684">Mateo's bid still stands &mdash; Isabel answers</div>
+            </div>
+
+            <div style="margin-top:auto;flex:none;display:flex;justify-content:center;padding:0 20px 18px">
+              <div style="display:flex;gap:7px">
+                <div style="width:50px;height:50px;border-radius:12px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:8px"><span style="grid-area:2/2;width:9px;height:9px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+                <div style="width:50px;height:50px;border-radius:12px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:8px"><span style="grid-area:1/1;width:9px;height:9px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:2/2;width:9px;height:9px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:9px;height:9px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+              </div>
+            </div>
+
+            <div style="flex:none;border-radius:28px 28px 0 0;background:#2b231b;border-top:1px solid rgba(255,224,176,.18);box-shadow:0 -16px 34px rgba(0,0,0,.42);padding:16px 20px 34px">
+              <div style="display:flex;align-items:center;gap:13px;padding:12px 14px;border-radius:20px;background:rgba(242,231,211,.06);border:1px solid rgba(242,231,211,.12)">
+                <div style="width:42px;height:42px;flex:none;border-radius:50%;background:rgba(247,214,155,.18);border:1px solid rgba(247,214,155,.4);color:#f0c98d;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;animation:lpulse 1.8s infinite">I</div>
+                <div style="min-width:0;display:flex;flex-direction:column;gap:2px">
+                  <div style="color:#f2e7d3;font-size:14.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Isabel weighs their wager</div>
+                  <div style="color:#8d8474;font-size:12px">Anne answers next</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:15px 17px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+            <div style="display:flex;align-items:center;gap:8px"><span style="padding:4px 10px;border-radius:999px;background:#f6dfd0;color:#8c491a;font-size:10.5px;font-weight:800;letter-spacing:.04em">TO BUILD</span><span style="font-size:13.5px;font-weight:700">Rule 5.7 &mdash; the protected stall</span></div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5a5347">The other timeout outcome, and it must look nothing like panel 10: <strong>no card, no scrim, no dismissal, no CTA</strong>. A brass ribbon in the same halo language as the active seat appears where the round chip's row ends, the standing bid is untouched, and play carries straight on to the next seat &mdash; the ribbon fades on the next bid or after 4s. Nothing is taken, so nothing stops. That contrast is the design: a card means you paid, a ribbon means you didn't.</div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <div data-screen-label="12 Match won" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:radial-gradient(112% 58% at 50% 16%,#5a462d 0%,#33281c 52%,#211a13 100%)">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.035) 0 2px,transparent 2px 7px)"></div>
+          <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:0 20px 30px">
+            <div style="height:54px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 6px 8px;color:#f2e7d3;font-size:14px;font-weight:600"><span>9:41</span><div style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:10px;border-radius:2px;background:#f2e7d3;opacity:.85"></span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid rgba(242,231,211,.85)"></span></div></div>
+
+            <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:44px">
+              <div style="width:78px;height:78px;border-radius:50%;background:radial-gradient(60% 60% at 50% 32%,#f7d69b,#c67139);box-shadow:0 0 46px rgba(247,214,155,.42);display:flex;align-items:center;justify-content:center">
+                <div style="width:34px;height:34px;border-radius:9px;background:#fffcf5;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px"><span style="grid-area:2/2;width:6px;height:6px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+              </div>
+            </div>
+
+            <div style="flex:none;margin-top:26px;border-radius:26px;background:#f5ead8;padding:22px 20px;display:flex;flex-direction:column;gap:16px;box-shadow:0 16px 40px rgba(0,0,0,.44)">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#8c7f6c">Match over</div>
+                <div style="font-family:var(--font-heading);font-size:30px;line-height:1.06;color:#2e2b25">The table is yours</div>
+                <div style="font-size:13.5px;line-height:1.5;color:#5a5347">Last cup standing after eleven rounds. Anne called on your final die and the count was true.</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:16px;background:rgba(198,113,57,.12)">
+                  <div style="width:22px;flex:none;font-family:var(--font-heading);font-size:17px;color:#8c491a">1</div>
+                  <div style="flex:1;font-size:14px;font-weight:800;color:#2e2b25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ you }}</div>
+                  <div style="flex:none;font-size:11.5px;font-weight:700;color:#8c491a">2 dice left</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:16px">
+                  <div style="width:22px;flex:none;font-family:var(--font-heading);font-size:17px;color:#8c7f6c">2</div>
+                  <div style="flex:1;font-size:14px;font-weight:700;color:#5a5347">Anne</div>
+                  <div style="flex:none;font-size:11.5px;color:#8c7f6c">out in round 11</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:16px">
+                  <div style="width:22px;flex:none;font-family:var(--font-heading);font-size:17px;color:#8c7f6c">3</div>
+                  <div style="flex:1;font-size:14px;font-weight:700;color:#5a5347">Isabel</div>
+                  <div style="flex:none;font-size:11.5px;color:#8c7f6c">out in round 8</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:16px">
+                  <div style="width:22px;flex:none;font-family:var(--font-heading);font-size:17px;color:#8c7f6c">4</div>
+                  <div style="flex:1;font-size:14px;font-weight:700;color:#5a5347">Mateo</div>
+                  <div style="flex:none;font-size:11.5px;color:#8c7f6c">out in round 5</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:auto;flex:none;display:flex;flex-direction:column;gap:10px;padding-top:24px">
+              <div style="height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(198,113,57,.44)">Start another table</div>
+              <div style="height:56px;border-radius:999px;border:1.5px solid rgba(242,231,211,.3);color:#f2e7d3;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center">Back to the door</div>
+            </div>
+          </div>
+        </div>
+        <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:15px 17px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+            <div style="display:flex;align-items:center;gap:8px"><span style="padding:4px 10px;border-radius:999px;background:#f7e9d3;color:#7d5417;font-size:10.5px;font-weight:800;letter-spacing:.04em">NEEDS PASS</span><span style="font-size:13.5px;font-weight:700">End card &mdash; the winner's copy of it</span></div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5a5347">One screen shape for the end of a match; only the kicker, headline, sentence and the highlighted row change. The lamp disc returns here &mdash; the only screen besides the nickname step that uses it, closing the arc. <strong>The standings are placement plus &ldquo;out in round N&rdquo; and nothing else:</strong> rounds played and calls won, which the older flow file's stat tiles showed, are not data the server holds &mdash; do not build tiles for them. Placement order and the round counter are both already known.</div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <div data-screen-label="13 Eliminated" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:radial-gradient(112% 58% at 50% 16%,#4a3a26 0%,#2b2218 52%,#1c160f 100%)">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.035) 0 2px,transparent 2px 7px)"></div>
+          <div style="position:relative;height:100%;display:flex;flex-direction:column;padding:0 20px 30px">
+            <div style="height:54px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 6px 8px;color:#f2e7d3;font-size:14px;font-weight:600"><span>9:41</span><div style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:10px;border-radius:2px;background:#f2e7d3;opacity:.85"></span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid rgba(242,231,211,.85)"></span></div></div>
+
+            <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:44px">
+              <div style="width:78px;height:78px;border-radius:50%;border:1.5px solid rgba(242,231,211,.22);display:flex;align-items:center;justify-content:center">
+                <div style="width:40px;height:29px;border-radius:20px 20px 5px 5px;border:1px dashed rgba(242,231,211,.4)"></div>
+              </div>
+            </div>
+
+            <div style="flex:none;margin-top:26px;border-radius:26px;background:#f5ead8;padding:22px 20px;display:flex;flex-direction:column;gap:16px;box-shadow:0 16px 40px rgba(0,0,0,.44)">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#8c7f6c">Your match is over</div>
+                <div style="font-family:var(--font-heading);font-size:30px;line-height:1.06;color:#2e2b25">Out in fourth</div>
+                <div style="font-size:13.5px;line-height:1.5;color:#5a5347">Your last die went to Anne's call in round 5. Three cups are still on the table.</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:16px">
+                  <div style="width:22px;flex:none;font-size:11.5px;font-weight:800;color:#4b5a30">&mdash;</div>
+                  <div style="flex:1;font-size:14px;font-weight:700;color:#5a5347">Anne, Isabel, Mateo</div>
+                  <div style="flex:none;font-size:11.5px;font-weight:700;color:#4b5a30">still playing</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:16px;background:rgba(198,113,57,.12)">
+                  <div style="width:22px;flex:none;font-family:var(--font-heading);font-size:17px;color:#8c491a">4</div>
+                  <div style="flex:1;font-size:14px;font-weight:800;color:#2e2b25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ you }}</div>
+                  <div style="flex:none;font-size:11.5px;font-weight:700;color:#8c491a">out in round 5</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:16px">
+                  <div style="width:22px;flex:none;font-family:var(--font-heading);font-size:17px;color:#8c7f6c">5</div>
+                  <div style="flex:1;font-size:14px;font-weight:700;color:#5a5347">Tobias</div>
+                  <div style="flex:none;font-size:11.5px;color:#8c7f6c">out in round 3</div>
+                </div>
+              </div>
+              <div style="font-size:11.5px;line-height:1.45;color:#8c7f6c">You'll see the final standings when the match ends.</div>
+            </div>
+
+            <div style="margin-top:auto;flex:none;display:flex;flex-direction:column;gap:10px;padding-top:24px">
+              <div style="height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(198,113,57,.44)">Back to the door</div>
+              <div style="font-size:11.5px;color:#8d8474;text-align:center">The match carries on without you</div>
+            </div>
+          </div>
+        </div>
+        <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:15px 17px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+            <div style="display:flex;align-items:center;gap:8px"><span style="padding:4px 10px;border-radius:999px;background:#f6dfd0;color:#8c491a;font-size:10.5px;font-weight:800;letter-spacing:.04em">TO BUILD</span><span style="font-size:13.5px;font-weight:700">Every player reaches an end card</span></div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5a5347">Same card, same slots &mdash; the changes are all subtraction. No lamp (an empty cup outline instead), the cabin gradient one step darker (<code>#4a3a26 &rarr; #1c160f</code>: the lamp is over someone else's seat now), and one action rather than two. <strong>Open, not designed:</strong> whether an eliminated player can stay and watch. Nothing in the app supports spectating today, so this panel assumes they leave &mdash; if watching is wanted, it is a feature decision first and a second button here second.</div>
+          </div>
+        </sc-if>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;align-items:baseline;gap:12px"><div style="font-family:var(--font-heading);font-size:24px">4 &middot; Special rounds, failure, scale</div><div style="font-size:13px;color:#645c50">palifico, a dropped connection, a refused action, twelve cups</div></div>
+
+    <div style="display:flex;gap:28px;flex-wrap:wrap;align-items:flex-start">
+
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <div data-screen-label="14 Palifico" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:radial-gradient(112% 58% at 50% 19%,#5a462d 0%,#33281c 52%,#211a13 100%)">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.035) 0 2px,transparent 2px 7px)"></div>
+          <div style="position:relative;height:100%;display:flex;flex-direction:column">
+            <div style="height:54px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;color:#f2e7d3;font-size:14px;font-weight:600"><span>9:41</span><div style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:10px;border-radius:2px;background:#f2e7d3;opacity:.85"></span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid rgba(242,231,211,.85)"></span></div></div>
+            <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 0">
+              <div style="height:36px;display:flex;align-items:center;gap:8px;padding:0 14px;border-radius:999px;background:rgba(247,214,155,.13);border:1px solid rgba(240,201,141,.55);color:#f0c98d;font-size:12.5px;font-weight:800"><span style="width:8px;height:8px;border-radius:50%;background:#f0c98d"></span>Palifico &middot; Mateo</div>
+              <div style="height:36px;display:flex;align-items:center;gap:8px;padding:0 13px;border-radius:999px;background:rgba(198,113,57,.2);border:1px solid rgba(240,201,141,.45);color:#f0c98d;font-size:12.5px;font-weight:800"><span style="width:9px;height:9px;border-radius:50%;background:#f0c98d;animation:lpulse 1s infinite"></span>0:11</div>
+            </div>
+
+            <div style="flex:none;margin:10px 20px 0;border-radius:18px;background:rgba(247,214,155,.11);border:1px solid rgba(247,214,155,.3);padding:11px 14px;display:flex;flex-direction:column;gap:3px">
+              <div style="color:#f0c98d;font-size:12.5px;font-weight:800">Aces are not wild this round</div>
+              <div style="color:#c0b6a5;font-size:11.5px;line-height:1.4">Mateo is down to one die, so the face is locked to fours &mdash; raise the count only.</div>
+            </div>
+
+            <div style="flex:none;position:relative;height:124px;margin-top:8px">
+              <div style="position:absolute;left:-30px;right:-30px;top:96px;height:260px;border-radius:50%;background:radial-gradient(70% 60% at 50% 22%,rgba(255,214,150,.2),rgba(255,214,150,0) 72%);border-top:1px solid rgba(255,224,176,.16)"></div>
+              <div style="position:absolute;left:22%;top:78px;transform:translateX(-50%);width:76px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                <div style="width:36px;height:26px;border-radius:18px 18px 5px 5px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div>
+                <div style="color:#f2e7d3;font-size:12px;font-weight:600">Mateo</div>
+                <div style="display:flex;gap:3px"><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span></div>
+              </div>
+              <div style="position:absolute;left:50%;top:34px;transform:translateX(-50%);width:76px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                <div style="width:36px;height:26px;border-radius:18px 18px 5px 5px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div>
+                <div style="color:#f2e7d3;font-size:12px;font-weight:600">Isabel</div>
+                <div style="display:flex;gap:3px"><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span></div>
+              </div>
+              <div style="position:absolute;left:78%;top:78px;transform:translateX(-50%);width:76px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                <div style="width:36px;height:26px;border-radius:18px 18px 5px 5px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div>
+                <div style="color:#f2e7d3;font-size:12px;font-weight:600">Anne</div>
+                <div style="display:flex;gap:3px"><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span></div>
+              </div>
+            </div>
+
+            <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:7px;margin-top:4px">
+              <div style="display:flex;align-items:center;gap:10px;padding:9px 18px;border-radius:20px;background:#f5ead8;box-shadow:0 8px 22px rgba(0,0,0,.36)">
+                <div style="font-family:var(--font-heading);font-size:30px;line-height:1;color:#2e2b25">2</div>
+                <div style="font-size:16px;color:#8c7f6c">&times;</div>
+                <div style="width:38px;height:38px;border-radius:10px;background:#fffcf5;border:1px solid #c0b6a5;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px"><span style="grid-area:1/1;width:7px;height:7px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:7px;height:7px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:7px;height:7px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:7px;height:7px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+              </div>
+              <div style="font-size:12px;color:#f0c98d;font-weight:700">Mateo's bid &mdash; your turn</div>
+            </div>
+
+            <div style="flex:none;display:flex;justify-content:center;padding:10px 20px 8px">
+              <div style="display:flex;gap:6px">
+                <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:1/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+                <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:2/2;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+                <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:1/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+              </div>
+            </div>
+
+            <div style="margin-top:auto;flex:none;border-radius:28px 28px 0 0;background:#2b231b;border-top:1px solid rgba(255,224,176,.18);box-shadow:0 -16px 34px rgba(0,0,0,.42);padding:14px 20px 26px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;justify-content:center;gap:14px">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                  <div style="width:56px;height:36px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px">&#9650;</div>
+                  <div style="width:58px;height:58px;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:38px;line-height:1;color:#fffaf0">3</div>
+                  <div style="width:56px;height:36px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px">&#9660;</div>
+                </div>
+                <div style="font-size:20px;color:#82796a">&times;</div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                  <div style="width:56px;height:36px;border-radius:12px;background:rgba(242,231,211,.04);border:1px solid rgba(242,231,211,.1);color:#8d8474;display:flex;align-items:center;justify-content:center;font-size:14px">&#9650;</div>
+                  <div style="position:relative;width:58px;height:58px;border-radius:13px;background:#fffaf0;border:1px solid #c0b6a5;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:9px;opacity:.72">
+                    <span style="grid-area:1/1;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span>
+                    <div style="position:absolute;right:-6px;bottom:-6px;width:22px;height:22px;border-radius:50%;background:#2b231b;border:1px solid rgba(240,201,141,.55);display:flex;align-items:center;justify-content:center;color:#f0c98d;font-size:11px;line-height:1">&#9679;</div>
+                  </div>
+                  <div style="width:56px;height:36px;border-radius:12px;background:rgba(242,231,211,.04);border:1px solid rgba(242,231,211,.1);color:#8d8474;display:flex;align-items:center;justify-content:center;font-size:14px">&#9660;</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:8px;overflow:hidden">
+                <div style="flex:none;padding:9px 15px;border-radius:999px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;font-size:12.5px;font-weight:700">Min &middot; 3&times;4</div>
+                <div style="flex:none;padding:9px 15px;border-radius:999px;background:rgba(247,214,155,.13);border:1px solid rgba(240,201,141,.5);color:#f0c98d;font-size:12.5px;font-weight:700">Face locked &middot; 4</div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <div style="flex:1.4;height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(198,113,57,.44)">Place bid</div>
+                <div style="flex:1;height:56px;border-radius:999px;border:1.5px solid #d98a6a;color:#f0b393;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center">Call liar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:15px 17px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+            <div style="display:flex;align-items:center;gap:8px"><span style="padding:4px 10px;border-radius:999px;background:#f6dfd0;color:#8c491a;font-size:10.5px;font-weight:800;letter-spacing:.04em">TO BUILD</span><span style="font-size:13.5px;font-weight:700">Palifico &mdash; a phase, not a warning</span></div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5a5347">Four coordinated changes, no new colours: the round chip becomes the <strong>only brass-edged chip</strong> on the header and names who triggered it; a rule ribbon states both rule changes in the player's words (never &ldquo;aces not wild&rdquo; alone &mdash; say the face and the direction); the face stepper's arrows drop to <code>.04</code> fill / <code>#8d8474</code> ink and the die itself to 72% with a brass lock disc, while the <em>quantity</em> stepper stays at full strength so the one legal move is obvious; and the hint row loses &ldquo;Aces&rdquo; and gains <strong>Face locked &middot; 4</strong>. <code>declareSpecialRound()</code>'s raw warning button is replaced by this state entirely.</div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <div data-screen-label="15 Connection lost" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:radial-gradient(112% 58% at 50% 19%,#5a462d 0%,#33281c 52%,#211a13 100%)">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.035) 0 2px,transparent 2px 7px)"></div>
+          <div style="position:absolute;inset:0;top:54px;display:flex;flex-direction:column">
+            <div style="flex:none;position:relative;height:170px;margin-top:36px;opacity:.5">
+              <div style="position:absolute;left:-30px;right:-30px;top:138px;height:280px;border-radius:50%;background:radial-gradient(70% 60% at 50% 22%,rgba(255,214,150,.2),rgba(255,214,150,0) 72%);border-top:1px solid rgba(255,224,176,.16)"></div>
+              <div style="position:absolute;left:20%;top:118px;transform:translateX(-50%);width:80px;display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:40px;height:29px;border-radius:20px 20px 5px 5px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div><div style="color:#f2e7d3;font-size:12.5px;font-weight:600">Mateo</div></div>
+              <div style="position:absolute;left:50%;top:52px;transform:translateX(-50%);width:80px;display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:40px;height:29px;border-radius:20px 20px 5px 5px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div><div style="color:#f2e7d3;font-size:12.5px;font-weight:600">Isabel</div></div>
+              <div style="position:absolute;left:80%;top:118px;transform:translateX(-50%);width:80px;display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:40px;height:29px;border-radius:20px 20px 5px 5px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div><div style="color:#f2e7d3;font-size:12.5px;font-weight:600">Anne</div></div>
+            </div>
+          </div>
+          <div style="position:absolute;inset:0;background:rgba(20,14,8,.62)"></div>
+          <div style="position:relative;height:100%;display:flex;flex-direction:column">
+            <div style="height:54px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;color:#f2e7d3;font-size:14px;font-weight:600"><span>9:41</span><div style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:10px;border-radius:2px;background:#f2e7d3;opacity:.85"></span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid rgba(242,231,211,.85)"></span></div></div>
+
+            <div style="margin:auto 20px;flex:none;border-radius:26px;background:#2b231b;border:1px solid rgba(242,231,211,.12);padding:26px 22px;display:flex;flex-direction:column;align-items:center;gap:16px;box-shadow:0 16px 40px rgba(0,0,0,.44)">
+              <div style="width:52px;height:52px;border-radius:50%;border:2px solid rgba(242,231,211,.16);border-top-color:#f0c98d;animation:lspin 1.6s linear infinite"></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:7px">
+                <div style="font-family:var(--font-heading);font-size:24px;color:#fffaf0;text-align:center;line-height:1.1">Finding the table</div>
+                <div style="font-size:13px;color:#c0b6a5;text-align:center;line-height:1.5;max-width:250px">You dropped out mid-round. Your seat and your dice are held &mdash; we're getting you back in.</div>
+              </div>
+              <div style="width:100%;display:flex;flex-direction:column;gap:8px;padding:13px 15px;border-radius:18px;background:rgba(242,231,211,.06);border:1px solid rgba(242,231,211,.12)">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span style="font-size:12px;color:#a29684">Retrying</span><span style="font-size:12.5px;font-weight:800;color:#f0c98d">attempt 2 &middot; 3s</span></div>
+                <div style="height:5px;border-radius:999px;background:rgba(242,231,211,.1);overflow:hidden"><div style="width:46%;height:100%;border-radius:999px;background:#f0c98d"></div></div>
+                <div style="font-size:11.5px;color:#8d8474;line-height:1.45">Your turn timer keeps running. Nobody votes on a drop &mdash; if it runs out you lose a die like any other stall.</div>
+              </div>
+              <div style="width:100%;height:56px;border-radius:999px;border:1.5px solid rgba(242,231,211,.3);color:#f2e7d3;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center">Leave the table</div>
+            </div>
+          </div>
+        </div>
+        <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+          <div style="border-radius:20px;overflow:hidden;background:radial-gradient(112% 90% at 50% 8%,#5a462d,#211a13);padding:16px 18px;display:flex;flex-direction:column;gap:11px">
+            <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#a29684">And when it succeeds &mdash; the rejoin ribbon</div>
+            <div style="border-radius:18px;background:rgba(247,214,155,.13);box-shadow:0 0 0 1px rgba(247,214,155,.34);padding:13px 15px;display:flex;align-items:center;gap:12px">
+              <div style="width:34px;height:34px;flex:none;border-radius:50%;border:1.5px solid rgba(240,201,141,.5);color:#f0c98d;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1">&#10003;</div>
+              <div style="min-width:0;display:flex;flex-direction:column;gap:2px">
+                <div style="color:#f0c98d;font-size:13.5px;font-weight:800">Back at the table</div>
+                <div style="color:#c0b6a5;font-size:12px;line-height:1.4">Round 5 &middot; you have 3 dice &middot; Anne is bidding</div>
+              </div>
+            </div>
+            <div style="font-size:11.5px;line-height:1.5;color:#a29684">The scrim and card come off, the ribbon takes panel 11's place under the header and fades after 4s. It states the <em>current</em> state, never a diff &mdash; &ldquo;you missed two rounds&rdquo; is not something the server can tell you.</div>
+          </div>
+          <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:15px 17px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+            <div style="display:flex;align-items:center;gap:8px"><span style="padding:4px 10px;border-radius:999px;background:#f6dfd0;color:#8c491a;font-size:10.5px;font-weight:800;letter-spacing:.04em">TO BUILD</span><span style="font-size:13.5px;font-weight:700">Drop mid-round &mdash; the real gap</span></div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5a5347"><code>sessionRestoreFailed()</code> covers the entry screen only; this is the in-game case. The table stays visible at 50% under the scrim &mdash; the player needs to see their seat is still there, which is the anxiety this screen answers. The card is the <em>sheet</em> surface (<code>#2b231b</code>), not card cream: nothing has resolved, so nothing is on paper. Honest about the rule rather than reassuring: the turn timer does not pause, and there is no vote. If retries are exhausted the card's copy becomes terminal and the primary action turns into <strong>Back to the door</strong>.</div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <div data-screen-label="16 Rejected action" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:radial-gradient(112% 58% at 50% 19%,#5a462d 0%,#33281c 52%,#211a13 100%)">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.035) 0 2px,transparent 2px 7px)"></div>
+          <div style="position:relative;height:100%;display:flex;flex-direction:column">
+            <div style="height:54px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;color:#f2e7d3;font-size:14px;font-weight:600"><span>9:41</span><div style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:10px;border-radius:2px;background:#f2e7d3;opacity:.85"></span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid rgba(242,231,211,.85)"></span></div></div>
+            <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 0">
+              <div style="height:36px;display:flex;align-items:center;padding:0 14px;border-radius:999px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.16);color:#f2e7d3;font-size:12.5px;font-weight:700">Your turn</div>
+              <div style="height:36px;display:flex;align-items:center;gap:8px;padding:0 13px;border-radius:999px;background:rgba(198,113,57,.2);border:1px solid rgba(240,201,141,.45);color:#f0c98d;font-size:12.5px;font-weight:800"><span style="width:9px;height:9px;border-radius:50%;background:#f0c98d;animation:lpulse 1s infinite"></span>0:14</div>
+            </div>
+
+            <div style="flex:none;position:relative;height:124px;margin-top:6px">
+              <div style="position:absolute;left:-30px;right:-30px;top:96px;height:260px;border-radius:50%;background:radial-gradient(70% 60% at 50% 22%,rgba(255,214,150,.2),rgba(255,214,150,0) 72%);border-top:1px solid rgba(255,224,176,.16)"></div>
+              <div style="position:absolute;left:22%;top:78px;transform:translateX(-50%);width:76px;display:flex;flex-direction:column;align-items:center;gap:5px"><div style="width:36px;height:26px;border-radius:18px 18px 5px 5px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div><div style="color:#f2e7d3;font-size:12px;font-weight:600">Mateo</div><div style="display:flex;gap:3px"><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span></div></div>
+              <div style="position:absolute;left:50%;top:34px;transform:translateX(-50%);width:76px;display:flex;flex-direction:column;align-items:center;gap:5px"><div style="width:36px;height:26px;border-radius:18px 18px 5px 5px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div><div style="color:#f2e7d3;font-size:12px;font-weight:600">Isabel</div><div style="display:flex;gap:3px"><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span></div></div>
+              <div style="position:absolute;left:78%;top:78px;transform:translateX(-50%);width:76px;display:flex;flex-direction:column;align-items:center;gap:5px"><div style="width:36px;height:26px;border-radius:18px 18px 5px 5px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div><div style="color:#f2e7d3;font-size:12px;font-weight:600">Anne</div><div style="display:flex;gap:3px"><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span><span style="width:5px;height:5px;border-radius:50%;background:#e6d8bd"></span></div></div>
+            </div>
+
+            <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:7px;margin-top:4px">
+              <div style="display:flex;align-items:center;gap:10px;padding:9px 18px;border-radius:20px;background:#f5ead8;box-shadow:0 8px 22px rgba(0,0,0,.36)">
+                <div style="font-family:var(--font-heading);font-size:30px;line-height:1;color:#2e2b25">4</div>
+                <div style="font-size:16px;color:#8c7f6c">&times;</div>
+                <div style="width:38px;height:38px;border-radius:10px;background:#fffcf5;border:1px solid #c0b6a5;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px"><span style="grid-area:1/1;width:7px;height:7px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:7px;height:7px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:2/2;width:7px;height:7px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:7px;height:7px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:7px;height:7px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+              </div>
+              <div style="font-size:12px;color:#f0c98d;font-weight:700">Mateo's bid &mdash; your turn</div>
+            </div>
+
+            <div style="flex:none;display:flex;justify-content:center;padding:10px 20px 8px">
+              <div style="display:flex;gap:6px">
+                <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:2/2;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+                <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:1/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+                <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:1/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+                <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:1/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:2/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:2/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+              </div>
+            </div>
+
+            <div style="margin-top:auto;flex:none;border-radius:28px 28px 0 0;background:#2b231b;border-top:1px solid rgba(255,224,176,.18);box-shadow:0 -16px 34px rgba(0,0,0,.42);padding:14px 20px 26px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;justify-content:center;gap:14px">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                  <div style="width:56px;height:36px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px">&#9650;</div>
+                  <div style="width:58px;height:58px;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:38px;line-height:1;color:#f0b393">3</div>
+                  <div style="width:56px;height:36px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px">&#9660;</div>
+                </div>
+                <div style="font-size:20px;color:#82796a">&times;</div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                  <div style="width:56px;height:36px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px">&#9650;</div>
+                  <div style="width:58px;height:58px;border-radius:13px;background:#fffaf0;border:1px solid #c0b6a5;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:9px"><span style="grid-area:1/1;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:2/2;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                  <div style="width:56px;height:36px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px">&#9660;</div>
+                </div>
+              </div>
+              <div style="min-height:38px;display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:999px;border:1.5px solid #d98a6a">
+                <span style="width:18px;height:18px;flex:none;border-radius:50%;border:1.5px solid #d98a6a;color:#f0b393;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;line-height:1">!</span>
+                <span style="font-size:12.5px;font-weight:700;color:#f0b393;line-height:1.35">Too low &mdash; beat 4 &times; fives or call</span>
+              </div>
+              <div style="display:flex;gap:10px">
+                <div style="flex:1.4;height:56px;border-radius:999px;background:rgba(198,113,57,.32);color:rgba(255,255,255,.55);font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center">Place bid</div>
+                <div style="flex:1;height:56px;border-radius:999px;border:1.5px solid #d98a6a;color:#f0b393;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center">Call liar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+          <div style="border-radius:20px;overflow:hidden;background:radial-gradient(112% 90% at 50% 8%,#5a462d,#211a13);padding:16px 18px;display:flex;flex-direction:column;gap:11px">
+            <div style="font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#a29684">The five refusals, and where each one lands</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:10px;align-items:flex-start"><span style="flex:none;margin-top:2px;padding:3px 9px;border-radius:999px;border:1px solid #d98a6a;color:#f0b393;font-size:10px;font-weight:800;letter-spacing:.03em">IN SHEET</span><div style="font-size:12px;line-height:1.45;color:#f2e7d3">&ldquo;Too low &mdash; beat 4 &times; fives or call&rdquo; &middot; illegal bid. Replaces the hint row, disables Place bid. Never a toast &mdash; the fix is two inches below it.</div></div>
+              <div style="display:flex;gap:10px;align-items:flex-start"><span style="flex:none;margin-top:2px;padding:3px 9px;border-radius:999px;border:1px solid #d98a6a;color:#f0b393;font-size:10px;font-weight:800;letter-spacing:.03em">IN SHEET</span><div style="font-size:12px;line-height:1.45;color:#f2e7d3">&ldquo;Face is locked this round&rdquo; &middot; wrong phase. Same slot, shown if a locked stepper is pressed.</div></div>
+              <div style="display:flex;gap:10px;align-items:flex-start"><span style="flex:none;margin-top:2px;padding:3px 9px;border-radius:999px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.2);color:#c0b6a5;font-size:10px;font-weight:800;letter-spacing:.03em">TOAST</span><div style="font-size:12px;line-height:1.45;color:#f2e7d3">&ldquo;Anne got there first&rdquo; &middot; not your turn. A late tap that the server refused &mdash; the sheet has already collapsed, so there is no field to attach to.</div></div>
+              <div style="display:flex;gap:10px;align-items:flex-start"><span style="flex:none;margin-top:2px;padding:3px 9px;border-radius:999px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.2);color:#c0b6a5;font-size:10px;font-weight:800;letter-spacing:.03em">ON ENTRY</span><div style="font-size:12px;line-height:1.45;color:#f2e7d3">&ldquo;That table is full&rdquo; / &ldquo;No table with that code&rdquo; &middot; room full, bad code. Sits above the Join button in <code>#f0b393</code>, and the fifth tile keeps focus.</div></div>
+              <div style="display:flex;gap:10px;align-items:flex-start"><span style="flex:none;margin-top:2px;padding:3px 9px;border-radius:999px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.2);color:#c0b6a5;font-size:10px;font-weight:800;letter-spacing:.03em">ON ENTRY</span><div style="font-size:12px;line-height:1.45;color:#f2e7d3">&ldquo;This seat has expired &mdash; take a new one&rdquo; &middot; invalid token. Terminal: clears the stored session and returns to the nickname step.</div></div>
+            </div>
+          </div>
+          <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:15px 17px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+            <div style="display:flex;align-items:center;gap:8px"><span style="padding:4px 10px;border-radius:999px;background:#f6dfd0;color:#8c491a;font-size:10.5px;font-weight:800;letter-spacing:.04em">TO BUILD</span><span style="font-size:13.5px;font-weight:700">Rule 4.2 &mdash; refusal without a toast</span></div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5a5347">Two rules. <strong>If the player can fix it here, say it here:</strong> the message takes the hint row's slot (same height, so nothing moves), the offending number turns <code>#f0b393</code>, and Place bid drops to its disabled 32% fill. <strong>Only use a toast when the surface that caused it is gone.</strong> Toasts sit under the status bar, use the sheet surface, and last 3s. No error ever announces a state name &mdash; &ldquo;wrong phase&rdquo; becomes &ldquo;Face is locked this round&rdquo;, and there is no such thing as an error dialog in this product.</div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;width:390px">
+        <div data-screen-label="17 Twelve players" style="width:390px;height:844px;border-radius:44px;overflow:hidden;position:relative;box-shadow:0 24px 60px rgba(46,43,37,.34);background:radial-gradient(112% 58% at 50% 19%,#5a462d 0%,#33281c 52%,#211a13 100%)">
+          <div style="position:absolute;inset:0;background:repeating-linear-gradient(96deg,rgba(255,235,200,.035) 0 2px,transparent 2px 7px)"></div>
+          <div style="position:relative;height:100%;display:flex;flex-direction:column">
+            <div style="height:54px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;color:#f2e7d3;font-size:14px;font-weight:600"><span>9:41</span><div style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:10px;border-radius:2px;background:#f2e7d3;opacity:.85"></span><span style="width:24px;height:11px;border-radius:3px;border:1.5px solid rgba(242,231,211,.85)"></span></div></div>
+            <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:6px 20px 0">
+              <div style="height:36px;display:flex;align-items:center;padding:0 14px;border-radius:999px;background:rgba(242,231,211,.09);border:1px solid rgba(242,231,211,.16);color:#f2e7d3;font-size:12.5px;font-weight:700">Round 1 &middot; 60 dice</div>
+              <div style="height:36px;display:flex;align-items:center;gap:8px;padding:0 13px;border-radius:999px;background:rgba(198,113,57,.2);border:1px solid rgba(240,201,141,.45);color:#f0c98d;font-size:12.5px;font-weight:800"><span style="width:9px;height:9px;border-radius:50%;background:#f0c98d;animation:lpulse 1s infinite"></span>0:19</div>
+            </div>
+
+            <div style="flex:none;position:relative;margin-top:10px;padding:0 12px">
+              <div style="position:absolute;left:-30px;right:-30px;top:96px;height:260px;border-radius:50%;background:radial-gradient(70% 60% at 50% 22%,rgba(255,214,150,.2),rgba(255,214,150,0) 72%);border-top:1px solid rgba(255,224,176,.16)"></div>
+              <div style="position:relative;display:flex;flex-direction:column;gap:10px">
+                <div style="display:flex;justify-content:center;gap:4px;padding:0 10px">
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;opacity:.6"><div style="width:26px;height:19px;border-radius:13px 13px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.16)"></div><div style="color:#f2e7d3;font-size:9.5px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Ari</div><div style="display:flex;gap:2px"><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span></div></div>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;opacity:.6"><div style="width:26px;height:19px;border-radius:13px 13px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.16)"></div><div style="color:#f2e7d3;font-size:9.5px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Bo</div><div style="display:flex;gap:2px"><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span></div></div>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;opacity:.6"><div style="width:26px;height:19px;border-radius:13px 13px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.16)"></div><div style="color:#f2e7d3;font-size:9.5px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Cyrus</div><div style="display:flex;gap:2px"><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span></div></div>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;opacity:.6"><div style="width:26px;height:19px;border-radius:13px 13px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.16)"></div><div style="color:#f2e7d3;font-size:9.5px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Dee</div><div style="display:flex;gap:2px"><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span></div></div>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;opacity:.6"><div style="width:26px;height:19px;border-radius:13px 13px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.16)"></div><div style="color:#f2e7d3;font-size:9.5px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Eli</div><div style="display:flex;gap:2px"><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span></div></div>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;opacity:.6"><div style="width:26px;height:19px;border-radius:13px 13px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.16)"></div><div style="color:#f2e7d3;font-size:9.5px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Fay</div><div style="display:flex;gap:2px"><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span></div></div>
+                </div>
+                <div style="display:flex;justify-content:center;gap:4px">
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px;border-radius:14px;background:rgba(247,214,155,.13);box-shadow:0 0 0 1px rgba(247,214,155,.34),0 0 22px rgba(247,214,155,.18)"><div style="width:30px;height:22px;border-radius:15px 15px 4px 4px;background:linear-gradient(180deg,#8a663d,#3d2d1c);border:1px solid rgba(255,224,176,.34)"></div><div style="color:#fffaf0;font-size:10px;font-weight:700;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Gus</div><div style="font-size:8.5px;color:#f0c98d;font-weight:800;letter-spacing:.04em">BIDDING</div></div>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px"><div style="width:30px;height:22px;border-radius:15px 15px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div><div style="color:#f2e7d3;font-size:10px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Hana</div><div style="display:flex;gap:2px"><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span></div></div>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px"><div style="width:30px;height:22px;border-radius:15px 15px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div><div style="color:#f2e7d3;font-size:10px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Ines</div><div style="display:flex;gap:2px"><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span></div></div>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px"><div style="width:30px;height:22px;border-radius:15px 15px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div><div style="color:#f2e7d3;font-size:10px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Jo</div><div style="display:flex;gap:2px"><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span></div></div>
+                  <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 2px"><div style="width:30px;height:22px;border-radius:15px 15px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a);border:1px solid rgba(255,224,176,.2)"></div><div style="color:#f2e7d3;font-size:10px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Kit</div><div style="display:flex;gap:2px"><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span><span style="width:4px;height:4px;border-radius:50%;background:#e6d8bd"></span></div></div>
+                </div>
+              </div>
+            </div>
+
+            <div style="flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:14px">
+              <div style="display:flex;align-items:center;gap:9px;padding:8px 15px;border-radius:18px;background:#f5ead8;box-shadow:0 8px 22px rgba(0,0,0,.36)">
+                <div style="font-family:var(--font-heading);font-size:30px;line-height:1;color:#2e2b25">14</div>
+                <div style="font-size:15px;color:#8c7f6c">&times;</div>
+                <div style="width:34px;height:34px;border-radius:9px;background:#fffcf5;border:1px solid #c0b6a5;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:6px"><span style="grid-area:1/1;width:6px;height:6px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:6px;height:6px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:6px;height:6px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:6px;height:6px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+              </div>
+              <div style="font-size:12px;color:#f0c98d;font-weight:700">Gus's bid &mdash; your turn</div>
+            </div>
+
+            <div style="flex:none;display:flex;justify-content:center;padding:12px 20px 8px">
+              <div style="display:flex;gap:6px">
+                <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:2/2;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+                <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:1/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+                <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:2/2;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+                <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:1/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:2/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:2/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+                <div style="width:44px;height:44px;border-radius:11px;background:#fffcf5;box-shadow:0 3px 8px rgba(0,0,0,.34);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:7px"><span style="grid-area:1/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:2/2;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:8px;height:8px;border-radius:50%;background:#302a23;align-self:center;justify-self:center"></span></div>
+              </div>
+            </div>
+
+            <div style="margin-top:auto;flex:none;border-radius:28px 28px 0 0;background:#2b231b;border-top:1px solid rgba(255,224,176,.18);box-shadow:0 -16px 34px rgba(0,0,0,.42);padding:14px 20px 26px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;justify-content:center;gap:14px">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                  <div style="width:56px;height:36px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px">&#9650;</div>
+                  <div style="width:58px;height:58px;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:38px;line-height:1;color:#fffaf0">15</div>
+                  <div style="width:56px;height:36px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px">&#9660;</div>
+                </div>
+                <div style="font-size:20px;color:#82796a">&times;</div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+                  <div style="width:56px;height:36px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px">&#9650;</div>
+                  <div style="width:58px;height:58px;border-radius:13px;background:#fffaf0;border:1px solid #c0b6a5;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:9px"><span style="grid-area:1/1;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:1/3;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/1;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span><span style="grid-area:3/3;width:10px;height:10px;border-radius:50%;background:#2e2b25;align-self:center;justify-self:center"></span></div>
+                  <div style="width:56px;height:36px;border-radius:12px;background:rgba(242,231,211,.1);border:1px solid rgba(242,231,211,.2);color:#f2e7d3;display:flex;align-items:center;justify-content:center;font-size:14px">&#9660;</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <div style="flex:1.4;height:56px;border-radius:999px;background:#c67139;color:#fff;font-family:var(--font-heading);font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(198,113,57,.44)">Place bid</div>
+                <div style="flex:1;height:56px;border-radius:999px;border:1.5px solid #d98a6a;color:#f0b393;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center">Call liar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fffdf7;border:1px solid rgba(46,43,37,.14);border-radius:20px;padding:15px 17px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+            <div style="display:flex;align-items:center;gap:8px"><span style="padding:4px 10px;border-radius:999px;background:#f7e9d3;color:#7d5417;font-size:10.5px;font-weight:800;letter-spacing:.04em">NEEDS PASS</span><span style="font-size:13.5px;font-weight:700">Eleven opponents, drawn in this file's language</span></div>
+            <div style="font-size:12.5px;line-height:1.55;color:#5a5347">Above 8 opponents the absolute arc gives way to two flex rows. <strong>The back row must read as further away, not merely smaller:</strong> it is at <code>opacity:.6</code>, its cups are 26&times;19 against the front row's 30&times;22, its pips drop to 4px, and it loses the row padding &mdash; four cues in the same direction, because size alone reads as a rendering bug. Seats are <code>flex:1;min-width:0</code> with truncating names, so eleven cups and your own hand hold at 320px without sideways scroll. The wager token drops a step (30px numeral, 34px die, 18px radius) and the hint chips are dropped entirely &mdash; at this scale the legal-raise hint is longer than the screen is wide. Nothing about the sheet or the hand strip changes; the arc absorbs the whole difference.</div>
+          </div>
+        </sc-if>
+      </div>
+
+    </div>
+  </div>
+
   <sc-if value="{{ showStress }}" hint-placeholder-val="{{ true }}">
     <div style="display:flex;flex-direction:column;gap:18px">
-      <div style="display:flex;align-items:baseline;gap:12px"><div style="font-family:var(--font-heading);font-size:24px">3 &middot; Component states</div><div style="font-size:13px;color:#645c50">ArcSeat, the two arc layouts, timer, wager token</div></div>
+      <div style="display:flex;align-items:baseline;gap:12px"><div style="font-family:var(--font-heading);font-size:24px">5 &middot; Component states</div><div style="font-size:13px;color:#645c50">ArcSeat, the two arc layouts, timer, wager token</div></div>
 
       <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:stretch">
 
@@ -505,14 +1294,30 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-700)}
           <div style="font-size:12.5px;line-height:1.55;color:#a29684">Fixed 84px tile at 2&ndash;8 players; <code>compact</code> + <code>subdued</code> shrink it for the two-row stress layout. Never rendered for the local player.</div>
         </div>
 
-        <div style="width:340px;border-radius:26px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
-          <div style="font-family:var(--font-heading);font-size:18px">Turn timer chip</div>
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <div style="align-self:flex-start;height:36px;display:flex;align-items:center;gap:8px;padding:0 13px;border-radius:999px;border:1px solid rgba(46,43,37,.18);color:#5a5347;font-size:12.5px;font-weight:700"><span style="width:9px;height:9px;border-radius:50%;background:#8d8474"></span>0:12 &middot; someone else</div>
-            <div style="align-self:flex-start;height:36px;display:flex;align-items:center;gap:8px;padding:0 13px;border-radius:999px;background:#f7e9d3;border:1px solid #d9ab6d;color:#7d5417;font-size:12.5px;font-weight:800"><span style="width:9px;height:9px;border-radius:50%;background:#c9903c"></span>0:07 &middot; yours</div>
-            <div style="align-self:flex-start;height:36px;display:flex;align-items:center;gap:8px;padding:0 13px;border-radius:999px;background:#f6dfd0;border:1px solid #d59a70;color:#8c491a;font-size:12.5px;font-weight:800"><span style="width:9px;height:9px;border-radius:50%;background:#c67139;animation:lpulse .7s infinite"></span>0:03 &middot; warning beep</div>
+        <div style="width:520px;border-radius:26px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);padding:22px;display:flex;flex-direction:column;gap:15px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
+          <div style="display:flex;flex-direction:column;gap:4px"><div style="font-family:var(--font-heading);font-size:18px">Turn timer &mdash; the three phases of rule 5.6</div><div style="font-size:12px;color:#8c7f6c">One control, four appearances. Always <strong>mm:ss</strong> counting down &mdash; the app's bare <code>0s</code> hides which phase you are in.</div></div>
+          <div style="border-radius:20px;background:radial-gradient(110% 90% at 50% 8%,#5a462d,#241d16);padding:18px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="flex:none;height:36px;display:flex;align-items:center;gap:8px;padding:0 13px;border-radius:999px;border:1px solid rgba(242,231,211,.16);color:#c0b6a5;font-size:12.5px;font-weight:700"><span style="width:9px;height:9px;border-radius:50%;background:#8d8474"></span>0:25</div>
+              <div style="min-width:0;font-size:12px;line-height:1.45;color:#c0b6a5"><strong style="color:#f2e7d3">Quiet &middot; 0&ndash;15s.</strong> Outline only, no fill, no pulse, silent. The number is present but not asking for anything.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="flex:none;height:36px;display:flex;align-items:center;gap:8px;padding:0 13px;border-radius:999px;background:rgba(198,113,57,.2);border:1px solid rgba(240,201,141,.45);color:#f0c98d;font-size:12.5px;font-weight:800"><span style="width:9px;height:9px;border-radius:50%;background:#f0c98d;animation:lpulse 1s infinite"></span>0:07</div>
+              <div style="min-width:0;font-size:12px;line-height:1.45;color:#c0b6a5"><strong style="color:#f2e7d3">Warning &middot; 15&ndash;25s.</strong> Gains the terracotta wash, brass ink and a 1s pulse, and the audible tick starts. This is the state panel 07 draws.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="flex:none;display:flex;flex-direction:column;align-items:stretch;gap:5px">
+                <div style="height:36px;display:flex;align-items:center;gap:8px;padding:0 13px;border-radius:999px;background:rgba(198,113,57,.2);border:1.5px solid #d98a6a;color:#f0b393;font-size:12.5px;font-weight:800"><span style="width:9px;height:9px;border-radius:50%;background:#d98a6a;animation:lpulse .7s infinite"></span>0:22 bank</div>
+                <div style="height:4px;border-radius:999px;background:rgba(242,231,211,.1);overflow:hidden"><div style="width:73%;height:100%;border-radius:999px;background:#d98a6a"></div></div>
+              </div>
+              <div style="min-width:0;font-size:12px;line-height:1.45;color:#c0b6a5"><strong style="color:#f2e7d3">Bank draining &middot; the 30s reserve.</strong> The word <strong>bank</strong> joins the numerals, the edge steps to the challenge outline, and a hairline drain bar appears under the chip &mdash; the only progress bar on the table. It is the one phase where a number going down costs the player something, so it gets a second channel.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="flex:none;height:36px;display:flex;align-items:center;gap:8px;padding:0 13px;border-radius:999px;border:1px solid rgba(242,231,211,.16);color:#8d8474;font-size:12.5px;font-weight:700"><span style="width:9px;height:9px;border-radius:50%;background:#8d8474"></span>0:00</div>
+              <div style="min-width:0;font-size:12px;line-height:1.45;color:#c0b6a5"><strong style="color:#f2e7d3">Spent.</strong> Stops pulsing, drops to quiet grey, stays on screen through panel 10 so the cause of the loss is still legible after the fact.</div>
+            </div>
           </div>
-          <div style="font-size:12.5px;line-height:1.55;color:#5a5347">Sits opposite the phase chip in the mobile header. Only the last step pulses and beeps.</div>
+          <div style="font-size:12.5px;line-height:1.55;color:#5a5347">Sits opposite the phase chip in the header, and only ever describes <em>your</em> clock: while another player is deciding it shows their remaining time in the quiet style and never pulses, beeps or banks &mdash; a chip shouting at you about someone else's turn is noise. Both durations are config (<code>TIMING_CONFIG</code>), so treat 25/30 as the current values, not as constants baked into the design.</div>
         </div>
 
         <div style="width:380px;border-radius:26px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
@@ -532,7 +1337,7 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-700)}
               <div style="width:44px;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:26px;height:20px;border-radius:13px 13px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a)"></div><div style="color:#f2e7d3;font-size:9.5px;font-weight:600">Ines</div></div>
               <div style="width:44px;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:26px;height:20px;border-radius:13px 13px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a)"></div><div style="color:#f2e7d3;font-size:9.5px;font-weight:600">Jo</div></div>
               <div style="width:44px;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:26px;height:20px;border-radius:13px 13px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a)"></div><div style="color:#f2e7d3;font-size:9.5px;font-weight:600">Kit</div></div>
-              <div style="width:44px;display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:26px;height:20px;border-radius:13px 13px 4px 4px;background:linear-gradient(180deg,#6b4f31,#33261a)"></div><div style="color:#f2e7d3;font-size:9.5px;font-weight:600">Lena</div></div>
+              
             </div>
           </div>
           <div style="font-size:12.5px;line-height:1.55;color:#5a5347">At 9+ opponents the absolute arc is replaced by two flex rows &mdash; back row inset and subdued, front row full. Seats shrink by flex, so 320px screens never scroll sideways. Wager token drops one size step.</div>
@@ -543,7 +1348,7 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-700)}
   </sc-if>
 
   <div style="display:flex;flex-direction:column;gap:18px">
-    <div style="display:flex;align-items:baseline;gap:12px"><div style="font-family:var(--font-heading);font-size:24px">4 &middot; Transitions and gaps</div><div style="font-size:13px;color:#645c50">what moves the player forward, and what is still missing</div></div>
+    <div style="display:flex;align-items:baseline;gap:12px"><div style="font-family:var(--font-heading);font-size:24px">6 &middot; Transitions and gaps</div><div style="font-size:13px;color:#645c50">what moves the player forward, and what is still missing</div></div>
 
     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:20px 22px;border-radius:24px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);box-shadow:0 3px 10px rgba(46,43,37,.07)">
       <div style="padding:9px 15px;border-radius:999px;background:#f5ead8;font-size:12.5px;font-weight:700">Nickname</div>
@@ -558,7 +1363,46 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-700)}
       <div style="font-size:12px;color:#8c7f6c">call liar &rarr;</div>
       <div style="padding:9px 15px;border-radius:999px;background:#f5ead8;font-size:12.5px;font-weight:700">Reveal</div>
       <div style="font-size:12px;color:#8c7f6c">loser at 0 dice &rarr;</div>
-      <div style="padding:9px 15px;border-radius:999px;background:#f6dfd0;border:1px solid #d59a70;font-size:12.5px;font-weight:700;color:#8c491a">Winner</div>
+      <div style="padding:9px 15px;border-radius:999px;background:#f6dfd0;border:1px solid #d59a70;font-size:12.5px;font-weight:700;color:#8c491a">End card</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;padding:20px 22px;border-radius:24px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);box-shadow:0 3px 10px rgba(46,43,37,.07)">
+      <div style="font-family:var(--font-heading);font-size:19px">The branches off that line</div>
+      <div style="display:flex;flex-direction:column;gap:11px">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div style="width:132px;flex:none;font-size:12px;color:#8c7f6c;text-align:right">from bidding</div>
+          <div style="padding:8px 14px;border-radius:999px;background:#f6dfd0;border:1px solid #d59a70;font-size:12.5px;font-weight:700;color:#8c491a">Timer spent</div>
+          <div style="font-size:12px;color:#8c7f6c">die taken &rarr;</div>
+          <div style="padding:8px 14px;border-radius:999px;background:#f5ead8;font-size:12.5px;font-weight:700">10 Timed out</div>
+          <div style="font-size:12px;color:#8c7f6c">Next round &rarr;</div>
+          <div style="padding:8px 14px;border-radius:999px;background:#f5ead8;font-size:12.5px;font-weight:700">Hand roll</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div style="width:132px;flex:none;font-size:12px;color:#8c7f6c;text-align:right">second stall in a row</div>
+          <div style="padding:8px 14px;border-radius:999px;background:#f7e9d3;border:1px solid #d9ab6d;font-size:12.5px;font-weight:700;color:#7d5417">Protected</div>
+          <div style="font-size:12px;color:#8c7f6c">nothing taken, no stop &rarr;</div>
+          <div style="padding:8px 14px;border-radius:999px;background:#f5ead8;font-size:12.5px;font-weight:700">11 Ribbon, play continues</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div style="width:132px;flex:none;font-size:12px;color:#8c7f6c;text-align:right">someone hits one die</div>
+          <div style="padding:8px 14px;border-radius:999px;background:#f5ead8;font-size:12.5px;font-weight:700">14 Palifico</div>
+          <div style="font-size:12px;color:#8c7f6c">face locked, aces tame, one round only &rarr;</div>
+          <div style="padding:8px 14px;border-radius:999px;background:#f5ead8;font-size:12.5px;font-weight:700">Bidding &#8646; waiting</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div style="width:132px;flex:none;font-size:12px;color:#8c7f6c;text-align:right">at any point</div>
+          <div style="padding:8px 14px;border-radius:999px;background:#f5ead8;font-size:12.5px;font-weight:700">15 Connection lost</div>
+          <div style="font-size:12px;color:#8c7f6c">rejoin ribbon &rarr; back where you were, or the timer takes a die anyway</div>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <div style="width:132px;flex:none;font-size:12px;color:#8c7f6c;text-align:right">reveal, at 0 dice</div>
+          <div style="padding:8px 14px;border-radius:999px;background:#f6dfd0;border:1px solid #d59a70;font-size:12.5px;font-weight:700;color:#8c491a">12 Won</div>
+          <div style="font-size:12px;color:#8c7f6c">or</div>
+          <div style="padding:8px 14px;border-radius:999px;background:#f6dfd0;border:1px solid #d59a70;font-size:12.5px;font-weight:700;color:#8c491a">13 Eliminated</div>
+          <div style="font-size:12px;color:#8c7f6c">&mdash; every player lands on one of the two</div>
+        </div>
+      </div>
+      <div style="font-size:12.5px;line-height:1.55;color:#5a5347">Panel <strong>16</strong> is on no line here on purpose: a refused action never advances anything. It is a state of the screen you are already on, which is why it is drawn in the sheet rather than as a surface of its own.</div>
     </div>
 
     <div style="display:flex;gap:20px;flex-wrap:wrap">
@@ -576,11 +1420,15 @@ a{color:var(--color-accent)}a:hover{color:var(--color-accent-700)}
       <div style="flex:1;min-width:420px;border-radius:24px;background:#fffdf7;border:1px solid rgba(46,43,37,.14);padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 3px 10px rgba(46,43,37,.07)">
         <div style="font-family:var(--font-heading);font-size:19px">Still to build</div>
         <div style="display:flex;flex-direction:column;gap:11px;font-size:13px;line-height:1.5;color:#5a5347">
-          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>Lantern skin for entry and lobby.</strong> Both screens still ship Ionic defaults; the code-tile, room-code patch and roster rows above are the spec.</div></div>
-          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>Palifico.</strong> <code>declareSpecialRound()</code> is a raw warning button with no phase treatment &mdash; needs a header chip state and a locked face stepper.</div></div>
-          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>Reveal vs RoundLossModal.</strong> Two surfaces can describe the same loss; the panel above assumes the modal is suppressed on mobile.</div></div>
-          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>Next round affordance.</strong> Reveal currently lingers with no explicit continue &mdash; the Next round button is new.</div></div>
-          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>Disconnect / reconnect.</strong> <code>sessionRestoreFailed()</code> exists on entry only; nothing covers a drop mid-round.</div></div>
+          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>Retire RoundLossModal on mobile.</strong> Decided in &sect;3: the reveal card is the only loss surface. Keep the component for desktop, stop presenting it from the mobile board. Panels <strong>09</strong>, <strong>10</strong>.</div></div>
+          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>Recompose the reveal (a rework, not a restyle).</strong> Confirmed: recap card at the top over a scrimmed table, <strong>Next round</strong> pinned at the bottom, roll button hidden in this state. The roll button no longer doubles as continue. Cheapest partial, if the rework has to wait: relabel it to &ldquo;Next round&rdquo; while the reveal is up &mdash; the composition still needs doing.</div></div>
+          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>Both timeout outcomes.</strong> The die-losing stall gets a card (<strong>10</strong>); the protected stall gets a ribbon and no interruption (<strong>11</strong>). They must not share a surface.</div></div>
+          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>Timer in mm:ss, three phases.</strong> Quiet, warning, bank draining, then spent &mdash; see &sect;5. Today the chip renders <code>0s</code> with no phase at all.</div></div>
+          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>Palifico as a phase.</strong> Chip state, rule ribbon, locked face stepper, <strong>Face locked</strong> hint. Replaces <code>declareSpecialRound()</code>'s raw warning button. Panel <strong>14</strong>.</div></div>
+          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>Refusals without dialogs.</strong> Fixable errors take the hint row's slot; only orphaned ones toast. Five strings specified in panel <strong>16</strong>. Replaces the plain toast for all of 4.2.</div></div>
+          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>Mid-round disconnect.</strong> <code>sessionRestoreFailed()</code> is entry-only. Panel <strong>15</strong> covers the in-game drop, the retry state and the rejoin ribbon.</div></div>
+          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#c67139;margin-top:6px"></span><div><strong>An end card for every player.</strong> Won (<strong>12</strong>) and eliminated (<strong>13</strong>) are one screen with different subtraction. No stat tiles &mdash; that data doesn't exist.</div></div>
+          <div style="display:flex;gap:10px"><span style="flex:none;width:8px;height:8px;border-radius:50%;background:#8d8474;margin-top:6px"></span><div><strong>Open, and not a design question yet:</strong> whether an eliminated player can stay and watch. Panel <strong>13</strong> assumes they leave.</div></div>
         </div>
       </div>
     </div>
