@@ -82,8 +82,11 @@ suite exercises the real transport and real (short) timers end to end.
 
 ## Known issues
 
-See [ISSUES.md](./ISSUES.md) for a running log of things found but not fixed in the moment —
-mostly resolved by now, but kept as a record rather than deleted.
+[ISSUES.md](./ISSUES.md) is the live backlog: only what is still open, with enough context to pick
+an item up cold. Most open entries are decisions waiting on a human rather than defects.
+
+[RESOLVED.md](./RESOLVED.md) holds the closed entries. Nothing there needs action — it exists so a
+past bug's root cause can be found without digging through git history.
 
 ## Testing over the internet with ngrok
 
