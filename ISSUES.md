@@ -86,10 +86,33 @@ Compare against it with `npm run design:compare -w client` (see `client/README.m
   away on four cues at once (opacity, cup size, pip size, padding), because size alone reads as a
   rendering bug.
 
-### Open question — can an eliminated player stay and watch?
+### Spectator seat for eliminated players
 
-- **Logged:** 2026-09-04. Panel `13` assumes they leave; the app has no spectator state.
-- This is a feature decision before it is a design one. Flagged rather than invented.
+- **Decided 2026-09-04 by the user**, closing the earlier open question. An eliminated player
+  **stays at the table**: they keep their seat, the table keeps showing they are present until they
+  choose to leave, and they get a reduced view — no bid controls, no hand, no turn, and no part in
+  the turn timer. They still see everything public.
+- Design brief: [`designs/perudo-spectator-claude-prompt.md`](designs/perudo-spectator-claude-prompt.md).
+  Panel `13 Eliminated` currently assumes they leave and needs reworking into the _moment_ of
+  elimination handing off to a persistent spectator state.
+- **No server, engine or shared change is needed — verified, not assumed.** The flow cannot be
+  blocked by a spectator because:
+  - `buildTurnOrder` filters on `diceCount > 0`, so an eliminated player is never in `turnOrder`,
+    and every turn guard compares against `turnOrder[currentTurnIndex]` — their intents are already
+    refused with `NOT_YOUR_TURN`.
+  - `pendingRolls` is seeded from `turnOrder`, so a round never waits for them to roll.
+  - `TurnTimerService` only ever owns the current bidder, and `onPlayerDisconnected` is a no-op
+    unless the disconnecting player owns the timer — so an eliminated player dropping does nothing.
+  - `selectPlayerView` keeps them in `players` and only blanks _other_ people's dice, so they keep
+    receiving the same filtered snapshot as anyone else.
+- **The work is client presentation only**, and the reason it is needed: the arc draws _opponents
+  only_, so the local player's whole on-screen presence is their hand strip and bid tray. Remove
+  both — which is what elimination does — and the player disappears from their own screen. Today an
+  eliminated player sees a bare table, a dead rule line where the hand was, and a waiting bar
+  reading "Mateo answers next", about a turn order they are no longer in.
+- Known copy to revisit when this is built: `RoundLossModal.lossSummary` already says "You lost your
+  last die — you're out.", but the canonical decision removes that modal from mobile, so panel `13`
+  has to carry the line instead.
 
 ### Not yet aligned to the canonical file
 
