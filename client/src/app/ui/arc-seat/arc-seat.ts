@@ -51,6 +51,10 @@ export class ArcSeat {
   readonly isCurrentBidder = input(false);
   readonly handRollStatus = input<HandRollStatus | null>(null);
   readonly openingRoll = input<ArcSeatOpeningRoll | null>(null);
+  /** True for the one seat that owns the standing wager (designs/mobile-lantern.dc.html's
+   * "BID PLACED" pill) — which is *not* the same seat as `isCurrentBidder` (whose turn it is), so
+   * both can be true, both false, or one of each depending on where the turn has moved to. */
+  readonly hasStandingBid = input(false);
   /** 58px/42px tier for the 9-12 player two-arc layout (Increment 5), instead of the regular
    * 84px/54px tier used up to 8 players. */
   readonly compact = input(false);
@@ -60,6 +64,21 @@ export class ArcSeat {
   readonly subdued = input(false);
 
   protected readonly isEliminated = computed(() => this.player().diceCount === 0);
+
+  /** One dot per die this seat still holds (designs/mobile-lantern.dc.html renders exactly this
+   * under every name) — the only place the mobile board shows an opponent's remaining dice count,
+   * which a player genuinely needs to reason about a bid. An empty array for an eliminated seat,
+   * so the dashed tile + struck-through name carry that state alone, same as the reference. */
+  protected readonly diceDots = computed(() =>
+    Array.from({ length: this.player().diceCount }, (_, i) => i),
+  );
+
+  /** See the template comment: no dots on an eliminated seat (nothing to count) and none during
+   * the opening roll (every seat still holds a full hand, and the public die slot occupies that
+   * same row). */
+  protected readonly showDiceDots = computed(
+    () => !this.isEliminated() && this.openingRoll() === null,
+  );
 
   /** Deterministic decorative mark, not a real avatar (CLAUDE.md 3.5/5.1) — same convention as
    * Lobby's roster tile, just larger and on the dark table surface. */

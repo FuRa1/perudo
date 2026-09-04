@@ -166,11 +166,17 @@ ion-content {
 // (--color-danger) rather than the dark-surface --color-ember-soft the rest of the app uses —
 // text alone already carries success vs. failure ("Copied" vs. "Couldn't copy..."), this is
 // reinforcement, matching the ready chip's own "never color alone" reasoning above.
-.lobby__copy-status,
-.lobby__share-status {
+// One shared status line for copy/share (see lobby.html). No `min-height` reservation: the element
+// is only rendered when it has something to say, so an empty line costs nothing — the two
+// permanently-reserved lines this replaced left ~56px of blank card under the share row, which the
+// design reference doesn't have.
+.lobby__code-status {
   color: var(--color-brass-deep);
   font-weight: 600;
-  min-height: 1em;
+
+  &:empty {
+    display: none;
+  }
 
   &--failure {
     color: var(--color-danger);
@@ -205,11 +211,14 @@ ion-content {
   }
 }
 
+// 38px at --radius-die (12px), matching the reference's roster avatar exactly. At the previous
+// 36px/--radius-tile (16px) the corners left only a 4px flat edge, so the tile read as a plain
+// circle rather than as the same rounded-square identity mark the table's arc seats use.
 .lobby__avatar {
   flex: none;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-tile);
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-die);
   background: linear-gradient(160deg, var(--color-identity-start), var(--color-identity-end));
   color: var(--color-ivory);
   border: 1px solid var(--color-border-onboard-strong);
@@ -265,11 +274,36 @@ ion-content {
   color: var(--color-cream-faint);
 }
 
+// Matches .lobby__avatar's size/radius above so a filled seat and an open one read as the same
+// slot in two states, exactly as the reference draws them.
 .lobby__seat--open-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-tile);
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-die);
   border: 1.5px dashed var(--color-border-onboard);
+}
+
+// The "+ N more seats open" summary standing in for the open-seat rows past the visible few
+// (Lobby.VISIBLE_OPEN_SEATS) — deliberately a quiet line, not another dashed row, so it reads as a
+// count rather than as one more empty seat.
+.lobby__seat--more {
+  color: var(--color-cream-faint);
+  padding: 0.25rem 0 0.125rem;
+}
+
+// Keeps the primary action in reach on a tall roster (see lobby.html). The gradient fade stops the
+// list from appearing to slide under a hard edge as it scrolls behind the button.
+.lobby__actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  background: linear-gradient(
+    180deg,
+    rgba(30, 24, 17, 0) 0%,
+    var(--color-table-edge) 38%,
+    var(--color-table-edge) 100%
+  );
 }
 
 .lobby__all-ready {

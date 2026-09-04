@@ -6,17 +6,47 @@
   display: block;
 }
 
-// ion-content manages its own scrollable area in a shadow-DOM inner wrapper — flex-centering
-// classes applied directly to <ion-content> itself don't reach it, leaving content pinned to the
-// top-left instead of centered. A plain child div (as Entry/Lobby already use for their own
-// surface wrapper) sits inside that scrollable area normally, where min-height: 100% and flex
-// centering both work as expected.
-.winner-surface {
-  min-height: 100%;
+// The match ended at the table, so the end card is shown over the table rather than on the app's
+// light off-table canvas (which read as an unrelated generic page). Same lamplit-wood layers
+// .table-surface uses, under the scrim --color-overlay already names — the reference's end cards
+// are "bottom sheets over the dimmed table".
+ion-content {
+  --background: var(--color-table-edge);
+  --color: var(--color-cream);
+  --padding-start: 0;
+  --padding-end: 0;
 }
 
-.winner-card {
+.winner-surface {
+  min-height: 100%;
+  // Pushes the sheet to the bottom of the viewport ("both actions sit inside thumb reach").
+  justify-content: flex-end;
+  background-image:
+    linear-gradient(var(--color-overlay), var(--color-overlay)),
+    repeating-linear-gradient(96deg, rgba(255, 235, 200, 0.03) 0 2px, transparent 2px 7px),
+    radial-gradient(
+      96% 62% at 50% 18%,
+      var(--color-table-center) 0%,
+      var(--color-table-mid) 54%,
+      var(--color-table-edge) 100%
+    );
+  background-repeat: no-repeat;
+  background-size: cover;
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+// The sheet keeps outcome-card('win')'s own parchment/brass treatment — only its geometry changes:
+// flush to the bottom edge with the top corners rounded, and the reference's upward shadow so it
+// reads as lifting off the table rather than floating in the middle of it. Content is left-aligned
+// (kicker over heading over body over action), matching the reference's own editorial stack rather
+// than a centred dialog.
+.winner-sheet {
   @include mixins.outcome-card('win');
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  border-bottom: none;
+  box-shadow: 0 -14px 44px rgba(0, 0, 0, 0.5);
+  padding: 1.5rem 1.375rem;
+  text-align: left;
 }
 
 .winner-badge {
@@ -25,6 +55,13 @@
 
 .winner-badge-image {
   @include mixins.outcome-badge-image;
+}
+
+// Both badge variants sit on the dimmed table above the sheet (see winner.html).
+.winner-badge,
+.winner-badge-image {
+  align-self: center;
+  margin-bottom: 1.25rem;
 }
 
 .winner__kicker {
@@ -39,4 +76,21 @@
 
 .winner__subtitle {
   color: var(--color-ink-muted);
+}
+
+// Same pill silhouette every other primary action in the app uses. Never rendered outlined, so
+// that branch of the mixin is inert; ember matches the app's one danger pair.
+.winner__action {
+  width: 100%;
+  margin-top: 0.5rem;
+
+  @include mixins.pill-action-button(
+    var(--color-ember),
+    var(--color-ember-soft),
+    rgba(224, 138, 120, 0.16)
+  );
+
+  &::part(native) {
+    height: 56px;
+  }
 }

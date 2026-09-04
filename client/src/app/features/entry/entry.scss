@@ -68,11 +68,16 @@ ion-content {
   color: var(--color-brass);
 }
 
+// The brand mark, not a player identity tile — so it does not share --color-identity-* (the muted
+// wood pair the table's arc seats use). designs/perudo-lobby-lantern.dc.html, the reference this
+// screen is built from, draws it as a lit brass-gold sweep, and it is the first thing on the
+// screen; against this dark backdrop the wood gradient had so little contrast that the tile barely
+// read at all, leaving the lamp glyph floating in a faint outline.
 .entry__badge {
   width: 64px;
   height: 64px;
   border-radius: var(--radius-seat);
-  background: linear-gradient(160deg, var(--color-identity-start), var(--color-identity-end));
+  background: linear-gradient(160deg, var(--color-gold-highlight), var(--color-brass-deep));
   border: 1.5px solid var(--color-brass);
   box-shadow: var(--shadow-float);
   display: flex;
@@ -80,10 +85,12 @@ ion-content {
   justify-content: center;
 }
 
+// Dark on the lit brass above, the way the reference's badge carries dark pips on its light die
+// face — a cream stroke icon washes out against gold.
 .entry__badge-icon {
   width: 26px;
   height: 26px;
-  color: var(--color-cream);
+  color: var(--color-ink);
 }
 
 .entry__title {
@@ -324,7 +331,11 @@ ion-content {
   // do; --width only keeps each slot from collapsing below a legible minimum on the narrowest
   // supported viewport before that fill takes over.
   --width: clamp(44px, 14vw, 58px);
-  --height: clamp(52px, 15vw, 62px);
+  // Portrait slots, not near-square ones: the reference draws these distinctly taller than they
+  // are wide (~1.35:1), which is what makes a code row read as a row of *slots* rather than as a
+  // row of buttons. The previous 62px ceiling against the same 58px width was almost exactly
+  // square. Still a clamp, so the narrowest viewport keeps a legible floor.
+  --height: clamp(60px, 20vw, 78px);
   --min-width: 40px;
   display: block;
   width: 100%;

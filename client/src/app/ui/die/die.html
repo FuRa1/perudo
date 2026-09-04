@@ -1,11 +1,12 @@
 <div
   class="die aspect-square w-full"
   [class.die--ringed]="ringed()"
+  [class.die--art]="!!face().imageUrl"
   [attr.aria-label]="face().label"
   role="img"
 >
   @if (face().imageUrl; as imageUrl) {
-    <img [src]="imageUrl" [alt]="face().label" class="h-full w-full object-contain" />
+    <img [src]="imageUrl" [alt]="face().label" class="die__art" />
   } @else if (isSpriteEnabled) {
     <div class="die__sprite h-full w-full" [style.background-position-x]="spritePositionX()"></div>
   } @else {

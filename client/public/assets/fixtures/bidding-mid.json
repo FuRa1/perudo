@@ -1,0 +1,79 @@
+{
+  "viewerPlayerId": "Xp-BUfddN2lgyWy_AAAF",
+  "events": [
+    {
+      "type": "BID_PLACED",
+      "playerId": "mu1ylK5JeEmxlIRVAAAH",
+      "bid": {
+        "kind": "NORMAL",
+        "quantity": 1,
+        "face": 2
+      }
+    }
+  ],
+  "snapshot": {
+    "phase": "BIDDING",
+    "roomId": "WBD9K",
+    "players": [
+      {
+        "id": "Xp-BUfddN2lgyWy_AAAF",
+        "nickname": "Anne",
+        "isReady": true,
+        "diceCount": 5,
+        "dice": [
+          6,
+          3,
+          6,
+          1,
+          3
+        ],
+        "consecutivePureStalls": 0
+      },
+      {
+        "id": "mu1ylK5JeEmxlIRVAAAH",
+        "nickname": "Mateo",
+        "isReady": true,
+        "diceCount": 5,
+        "dice": [],
+        "consecutivePureStalls": 0
+      }
+    ],
+    "startRoll": null,
+    "completedStartRoll": {
+      "rolls": {
+        "Xp-BUfddN2lgyWy_AAAF": 3,
+        "mu1ylK5JeEmxlIRVAAAH": 6
+      },
+      "firstPlayerId": "mu1ylK5JeEmxlIRVAAAH"
+    },
+    "round": {
+      "roundNumber": 1,
+      "turnOrder": [
+        "mu1ylK5JeEmxlIRVAAAH",
+        "Xp-BUfddN2lgyWy_AAAF"
+      ],
+      "currentTurnIndex": 1,
+      "bidHistory": [
+        {
+          "playerId": "mu1ylK5JeEmxlIRVAAAH",
+          "bid": {
+            "kind": "NORMAL",
+            "quantity": 1,
+            "face": 2
+          }
+        }
+      ],
+      "isSpecialRoundDeclared": false,
+      "pendingRolls": []
+    },
+    "winnerId": null,
+    "turnTimer": {
+      "playerId": "Xp-BUfddN2lgyWy_AAAF",
+      "turnStartedAt": 1788482456485,
+      "quietPhaseEndsAt": 1788482471485,
+      "warningPhaseEndsAt": 1788482481485,
+      "bankDeadlineAt": 1788482511485,
+      "bankMsRemaining": 30000
+    }
+  }
+}

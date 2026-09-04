@@ -177,14 +177,38 @@ describe('Lobby', () => {
   });
 
   describe('open-seat placeholders', () => {
-    it('renders one placeholder per remaining seat up to the configured max', () => {
+    // Only the first few open seats are drawn as rows; the rest are summarised. At the 12-player
+    // max an empty room would otherwise be ten identical dashed rows, burying the primary
+    // "I'm ready" action a full screen below the fold.
+    it('draws only the first few open seats as rows, starting after the seated players', () => {
       const { nativeElement } = render('p1', [
         player('p1', 'Alice', false),
         player('p2', 'Bob', false),
       ]);
       const openSeats = nativeElement.querySelectorAll('.lobby__seat--open');
-      expect(openSeats).toHaveLength(RULES_CONFIG.players.max - 2);
+      expect(openSeats.length).toBeLessThan(RULES_CONFIG.players.max - 2);
       expect(openSeats[0].textContent ?? '').toContain('Seat 3');
+    });
+
+    it('summarises the open seats it did not draw, so the real remaining capacity is still stated', () => {
+      const { nativeElement } = render('p1', [
+        player('p1', 'Alice', false),
+        player('p2', 'Bob', false),
+      ]);
+      const drawn = nativeElement.querySelectorAll('.lobby__seat--open').length;
+      const summary = nativeElement.querySelector('.lobby__seat--more');
+      expect(summary?.textContent ?? '').toContain(
+        `${RULES_CONFIG.players.max - 2 - drawn} more seats open`,
+      );
+    });
+
+    it('renders no summary line when every open seat is already drawn', () => {
+      const players = Array.from({ length: RULES_CONFIG.players.max - 1 }, (_, i) =>
+        player(`p${i}`, `Player${i}`, false),
+      );
+      const { nativeElement } = render('p0', players);
+      expect(nativeElement.querySelectorAll('.lobby__seat--open')).toHaveLength(1);
+      expect(nativeElement.querySelector('.lobby__seat--more')).toBeNull();
     });
 
     it('renders no placeholders once the table is at max capacity', () => {
@@ -233,7 +257,7 @@ describe('Lobby', () => {
       const writeText = vi.fn().mockResolvedValue(undefined);
       stubClipboard(writeText);
       const { nativeElement, fixture } = render('p1', [player('p1', 'Alice', false)]);
-      const status = nativeElement.querySelector('.lobby__copy-status') as HTMLElement;
+      const status = nativeElement.querySelector('.lobby__code-status') as HTMLElement;
       expect(status.getAttribute('aria-live')).toBe('polite');
       expect(status.textContent?.trim()).toBe('');
 
@@ -253,10 +277,10 @@ describe('Lobby', () => {
       await Promise.resolve();
       fixture.detectChanges();
 
-      const status = nativeElement.querySelector('.lobby__copy-status') as HTMLElement;
+      const status = nativeElement.querySelector('.lobby__code-status') as HTMLElement;
       expect(status.textContent?.trim()).not.toBe('Copied');
       expect(status.textContent?.trim().length ?? 0).toBeGreaterThan(0);
-      expect(status.className).toContain('lobby__copy-status--failure');
+      expect(status.className).toContain('lobby__code-status--failure');
       expect(nativeElement.textContent ?? '').toContain('TORTUGA');
     });
 
@@ -302,7 +326,7 @@ describe('Lobby', () => {
       expect(share).toHaveBeenCalledTimes(1);
       const call = share.mock.calls[0][0] as { text: string };
       expect(call.text).toContain('TORTUGA');
-      const status = nativeElement.querySelector('.lobby__share-status') as HTMLElement;
+      const status = nativeElement.querySelector('.lobby__code-status') as HTMLElement;
       expect(status.textContent?.trim()).toBe('Shared');
     });
 
@@ -312,7 +336,7 @@ describe('Lobby', () => {
       shareButton().dispatchEvent(new Event('click'));
       fixture.detectChanges();
 
-      const status = nativeElement.querySelector('.lobby__share-status') as HTMLElement;
+      const status = nativeElement.querySelector('.lobby__code-status') as HTMLElement;
       expect(status.textContent?.trim()).not.toBe('Shared');
       expect(status.textContent ?? '').toMatch(/not available|isn't available/i);
       expect(nativeElement.textContent ?? '').toContain('TORTUGA');
@@ -328,7 +352,7 @@ describe('Lobby', () => {
       await Promise.resolve();
       fixture.detectChanges();
 
-      const status = nativeElement.querySelector('.lobby__share-status') as HTMLElement;
+      const status = nativeElement.querySelector('.lobby__code-status') as HTMLElement;
       expect(status.textContent?.trim()).toBe('');
     });
 
@@ -341,9 +365,9 @@ describe('Lobby', () => {
       await Promise.resolve();
       fixture.detectChanges();
 
-      const status = nativeElement.querySelector('.lobby__share-status') as HTMLElement;
+      const status = nativeElement.querySelector('.lobby__code-status') as HTMLElement;
       expect(status.textContent?.trim()).not.toBe('Shared');
-      expect(status.className).toContain('lobby__share-status--failure');
+      expect(status.className).toContain('lobby__code-status--failure');
     });
   });
 

@@ -6,9 +6,39 @@
 }
 
 .die {
+  position: relative;
   border-radius: var(--radius-die);
   background: var(--color-ivory);
   box-shadow: inset 0 1px 3px rgba(46, 43, 37, 0.18);
+}
+
+// Per-face art tier (DICE_FACES_CONFIG[].imageUrl): the PNG is itself a complete die — body,
+// outline and a baked soft shadow — so the wrapper must NOT also paint a die body underneath it.
+// It used to, and the ivory box + inset shadow showed through the art's transparent margin as a
+// phantom second border with a ring of dead space inside every die. Both are dropped here; only
+// the art draws.
+.die--art {
+  background: none;
+  box-shadow: none;
+}
+
+// The art canvas is 156x156 with the die body occupying only the middle 110x110 (23px of
+// transparent padding per side — measured directly off assets/dice/die-face-N.png). Drawn at
+// 100% that padding became visible inset whitespace, so the die read ~30% smaller than its own
+// box and far weaker than the references' full-bleed dice. Scaled by 156/110 (= 141.82%) and
+// re-centred (-20.91% on each axis) so the body itself fills the box edge to edge; what now
+// spills past the edge is the art's own soft drop shadow, which is exactly what the design
+// reference shows around each die.
+.die__art {
+  position: absolute;
+  top: -20.91%;
+  left: -20.91%;
+  width: 141.82%;
+  height: 141.82%;
+  // Tailwind's preflight sets `img { max-width: 100% }`, which silently clamped the width above
+  // back to the die's own box and undid the whole rescale — the art has to be allowed past it.
+  max-width: none;
+  object-fit: contain;
 }
 
 // Reveal's "ringed dice" (design's Die-face component inventory: "ringed — counted at reveal") —
@@ -18,6 +48,12 @@
   box-shadow:
     inset 0 1px 3px rgba(46, 43, 37, 0.18),
     0 0 0 2px var(--color-brass);
+}
+
+// On the art tier there is no inset body shadow to preserve — the ring is the only shadow, and it
+// sits flush against the now-full-bleed die edge.
+.die--art.die--ringed {
+  box-shadow: 0 0 0 2px var(--color-brass);
 }
 
 .die__pip {

@@ -1,4 +1,13 @@
-import { Component, computed, inject } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
 import { LucideDices } from '@lucide/angular';
 import {
@@ -82,6 +91,14 @@ const ARC_TOP_PADDING_PX = 140;
 const MOBILE_ARC_TOP_PADDING_PX = 64;
 const MOBILE_ARC_GAP_PX = 10;
 
+/** Height of the mobile arc box. computeArcPosition places seats on a sine curve whose vertical
+ * spread only materialises from three seats up — at one or two opponents every seat lands on the
+ * same line, so a box sized for the full curve left ~80px of dead mat between the arc and the
+ * wager token below it (visible as a conspicuous empty gap in a 2-player match). Two values, not
+ * a formula: the curve either has spread to show or it doesn't. */
+const MOBILE_ARC_HEIGHT_PX = 176;
+const MOBILE_ARC_FLAT_HEIGHT_PX = 104;
+
 /** 9-12 total players (Increment 5) means 8-11 opponents — the point past which a single arc
  * row of even the compact 58px tier can no longer fit six-plus seats without either scrolling
  * (ruled out for this stress case) or shrinking below legibility. */
@@ -140,6 +157,38 @@ function joinWithAnd(names: readonly string[]): string {
 export class Table {
   protected readonly store = inject(GameStore);
   private readonly socket = inject(SocketService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  /** Live height of the fixed bid tray, so .table-surface can reserve exactly that much bottom
+   * padding instead of a hand-tuned constant. The tray is `position: fixed`, so it contributes
+   * nothing to flow and the surface has to reserve the space itself; the old constant (420px) was
+   * measured once against a taller build of the tray and had drifted ~85px above its real height,
+   * which showed up as a band of empty mat between the player's dice and the tray. */
+  private readonly bidSheet = viewChild<ElementRef<HTMLElement>>('bidSheet');
+  protected readonly bidSheetHeightPx = signal(0);
+
+  constructor() {
+    // `bidSheet` is a signal and the tray lives inside an @if, so an effect re-runs on its own
+    // whenever the element appears, disappears, or is replaced — no polling needed. The observer
+    // then tracks height changes within one element's lifetime (the tray grows/shrinks as the
+    // suggestion row wraps or the waiting bar swaps in).
+    const observer = new ResizeObserver((entries) => {
+      const rect = entries[0]?.target.getBoundingClientRect();
+      this.bidSheetHeightPx.set(rect ? Math.ceil(rect.height) : 0);
+    });
+    this.destroyRef.onDestroy(() => observer.disconnect());
+
+    effect((onCleanup) => {
+      const el = this.bidSheet()?.nativeElement;
+      if (!el) {
+        this.bidSheetHeightPx.set(0);
+        return;
+      }
+      observer.observe(el);
+      this.bidSheetHeightPx.set(Math.ceil(el.getBoundingClientRect().height));
+      onCleanup(() => observer.unobserve(el));
+    });
+  }
 
   protected readonly GamePhase = GamePhase;
   protected readonly describeBid = describeBid;
@@ -182,6 +231,10 @@ export class Table {
    * tracks. Reuses `opponentPositions` as-is: it's percentage-based and doesn't care about the
    * pixel width of any one seat. */
   protected readonly mobileArcTopPaddingPx = MOBILE_ARC_TOP_PADDING_PX;
+  /** See MOBILE_ARC_FLAT_HEIGHT_PX — collapses the arc box when the curve has no spread to show. */
+  protected readonly mobileArcHeightPx = computed(() =>
+    this.opponents().length <= 2 ? MOBILE_ARC_FLAT_HEIGHT_PX : MOBILE_ARC_HEIGHT_PX,
+  );
   protected readonly mobileArcMinWidthPx = computed(() => {
     const bidderId = this.currentBidderId();
     const widths = this.opponents().map((o) =>
@@ -367,6 +420,42 @@ export class Table {
       : `${this.nicknameFor(reveal.loserId)}'s bid was false — they lose a die.`;
   }
 
+  /** Closing summary line for the mobile reveal panel — "<loser> drops to N dice · next round
+   * opens with <player>", or "<loser> is out" once eliminated (5.9's win condition means there's
+   * no "next round" line for that case). Reads the already-updated `matchState` rather than the
+   * reveal event itself (neither field exists on it) — safe because the engine emits
+   * ROUND_REVEALED and the resulting `state` snapshot together, so by the time a consumer
+   * observes `reveal()` as non-null, `matchState()` already reflects the post-loss dice count and
+   * (unless the match just ended) the next round's turn order — same ordering revealRows relies
+   * on. Returns `null` (renders nothing) only when there's no reveal to summarize at all. */
+  protected readonly nextRoundSummary = computed(() => {
+    const r = this.reveal();
+    const state = this.store.matchState();
+    if (!r || !state) {
+      return null;
+    }
+    const loserName = this.nicknameFor(r.loserId);
+    const remaining = state.players.find((p) => p.id === r.loserId)?.diceCount;
+    if (remaining === undefined) {
+      return null;
+    }
+    // nicknameFor renders the local player as "You", which takes a plural verb — "You drops to
+    // four dice" / "You is out" otherwise.
+    const isLocal = r.loserId === this.store.playerId();
+    if (remaining === 0) {
+      return `${loserName} ${isLocal ? 'are' : 'is'} out.`;
+    }
+    const dieWord = remaining === 1 ? 'die' : 'dice';
+    const starterId = state.round?.turnOrder[state.round.currentTurnIndex];
+    // "next round opens with You" reads as a typo. The local player gets the active phrasing.
+    const starterClause = !starterId
+      ? ''
+      : starterId === this.store.playerId()
+        ? ' · you open the next round'
+        : ` · next round opens with ${this.nicknameFor(starterId)}`;
+    return `${loserName} ${isLocal ? 'drop' : 'drops'} to ${remaining} ${dieWord}${starterClause}`;
+  });
+
   /** Per-player revealed hands for the mobile reveal panel (Increment 5) — the same
    * ROUND_REVEALED event already drives the desktop banner and RoundLossModal, just read here
    * for its full `dice` map (public once revealed, 5.3) instead of only the aggregate outcome. */
@@ -399,6 +488,17 @@ export class Table {
   protected currentBidFor(playerId: string): Bid | null {
     const record = this.latestBidRecord();
     return record && record.playerId === playerId ? record.bid : null;
+  }
+
+  /** Whether this seat is the one holding the round's standing wager — drives ArcSeat's
+   * "Bid placed" pill (designs/mobile-lantern.dc.html). Gated on BIDDING so the pill clears the
+   * moment a round ends rather than lingering over the reveal/next roll, and distinct from
+   * `currentBidderId()`, which is whose *turn* it is. */
+  protected hasStandingBidAt(playerId: string): boolean {
+    if (this.store.matchState()?.phase !== GamePhase.BIDDING) {
+      return false;
+    }
+    return this.latestBidRecord()?.playerId === playerId;
   }
 
   protected roll(): void {

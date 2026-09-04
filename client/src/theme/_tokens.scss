@@ -32,6 +32,11 @@
   // "parchment-muted" (requested name): the same value/role as --color-parchment-dark above —
   // documented rather than duplicated as a second property with nothing new to say.
   --color-ivory: #fffaf0; // die body, always — on or off the table (exact match, mobile-lantern.dc.html's larger dice)
+  // Same value as --color-ivory, as an rgb triplet so a consumer can supply its own alpha (same
+  // convention as --color-lantern-glow-rgb below). The end cards' stat tiles are a translucent
+  // ivory panel floating on parchment in every reference (rgba(255,250,240,.7-.75)), which a flat
+  // hex can't express.
+  --color-ivory-rgb: 255, 250, 240;
   // The per-player identity tile was previously a brighter/more saturated brass-toned gradient
   // that didn't actually match any color in the approved design. mobile-lantern.dc.html's own
   // opponent seat/cup avatars use a distinct muted wood-brown gradient — corrected to that exact
@@ -57,6 +62,11 @@
   // its point of use, never named. Alpha is supplied per-use (glow gradients and hairlines use
   // different strengths in the design itself), so this token holds the base RGB triplet only.
   --color-lantern-glow-rgb: 255, 224, 176; // mobile-lantern.dc.html's own glow rgb, exact
+  // The lit pool on the mat itself is a *deeper* gold than the lantern-edge hairline above — the
+  // design uses two distinct values here, not one (mat: rgba(255,214,150,.20); hairline:
+  // rgba(255,224,176,.16)), so collapsing them into one token would have washed the pool out.
+  // Same "alpha supplied per-use" convention as the hairline token above.
+  --color-mat-glow-rgb: 255, 214, 150; // mobile-lantern.dc.html's mat radial-gradient rgb, exact
 
   // Ink & text
   --color-ink: #2e2b25; // primary text on light surfaces (exact, mobile-lantern.dc.html title)

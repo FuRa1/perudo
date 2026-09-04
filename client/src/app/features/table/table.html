@@ -2,6 +2,7 @@
   <div
     class="table-surface flex flex-col gap-3 p-3"
     [class.table-surface--bid-sheet-open]="store.matchState()?.phase === GamePhase.BIDDING"
+    [style.--bid-sheet-height.px]="bidSheetHeightPx()"
   >
     <!-- Mobile-only header (Increment 1): a single 36px chip replaces the raw "Round N — PHASE"
          heading below 768px. There is no Ledger/history control on the mobile board (removed —
@@ -38,7 +39,8 @@
               [style.padding-top.px]="mobileArcTopPaddingPx"
             >
               <div
-                class="mobile-arc relative h-44 w-full"
+                class="mobile-arc relative w-full"
+                [style.height.px]="mobileArcHeightPx()"
                 [style.min-width.px]="mobileArcMinWidthPx()"
               >
                 @for (opponent of opponents(); track opponent.id; let i = $index) {
@@ -52,6 +54,7 @@
                       [isCurrentBidder]="opponent.id === currentBidderId()"
                       [handRollStatus]="handRollStatusFor(opponent.id)"
                       [openingRoll]="openingRollFor(opponent.id)"
+                      [hasStandingBid]="hasStandingBidAt(opponent.id)"
                     />
                   </div>
                 }
@@ -73,6 +76,7 @@
                   [isCurrentBidder]="opponent.id === currentBidderId()"
                   [handRollStatus]="handRollStatusFor(opponent.id)"
                   [openingRoll]="openingRollFor(opponent.id)"
+                  [hasStandingBid]="hasStandingBidAt(opponent.id)"
                   [compact]="true"
                   [subdued]="true"
                 />
@@ -85,6 +89,7 @@
                   [isCurrentBidder]="opponent.id === currentBidderId()"
                   [handRollStatus]="handRollStatusFor(opponent.id)"
                   [openingRoll]="openingRollFor(opponent.id)"
+                  [hasStandingBid]="hasStandingBidAt(opponent.id)"
                   [compact]="true"
                 />
               }
@@ -93,7 +98,10 @@
         }
 
         @if (isOpeningRollPhase()) {
-          <p class="mobile-arc__caption text-center text-xs">
+          <p
+            class="mobile-arc__caption text-center text-xs"
+            [class.mobile-arc__caption--turn-order]="!openingTieCaption()"
+          >
             {{ openingTieCaption() ?? 'Highest cast opens the round' }}
           </p>
         }
@@ -282,9 +290,20 @@
                 </li>
               }
             </ul>
+            <p class="mobile-reveal__caption flex items-center gap-2 text-xs">
+              <span class="mobile-reveal__caption-ring shrink-0" aria-hidden="true"></span>
+              <span>
+                Ringed dice counted toward the claim{{
+                  store.lastRevealWasSpecialRound() ? '' : ' — aces are wild'
+                }}.
+              </span>
+            </p>
             <p class="mobile-reveal__outcome text-sm font-semibold">
               {{ revealOutcomeText(r) }}
             </p>
+            @if (nextRoundSummary(); as summary) {
+              <p class="mobile-reveal__next text-xs">{{ summary }}</p>
+            }
           </div>
         }
       </div>
@@ -316,6 +335,7 @@
                (mobile-lantern.dc.html), which shows only the one wager token, never two claim
                descriptions on screen at once. -->
           <div
+            #bidSheet
             class="mobile-bid-sheet-wrap flex flex-col"
             [class.mobile-bid-sheet-wrap--waiting]="!isMyBiddingTurn()"
           >

@@ -14,6 +14,24 @@
 
   <span class="arc-seat__name truncate">{{ player().nickname }}</span>
 
+  <!-- Remaining-dice dots (designs/mobile-lantern.dc.html) — one per die, directly under the
+       name. Decorative-only markup: the count is also exposed to assistive tech as text, since a
+       row of unlabelled dots is invisible to a screen reader. Suppressed during the opening roll:
+       the reference's opening-roll seat is tile → name → public die → status with no dots (every
+       seat still holds five dice there, so the count carries no information, and the dots would
+       sit directly on top of the die slot). -->
+  @if (showDiceDots()) {
+    <div
+      class="arc-seat__dots flex items-center justify-center"
+      role="img"
+      [attr.aria-label]="player().diceCount + ' dice remaining'"
+    >
+      @for (dot of diceDots(); track dot) {
+        <span class="arc-seat__dot" aria-hidden="true"></span>
+      }
+    </div>
+  }
+
   <div class="flex h-5 items-center justify-center">
     @if (openingRoll(); as roll) {
       <div class="arc-seat__die-slot relative" [class.arc-seat__die-slot--winner]="roll.isWinner">
@@ -23,6 +41,8 @@
       </div>
     } @else if (isEliminated()) {
       <span class="arc-seat__status arc-seat__status--out">out</span>
+    } @else if (hasStandingBid()) {
+      <span class="arc-seat__bid-pill">Bid placed</span>
     } @else if (handRollStatus() === 'rolled') {
       <span class="arc-seat__status arc-seat__status--rolled">&#10003; rolled</span>
     } @else if (handRollStatus() === 'waiting') {

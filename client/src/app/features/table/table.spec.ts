@@ -595,6 +595,44 @@ describe('Table', () => {
       expect(text).toContain('bid was false');
     });
 
+    // nicknameFor renders the local player as "You", which takes a plural verb — the summary read
+    // "You drops to 4 dice" / "You is out" before this.
+    //
+    // Read off the computed rather than the rendered DOM: making the local player the loser is
+    // exactly what auto-opens RoundLossModal, and Ionic overlays can't present in the unit-test
+    // DOM ("framework delegate is missing"). Skipping detectChanges keeps the modal out of it
+    // while still exercising the real signal the template binds to.
+    function summaryFor(loserId: string): string {
+      const store = TestBed.inject(GameStore);
+      store.playerId.set('p1');
+      store.matchState.set(biddingState());
+      store.lastReveal.set(
+        reveal({
+          dice: { p1: [1, 2, 3, 4, 5], p2: [6, 6, 1, 2, 3] },
+          claimedBid: { kind: 'NORMAL', quantity: 4, face: 5 },
+          bidderId: loserId,
+          actualQuantity: 2,
+          outcome: 'BIDDER_LOSES',
+          loserId,
+        }),
+      );
+      const fixture = TestBed.createComponent(Table);
+      const instance = fixture.componentInstance as unknown as {
+        nextRoundSummary: () => string | null;
+      };
+      return instance.nextRoundSummary() ?? '';
+    }
+
+    it('conjugates the closing summary for the local player, who is named "You"', () => {
+      const text = summaryFor('p1');
+      expect(text).toContain('You drop to');
+      expect(text).not.toContain('You drops');
+    });
+
+    it('keeps the third-person form for everyone else', () => {
+      expect(summaryFor('p2')).toContain('Bob drops to');
+    });
+
     it('is absent when there has been no reveal yet', () => {
       const { nativeElement } = render('p1', biddingState());
       expect(nativeElement.querySelector('.mobile-reveal')).toBeNull();

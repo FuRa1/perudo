@@ -90,13 +90,16 @@
 
           <div class="entry__hero flex flex-col gap-2 pt-6">
             <h1 class="entry__title font-heading text-3xl">Room code</h1>
+            <!-- The reference states the length once, in the subtitle, rather than twice (here
+                 and again under the field) — sourced from the shared rules config so it can't
+                 drift from the code the OTP control actually accepts. -->
             <p class="entry__tagline text-sm">
-              Enter the invitation code from whoever opened the table.
+              {{ roomCodeLength }} characters from whoever opened the table.
             </p>
           </div>
 
           <form
-            class="entry__form flex flex-col gap-4 pt-8"
+            class="entry__form flex flex-1 flex-col gap-4 pt-8"
             (submit)="$event.preventDefault(); submitCodeStep()"
           >
             <div class="entry__code-group flex flex-col gap-1">
@@ -108,19 +111,25 @@
                 inputmode="text"
                 autocapitalize="characters"
                 [pattern]="roomCodePattern"
-                aria-label="Room code"
+                [attr.aria-label]="'Room code, ' + roomCodeLength + ' characters'"
                 [value]="roomId()"
                 (ionInput)="setRoomCode($any($event).detail.value ?? '')"
                 (keydown.enter)="submitCodeStep()"
               ></ion-input-otp>
-              <p class="entry__code-helper text-xs">Enter the 5-character invitation code.</p>
+              <!-- No separate helper line: the subtitle above already states the length (the
+                   reference states it once, not twice), and the field carries it in its own label
+                   so a screen reader gets it from the control itself rather than from a
+                   nearby paragraph it was never actually associated with. -->
             </div>
 
             @if (store.lastError(); as error) {
               <p class="entry__error text-sm" role="alert">{{ error.message }}</p>
             }
 
-            <div class="flex flex-col gap-2 pt-2">
+            <!-- Bottom-anchored, matching the reference: "Join table" sits at the foot of the
+                 screen, not floating directly under the code field with the rest of the screen
+                 empty below it. -->
+            <div class="mt-auto flex flex-col gap-2 pt-2">
               <ion-button
                 expand="block"
                 fill="solid"

@@ -143,6 +143,22 @@ export class SocketService {
     this.socket?.emit('joinRoom', { roomId, nickname });
   }
 
+  /** Leave the finished match and return to the entry screen. Without this the winner screen is a
+   * dead end: the stored reconnect token survives a reload, so refreshing just restores the same
+   * finished match. Drops the saved session first, then reconnects on a fresh socket so the server
+   * stops associating this client with the old slot, and clears local state last. There is no
+   * server-side "leave" intent (CLAUDE.md 6.2) and this deliberately does not invent one — an
+   * abandoned slot is already handled by the existing disconnect path (section 7). */
+  leaveMatch(): void {
+    clearSession();
+    this.socket?.disconnect();
+    this.socket?.removeAllListeners();
+    this.socket = null;
+    this.store.setConnected(false);
+    this.store.resetMatch();
+    this.connect();
+  }
+
   setReady(isReady: boolean): void {
     this.socket?.emit('setReady', { isReady });
   }

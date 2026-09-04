@@ -50,6 +50,20 @@ export class Lobby implements OnDestroy {
     return Array.from({ length: Math.max(0, this.maxPlayers - seated) }, (_, i) => seated + i + 1);
   });
 
+  /** The roster only ever draws the first few open seats. At the 12-player maximum an empty room
+   * otherwise renders ten identical dashed rows, which buries the primary "I'm ready" action a
+   * full screen below the fold and reads as a wall of nothing rather than as the "how many more
+   * can join" cue the placeholders exist for. The remainder is summarised in one line instead. */
+  private static readonly VISIBLE_OPEN_SEATS = 4;
+
+  protected readonly visibleOpenSeatNumbers = computed(() =>
+    this.openSeatNumbers().slice(0, Lobby.VISIBLE_OPEN_SEATS),
+  );
+
+  protected readonly hiddenOpenSeatCount = computed(() =>
+    Math.max(0, this.openSeatNumbers().length - Lobby.VISIBLE_OPEN_SEATS),
+  );
+
   /** Idle until a real tap/click; never set on load (a genuine user action is required — see
    * copyRoomCode). 'failure' distinguishes a real clipboard error from the ordinary idle state so
    * the announcement/label never claims success it didn't have. */
@@ -86,6 +100,17 @@ export class Lobby implements OnDestroy {
         return '';
     }
   });
+
+  /** One status line for the code card, carrying whichever of copy/share spoke last — they can
+   * never fire together (each needs its own tap), so two permanently-reserved lines only ever cost
+   * empty space. Share wins a tie purely because it is the primary of the two actions. */
+  protected readonly codeStatusMessage = computed(
+    () => this.shareStatusMessage() || this.copyStatusMessage(),
+  );
+
+  protected readonly codeStatusIsFailure = computed(() =>
+    this.shareStatusMessage() ? this.shareStatus() === 'failure' : this.copyStatus() === 'failure',
+  );
 
   protected toggleReady(): void {
     const me = this.me();

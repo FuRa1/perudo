@@ -73,7 +73,12 @@
     </div>
   }
 
+  <!-- Palafico (5.5). Offered as a secondary, outlined action rather than a solid one: it is a
+       rules declaration, not the turn's primary move — Place bid / Call liar stay the two loud
+       actions in this tray. -->
   @if (canDeclareSpecialRound()) {
-    <ion-button color="warning" (click)="declareSpecialRound()">Declare special round</ion-button>
+    <ion-button class="bid-controls__special-btn" fill="outline" (click)="declareSpecialRound()">
+      Declare special round
+    </ion-button>
   }
 </div>

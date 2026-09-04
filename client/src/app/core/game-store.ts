@@ -108,4 +108,18 @@ export class GameStore {
   clearError(): void {
     this.lastError.set(null);
   }
+
+  /** Back to a clean slate, as if the app had just loaded. `playerId` is what app.html routes on,
+   * so clearing it is what actually returns the player to the entry screen; the rest is cleared
+   * alongside it so no fragment of the finished match (a stale reveal recap, a timeout modal, an
+   * error toast) can survive into the next one. Purely local — the server is told separately. */
+  resetMatch(): void {
+    this.playerId.set(null);
+    this.matchState.set(null);
+    this.lastReveal.set(null);
+    this.lastRevealWasSpecialRound.set(false);
+    this.lastTimeout.set(null);
+    this.lastError.set(null);
+    this.sessionRestoreFailed.set(false);
+  }
 }

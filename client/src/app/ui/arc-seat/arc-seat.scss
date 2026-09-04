@@ -156,11 +156,66 @@
   }
 }
 
+// Remaining-dice dots — designs/mobile-lantern.dc.html renders these at 6px with a 3px gap under
+// every seat name. --color-parchment-dark (#e4d5b8) is the token matching the reference's own
+// #e6d8bd: deliberately a touch dimmer than the name's --color-cream above, so the dots read as a
+// quiet count rather than competing with the nickname.
+.arc-seat__dots {
+  gap: 3px;
+  min-height: 6px;
+
+  .arc-seat--compact & {
+    gap: 2px;
+  }
+}
+
+.arc-seat__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-parchment-dark);
+  flex: none;
+
+  // The active seat's dots warm up with the rest of its turn treatment (the reference tints them
+  // orange). --color-brass is the app's established active/current accent and is already on this
+  // same seat's tile ring, so the seat reads as one warm unit rather than two unrelated cues.
+  .arc-seat--active & {
+    background: var(--color-brass);
+  }
+
+  // 5px/2px at the 9-12 player tier so five dots still fit inside a 58px column.
+  .arc-seat--compact & {
+    width: 5px;
+    height: 5px;
+  }
+}
+
 .arc-seat__status {
   font-size: 10.5px;
   font-weight: 600;
   color: var(--color-cream-faint);
   white-space: nowrap;
+}
+
+// "Bid placed" — the seat that owns the standing wager (designs/mobile-lantern.dc.html's own
+// terracotta pill). Sits in the same status slot as "rolled"/"waiting"/"out", so it never adds
+// height; only one of the four is ever rendered.
+.arc-seat__bid-pill {
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-terracotta);
+  color: var(--color-ivory);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  .arc-seat--compact & {
+    padding: 2px 6px;
+    font-size: 9px;
+    letter-spacing: 0;
+  }
 }
 
 .arc-seat__status--rolled {

@@ -1,0 +1,37 @@
+{
+  "viewerPlayerId": "Xp-BUfddN2lgyWy_AAAF",
+  "events": [
+    {
+      "type": "PLAYER_JOINED",
+      "playerId": "mu1ylK5JeEmxlIRVAAAH",
+      "nickname": "Mateo"
+    }
+  ],
+  "snapshot": {
+    "phase": "LOBBY",
+    "roomId": "WBD9K",
+    "players": [
+      {
+        "id": "Xp-BUfddN2lgyWy_AAAF",
+        "nickname": "Anne",
+        "isReady": false,
+        "diceCount": 5,
+        "dice": [],
+        "consecutivePureStalls": 0
+      },
+      {
+        "id": "mu1ylK5JeEmxlIRVAAAH",
+        "nickname": "Mateo",
+        "isReady": false,
+        "diceCount": 5,
+        "dice": [],
+        "consecutivePureStalls": 0
+      }
+    ],
+    "startRoll": null,
+    "completedStartRoll": null,
+    "round": null,
+    "winnerId": null,
+    "turnTimer": null
+  }
+}

@@ -109,7 +109,7 @@ async function main() {
     // real code.
     await sharePage.locator('.lobby__room-code').click();
     await sharePage.waitForFunction(
-      () => document.querySelector('.lobby__copy-status')?.textContent?.trim() === 'Copied',
+      () => document.querySelector('.lobby__code-status')?.textContent?.trim() === 'Copied',
     );
     const copyCallArgs = await sharePage.evaluate(() => window.__copyCalls);
     check(
@@ -126,11 +126,11 @@ async function main() {
     });
     await sharePage.locator('.lobby__room-code').click();
     await sharePage.waitForFunction(() => {
-      const t = document.querySelector('.lobby__copy-status')?.textContent?.trim() ?? '';
+      const t = document.querySelector('.lobby__code-status')?.textContent?.trim() ?? '';
       return t.length > 0 && t !== 'Copied';
     });
     const copyFailureText = (
-      (await sharePage.locator('.lobby__copy-status').textContent()) ?? ''
+      (await sharePage.locator('.lobby__code-status').textContent()) ?? ''
     ).trim();
     check(
       'Copy never claims success when the underlying API call failed',
@@ -142,7 +142,7 @@ async function main() {
     // that actually contains the real code.
     await sharePage.locator('.lobby__code-share').click();
     await sharePage.waitForFunction(
-      () => document.querySelector('.lobby__share-status')?.textContent?.trim() === 'Shared',
+      () => document.querySelector('.lobby__code-status')?.textContent?.trim() === 'Shared',
     );
     const shareCallArgs = await sharePage.evaluate(() => window.__shareCalls);
     check(
@@ -161,10 +161,10 @@ async function main() {
     await noSharePage.waitForSelector('.lobby__code-value');
     await noSharePage.locator('.lobby__code-share').click();
     await noSharePage.waitForFunction(
-      () => (document.querySelector('.lobby__share-status')?.textContent?.trim().length ?? 0) > 0,
+      () => (document.querySelector('.lobby__code-status')?.textContent?.trim().length ?? 0) > 0,
     );
     const unavailableText = (
-      (await noSharePage.locator('.lobby__share-status').textContent()) ?? ''
+      (await noSharePage.locator('.lobby__code-status').textContent()) ?? ''
     ).trim();
     check(
       'Share invite reports unavailable (never a fabricated success) with no Web Share API',

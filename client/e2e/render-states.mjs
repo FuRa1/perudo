@@ -258,6 +258,17 @@ async function main() {
       });
       await shoot(firstBidder.page, 'reveal-after-call-liar');
 
+      // reveal-card-only.png — a tight crop of just the .mobile-reveal card (Phase 4 design-parity
+      // pass, 2026-09-04), independent of viewport scroll position: the full-viewport shot above
+      // can cut the card off mid-content depending on where BIDDING left the inner ion-content
+      // scroll, but this is what actually gets compared pixel-for-pixel against a design
+      // reference, so it needs to show the whole card every time.
+      await firstBidder.page.waitForTimeout(150);
+      await firstBidder.page
+        .locator('.mobile-reveal')
+        .screenshot({ path: path.join(OUT_DIR, 'reveal-card-only.png') });
+      console.log('captured reveal-card-only');
+
       await host.ctx.close();
       await guest.ctx.close();
     }

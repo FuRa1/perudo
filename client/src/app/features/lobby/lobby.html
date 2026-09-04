@@ -32,17 +32,16 @@
               <svg lucideCopy aria-hidden="true"></svg>
             </button>
           </div>
+          <!-- Copy and share can never report at the same moment (each is its own tap), so one
+               shared line carries whichever spoke last. Two permanently-mounted lines used to sit
+               here instead, reserving ~56px of empty card even when both were silent — the design
+               reference's card ends at the button row. Rendered only when there is something to
+               say; the aria-live region stays mounted so assistive tech still announces it. -->
           <span
-            class="lobby__copy-status text-xs"
-            [class.lobby__copy-status--failure]="copyStatus() === 'failure'"
+            class="lobby__code-status text-xs"
+            [class.lobby__code-status--failure]="codeStatusIsFailure()"
             aria-live="polite"
-            >{{ copyStatusMessage() }}</span
-          >
-          <span
-            class="lobby__share-status text-xs"
-            [class.lobby__share-status--failure]="shareStatus() === 'failure'"
-            aria-live="polite"
-            >{{ shareStatusMessage() }}</span
+            >{{ codeStatusMessage() }}</span
           >
         </div>
 
@@ -89,10 +88,15 @@
               </span>
             </li>
           }
-          @for (seatNumber of openSeatNumbers(); track seatNumber) {
+          @for (seatNumber of visibleOpenSeatNumbers(); track seatNumber) {
             <li class="lobby__seat--open flex items-center gap-3 p-3">
               <div class="lobby__seat--open-avatar flex-none" aria-hidden="true"></div>
               <span class="text-sm">Seat {{ seatNumber }} — open</span>
+            </li>
+          }
+          @if (hiddenOpenSeatCount(); as hidden) {
+            <li class="lobby__seat--more text-center text-xs">
+              + {{ hidden }} more {{ hidden === 1 ? 'seat' : 'seats' }} open
             </li>
           }
         </ul>
@@ -103,7 +107,10 @@
           </p>
         }
 
-        <div class="mt-auto flex flex-col gap-2 pt-6">
+        <!-- Sticky, not just bottom-of-page: readying up is the only thing this screen exists to
+             do, and with a large table the roster is taller than the viewport, which used to leave
+             the button a full screen below the fold. -->
+        <div class="lobby__actions mt-auto flex flex-col gap-2 pt-6">
           <ion-button
             class="lobby__ready-button"
             expand="block"

@@ -15,6 +15,14 @@
 ion-content {
   --background: var(--color-table-edge);
   --color: var(--color-cream);
+  // The table is the one screen whose surface is meant to reach the physical edges (every design
+  // reference draws the mat filling the whole phone). styles.scss's global --app-gutter-x applies
+  // a horizontal gutter to every ion-content, which inset .table-surface by ~24px a side and left
+  // two darker vertical bands of bare ion-content background down the screen — made worse by the
+  // bid tray being position:fixed and therefore *not* inset, so the tray visibly overhung the mat.
+  // Zeroed here only; .table-surface's own p-3 still keeps content off the edges.
+  --padding-start: 0;
+  --padding-end: 0;
 }
 
 // Table outer surface (design-kit "table" swatch, perudo-desktop-board.dc.html) — the one radial
@@ -156,8 +164,17 @@ $table-photo-overlay: linear-gradient(
     top: 45%;
     height: 70%;
     border-radius: 50%;
-    background: radial-gradient(70% 60% at 50% 24%, rgba(255, 214, 150, 0.16), transparent 72%);
-    border-top: 1px solid rgba(255, 224, 176, 0.16);
+    // Alpha is the reference's own (mobile-lantern.dc.html's mat glow is .20, not the .16 this
+    // previously used) — the lit pool under the seats is the scene's single strongest cue that
+    // the table is lamplit, and at .16 it was reading as an almost-flat surface. The glow's own
+    // rgb is a deeper gold than the lantern-edge hairline below it; both are now named tokens
+    // rather than the raw literals this rule used to carry.
+    background: radial-gradient(
+      70% 60% at 50% 24%,
+      rgba(var(--color-mat-glow-rgb), 0.2),
+      transparent 72%
+    );
+    border-top: 1px solid rgba(var(--color-lantern-glow-rgb), 0.16);
     pointer-events: none;
   }
 }
@@ -184,10 +201,43 @@ $table-photo-overlay: linear-gradient(
   color: var(--color-cream-faint);
 }
 
+// The "highest cast opens the round" turn-order callout specifically — designs/mobile-lantern
+// .dc.html renders this exact "opens the round" line in --color-gold-highlight (its documented
+// sole purpose: "the turn-order kicker"), a punchier tone than the neutral cream-faint the tie
+// re-roll notice keeps (the design kit's own "Tie state" note asks for no colour there).
+.mobile-arc__caption--turn-order {
+  color: var(--color-gold-highlight);
+}
+
 // Mobile private local zone (Increment 3) — the one place per phase where the local player's own
 // action/status lives; exactly one of the three states inside it is ever visible at once.
+// The local player's zone is bottom-anchored, matching every design reference — mobile-lantern
+// .dc.html puts `margin-top:auto` on exactly this row so the five dice always rest just above the
+// bid tray ("your five dice sit on the table and never move") instead of floating wherever the
+// content above happens to end. Without it, a short table (one or two opponents) left a wide band
+// of empty mat between the dice and the tray.
 .mobile-hand-zone {
   width: 100%;
+  margin-top: auto;
+  // The reference separates this bottom zone from the mat with a single warm hairline
+  // (mobile-lantern.dc.html / perudo-mobile-board.dc.html both rule off "your cast"/"your hand"
+  // this way). It also gives the zone something to sit against when the arc above is sparse.
+  border-top: 1px solid rgba(var(--color-lantern-glow-rgb), 0.14);
+  padding-top: 0.875rem;
+}
+
+// `margin-top: auto` on .mobile-hand-zone only does anything if there is spare height for it to
+// push against. .table-surface is a min-height:100dvh flex column, but the layout grid inside it
+// was content-sized, so all the slack pooled *below* the grid and the hand zone stayed packed up
+// under the wager token. Growing the grid moves that slack inside it, where the auto margin can
+// use it; the main column then stretches to the grid row by default (align-items: stretch).
+.table-layout {
+  flex: 1;
+  min-height: 0;
+}
+
+.table-layout__main {
+  min-height: 100%;
 }
 
 .mobile-hand-zone__label {
@@ -202,18 +252,44 @@ $table-photo-overlay: linear-gradient(
 
 // The public opening die (5.2) sits bare on the mat, not inside a cup — 66px per the reference,
 // the largest die on the opening-roll screen.
+// The local player's public opening die. perudo-mobile-board.dc.html's own note for this slot:
+// "dashed while waiting; the die replaces the dash in place, so nothing reflows when results
+// land" — the slot already reserved its footprint, but rendered as invisible empty space before a
+// cast, which read as an unexplained gap between the label and the Cast button rather than as a
+// waiting slot. Same dashed treatment the arc seats' own opening slots use.
 .mobile-opening-die {
   @include mixins.clamp-square(66px, 66px, 66px);
+  border-radius: var(--radius-die);
+  border: 1.5px dashed var(--color-border-onboard-strong);
+
+  // Once the die lands, the art is the slot — the dash would otherwise show as a second border.
+  &:has(app-die) {
+    border-color: transparent;
+  }
 }
 
-// Both mobile primary roll buttons are 56px tall via Ionic's `native` shadow part — Ionic's own
-// height defaults are padding-derived and don't hit an exact pixel target on their own.
-.mobile-primary-btn {
-  width: 100%;
+// The two roll buttons are primary actions like any other, and every design reference draws them
+// with the same 56px terracotta pill silhouette as "Place bid" / "Start a table" / "I'm ready".
+// They were the only primary actions in the app that never picked up pill-action-button, so they
+// rendered as plain rectangles — conspicuous next to the pill-shaped bid tray directly below.
+// Neither ever sets [fill='outline'], so that branch of the mixin is inert here; the outline
+// arguments still have to be supplied, and ember matches the one danger pair the app already uses.
+.mobile-primary-btn,
+.mobile-hand-roll-btn {
+  @include mixins.pill-action-button(
+    var(--color-ember),
+    var(--color-ember-soft),
+    rgba(224, 138, 120, 0.16)
+  );
 
+  // Ionic's own height defaults are padding-derived and don't hit an exact pixel target alone.
   &::part(native) {
     height: 56px;
   }
+}
+
+.mobile-primary-btn {
+  width: 100%;
 }
 
 // Hand-roll button (Increment 3) — matches the reserved roll-stage spacer's width below it, so
@@ -221,10 +297,6 @@ $table-photo-overlay: linear-gradient(
 // above it.
 .mobile-hand-roll-btn {
   width: 236px;
-
-  &::part(native) {
-    height: 56px;
-  }
 }
 
 // Reserved breathing room above the "Roll your hand" button (Design QA audit, finding 10) — a
@@ -237,6 +309,13 @@ $table-photo-overlay: linear-gradient(
 .mobile-roll-stage {
   width: 236px;
   height: 236px;
+
+  // ...but only while it is genuinely the emptiest thing on screen. Once a reveal recap is up,
+  // the round's result is competing for the same viewport, and 236px of deliberate blankness
+  // between the arc and the roll button stops reading as rhythm and starts reading as a hole.
+  .table-surface:has(.mobile-reveal) & {
+    height: 0;
+  }
 
   @media (max-width: 359px) {
     height: 180px;
@@ -301,7 +380,10 @@ $table-photo-overlay: linear-gradient(
     z-index: 20;
     background: var(--color-cabin);
     border-radius: 28px 28px 0 0;
-    border-top: 1px solid var(--color-border-onboard);
+    // Warm lantern-glow hairline, matching designs/mobile-lantern.dc.html's bid-tray top edge
+    // (rgba(255,224,176,.18)) — the tray catches the same light the mat glow does, not the neutral
+    // cream --color-border-onboard this previously used.
+    border-top: 1px solid rgba(var(--color-lantern-glow-rgb), 0.18);
     box-shadow: 0 -16px 34px rgba(0, 0, 0, 0.42);
     padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
   }
@@ -313,15 +395,14 @@ $table-photo-overlay: linear-gradient(
     box-shadow: none;
   }
 
-  // The wrap is `position: fixed`, so it no longer reserves space in .table-surface's own flow —
-  // without this, its taller (full-sheet) state can cover the last of the scrollable content
-  // behind it. Sized to the larger of the two states (the sheet, not the compact bar); the bar's
-  // own leftover slack reads as a bit of breathing room, not a layout bug. 420px (measured live:
-  // the full sheet — claim line + picker + hints + actions — renders at ~379px at 390-440px
-  // widths) rather than the sheet's exact height, since the claim line can wrap to a second line
-  // for a longer bid description ("X claimed N × face M. Raise or call.") on a narrow screen.
+  // The wrap is `position: fixed`, so it reserves no space in .table-surface's own flow — without
+  // a reservation here its taller (full-sheet) state covers the last of the content behind it.
+  // --bid-sheet-height is measured live from the tray itself (Table's ResizeObserver) rather than
+  // hand-tuned: the previous 420px constant had drifted ~85px above the tray's real height, and
+  // that surplus rendered as a conspicuous band of empty mat between the player's own dice and
+  // the tray. The fallback keeps a sane reservation for the first frame, before the first measure.
   .table-surface--bid-sheet-open {
-    padding-bottom: 420px;
+    padding-bottom: var(--bid-sheet-height, 340px);
   }
 }
 
@@ -339,50 +420,86 @@ $table-photo-overlay: linear-gradient(
 
 // Mobile reveal panel (Increment 5) — claimed-vs-actual plus every revealed hand, in the same
 // board context as the rest of the mobile table rather than the desktop's plain text banner.
+//
+// Raised to the same light-parchment "verdict surface" language as the winner screen and
+// RoundLossModal (theme/_mixins.scss's outcome-card doc comment: "the one thing on screen that
+// must read as unambiguously important") rather than the dark on-table panel this used to share
+// with every other ambient card. Deliberately NOT routed through outcome-card($variant) itself —
+// that mixin's only two variants are 'win'/'loss' framed around *this viewer's* result, but this
+// panel is seen by every player after every reveal regardless of who lost, so it needs a neutral
+// shell with the same tokens rather than a win/loss-colored one. Verdict-specific color still
+// lives only on .mobile-reveal__verdict below, same split RoundLossModal already uses.
+//
+// Surface + border match the design reference (screens/Screenshot 2026-08-16 002742.png): the
+// parchment→parchment-dark gradient and the 1.5px brass edge are the exact pair
+// theme/_mixins.scss's outcome-card('win') already uses — reproduced here via the same tokens
+// (not the mixin, per the note above) rather than the near-invisible --color-border hairline the
+// panel previously carried, which the reference does not show.
 .mobile-reveal {
-  @include mixins.onboard-panel-strong;
-  color: var(--color-cream);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-overlay);
+  border: 1.5px solid var(--color-brass);
+  background: linear-gradient(180deg, var(--color-parchment), var(--color-parchment-dark));
+  padding: 1.25rem;
+  color: var(--color-ink);
 }
 
 .mobile-reveal__title {
-  color: var(--color-cream);
+  color: var(--color-ink);
+  font-size: 1.25rem;
 }
 
 .mobile-reveal__summary {
-  color: var(--color-cream-muted);
+  color: var(--color-ink-muted);
 }
 
 .mobile-reveal__verdict {
   margin: 0.75rem 0;
   padding: 0.6rem 0.75rem;
-  border: 1px solid var(--color-border-onboard-strong);
-  border-radius: var(--radius-tile);
+  border-radius: var(--radius-pill);
 }
 
 .mobile-reveal__verdict--true {
-  border-color: var(--color-sage);
-  background: var(--color-fill-onboard-strong);
-  color: var(--color-sage-soft);
+  background: var(--color-sage-soft);
+  color: var(--color-sage-deep);
 }
 
 .mobile-reveal__verdict--false {
-  border-color: var(--color-ember);
-  background: var(--color-fill-onboard-strong);
-  color: var(--color-ember-soft);
+  border: 1px solid var(--color-ember);
+  background: var(--color-sand);
+  color: var(--color-danger);
 }
 
 .mobile-reveal__name {
-  color: var(--color-cream-muted);
+  color: var(--color-ink-muted);
   font-weight: 600;
 }
 
 .mobile-reveal__die {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
+}
+
+.mobile-reveal__caption {
+  color: var(--color-meta);
+}
+
+// The hollow ring glyph the design reference (screens/Screenshot 2026-08-16 002742.png) sets
+// beside this caption — a literal echo of the ringed-die treatment above it. Brass edge, matching
+// the dice ring's own 2px brass halo (ui/die/die.scss's .die--ringed).
+.mobile-reveal__caption-ring {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-brass);
 }
 
 .mobile-reveal__outcome {
-  color: var(--color-cream);
+  color: var(--color-ink);
+}
+
+.mobile-reveal__next {
+  color: var(--color-ink-muted);
 }
 
 // The bidding rail (design-kit desktop board, right-hand "wager rail" column) — a quiet hairline

@@ -63,6 +63,25 @@
   );
 }
 
+// Palafico. Same pill system as every other action; brass rather than ember, because declaring a
+// special round is a rules move, not a danger one. It previously carried no class at all and so
+// rendered as a stock Ionic `color="warning"` button — the one control in the app still wearing
+// Ionic's default palette instead of the theme's.
+.bid-controls__special-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+
+  @include mixins.pill-action-button(
+    var(--color-brass),
+    var(--color-gold-highlight),
+    rgba(214, 154, 82, 0.16)
+  );
+
+  &::part(native) {
+    height: 48px;
+  }
+}
+
 // Mobile bid sheet (Increment 4) — horizontally scrollable suggestions, and Place bid/Call liar
 // as a fixed-height action row (flex:1 primary + a narrower fixed-width danger action) rather
 // than the desktop's centered, wrapping button pair. Desktop is untouched below 768px's boundary.

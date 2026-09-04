@@ -13,12 +13,130 @@ Format: one entry per issue, newest first within its section. Move an entry from
 
 ## Open
 
-_(none currently — see Resolved below for the two items closed during the Phase 4 UI/UX pass,
-2026-08-15)_
+### Design-parity deltas left as judgment calls (autonomous design pass, 2026-09-04)
+
+- **Logged:** 2026-09-04, during an autonomous design-parity loop over the mobile states that
+  have concrete references (`screens/Screenshot 2026-08-16 002742.png` for the reveal card,
+  `designs/mobile-lantern.dc.html` for the bidding board, `designs/perudo-lobby-lantern.dc.html`
+  for the waiting room). The token-only, unambiguous gaps found in that pass **were** fixed in it
+  (see the CLAUDE.md addendum of the same date). These remaining items were found in the same
+  comparison but each is a design-system consistency tradeoff or a contradiction *between* two
+  approved reference files — not a "checkable, not taste-based" gap — so they need the user's call
+  before spending time on them:
+  - **Reveal verdict block style.** `screens/Screenshot 2026-08-16 002742.png` renders the
+    verdict as a large Pirata-One word ("Bid false") with the explanation inline beside it, on a
+    peach fill. The app renders it as a small letter-spaced caps label stacked above the
+    explanation in a full-radius pill — but that is exactly the treatment
+    `round-loss-modal.scss`'s `.round-loss__verdict` uses, and the 2026-09-04 (earlier that day)
+    pass deliberately matched the two. Changing one without the other reintroduces the
+    inconsistency; changing both is a design-system decision, not a parity fix. The reference
+    also only ever shows the loss ("false") variant — the app's "true" variant (sage green) has
+    no reference at all.
+  - **`describeBid` face wording.** App says "N × face M"; the design says "N × fives". A pure
+    display string, but it is shared across 3 table templates + the desktop banner + 2 asserting
+    tests (`table.spec.ts`), and the design system itself is inconsistent — `perudo-mobile-board`
+    .dc.html says "4 × five" (singular), the mockup says "4 × fives" (plural). Needs a decided
+    wording before touching shared display + tests.
+  - **Lobby seat-avatar colour (and the entry-screen brand badge).** The waiting-room design
+    (`designs/perudo-lobby-lantern.dc.html`) gives each seat a distinct avatar gradient — brass
+    (`#e3bd7e→#8a5c26`) for "you", sage (`#8e9c6c→#4b5730`) for the next player. The app uses one
+    wood-brown gradient (`--color-identity-start/end`) for every seat, which the Phase 4 token
+    audit chose on the basis of `mobile-lantern.dc.html` (the "canonical" file) — where the arc
+    seats *are* uniform wood-brown. So the two reference files genuinely disagree, and Phase 4's
+    note ("the old brass-toned identity gradient matched no colour in the approved design") was
+    written having checked only one of them. None of the lobby design's per-seat colours are
+    current tokens. The same call decides `.entry__badge` (`entry.scss`) — the entry-screen brand
+    icon tile, which uses the identical `--color-identity-*` gradient and which
+    `perudo-lobby-lantern.dc.html` renders as a brass-gold `#e3bd7e→#8a5c26` sweep.
+  - **Lobby per-player subline + header back-affordance.** The design shows a secondary line per
+    roster row ("Host · set the rules", "Joined a moment ago") and a back-arrow in the header
+    where the app shows the wordmark. The app has no timestamp on its `Player` model to render
+    "joined N ago" truthfully (already noted in `lobby.scss`), and the header/nav change is
+    structural — both are added content, not a token nudge.
+  - **Round chip during reveal.** Design pill reads "Round N · revealed"; the app's reads
+    "Round N · M dice" (the same `mobilePhaseLabel` format it uses in every non-your-turn phase).
+    Minor, and the label helper is shared across phases.
+
+### Open question — true game save/restore across a server restart, not yet decided
+
+- **Logged:** 2026-09-04. Full context: [STATE_FIXTURES_AND_SAVE_PLAN.md](STATE_FIXTURES_AND_SAVE_PLAN.md)
+  §2.
+- Not the same thing as Phase 5's already-built reconnect-by-token (which only covers a
+  still-running server) — this would mean surviving the **server process restarting**, which
+  directly reverses §3.3's documented "deliberate MVP limitation, do not add a DB/Redis" decision.
+  Logged as an open question for the user (§12 territory), not built.
+- (The other half of this same request — a dev-only "fixture mode" to render any screen from a
+  captured `StateSnapshot` instead of playing a full match — was built 2026-09-04; see Resolved
+  below and `STATE_FIXTURES_AND_SAVE_PLAN.md` §1.)
+
+_(see Resolved below for the two items closed during the Phase 4 UI/UX pass, 2026-08-15)_
 
 ---
 
 ## Resolved
+
+### Dice rendered with a ring of dead space and a phantom second border
+
+- **Found:** 2026-09-04, reported by the user during the design-parity pass ("each dice has some
+  spacing and additional border with whitespace... its an old bug").
+- **Two causes stacked.** `designs/assets/dice/die-face-N.png` is a 156×156 canvas whose die body
+  occupies only the middle 110×110 — 23px of transparent padding per side, measured directly off
+  the asset — so at `object-contain` the die rendered ~30% smaller than its own box. On top of
+  that, `.die` painted `background: var(--color-ivory)` plus an inset shadow *underneath* the art
+  regardless of tier, and that ivory box showed through the art's transparent margin as a second,
+  phantom die edge.
+- **Resolved 2026-09-04:** `Die` now marks the wrapper `.die--art` when a per-face image is in
+  play (no background, no inset shadow — the art is the whole die), and `.die__art` scales the
+  image by 156/110 and re-centres it so the body is full-bleed. `max-width: none` is load-bearing:
+  Tailwind's preflight `img { max-width: 100% }` silently clamped the rescale back to the box.
+  Two `die.spec.ts` cases cover the art tier getting the class and the CSS-pip tier not.
+
+### Dark vertical bands down both sides of the table screen
+
+- **Found:** 2026-09-04, reported by the user in the same pass ("the table has blank darker space
+  on left and right... the table image should took all the width").
+- **Symptom:** `styles.scss`'s global `--app-gutter-x` applies a horizontal gutter to every
+  `ion-content`, which inset `.table-surface` to `left: 24, width: 342` in a 390px viewport,
+  leaving two darker strips of bare `ion-content` background. The bid tray is `position: fixed`
+  and therefore *not* inset, so it visibly overhung the mat on both sides — which is what made the
+  bands obvious rather than merely present.
+- **Resolved 2026-09-04:** the table screen zeroes `--padding-start`/`--padding-end` on its own
+  `ion-content` (it is the one screen whose surface is meant to reach the physical edges in every
+  design reference); `.table-surface`'s own `p-3` still keeps content off the edge.
+
+### Mobile board never showed opponents' remaining dice counts
+
+- **Found:** 2026-09-04, comparing the live board against `designs/mobile-lantern.dc.html`.
+- Not only a visual gap: how many dice each opponent holds is information a player needs to reason
+  about a bid at all, and the mobile arc seat showed nickname and turn state only. Both reference
+  files draw a row of small dots under every name.
+- **Resolved 2026-09-04:** `ArcSeat` renders one dot per remaining die (with the count exposed as
+  text for assistive tech, since bare dots read as nothing), suppressed on an eliminated seat and
+  during the opening roll — where the public die occupies that same slot and every seat still
+  holds a full hand. The reference's "Bid placed" pill for the seat holding the standing wager was
+  added in the same slot.
+
+### Reveal summary read "You drops to 4 dice"
+
+- **Found:** 2026-09-04, while rendering a synthetic fixture in which the local player loses.
+- `nicknameFor` deliberately renders the local player as "You", which takes a plural verb — so the
+  `nextRoundSummary` line added earlier that day produced "You drops to 4 dice" and "You is out".
+- **Resolved 2026-09-04:** conjugated on whether the loser is the local player, with two
+  `table.spec.ts` cases. Those tests read the computed directly rather than the rendered DOM:
+  making the local player the loser is exactly what auto-opens `RoundLossModal`, and Ionic
+  overlays cannot present in the unit-test DOM ("framework delegate is missing").
+
+### Winner screen was a dead end
+
+- **Found:** 2026-09-04, reviewing the end-of-match state against `perudo-mobile-flow.dc.html`.
+- The screen offered no actions at all, and the stored reconnect token outlives the match, so
+  reloading restored the same finished game rather than returning to the entry screen.
+- **Resolved 2026-09-04:** added `SocketService.leaveMatch()` (drops the saved session, reconnects
+  on a fresh socket, resets local state via the new `GameStore.resetMatch()`) behind a single
+  "Back to the entry" action. Deliberately **no** "Play again": a rematch would need a server
+  intent the engine does not define (CLAUDE.md 6.2), and inventing one was out of scope for a
+  presentation pass. The screen also moved from a centred card on the app's light canvas to a
+  bottom sheet over the dimmed table, which is how every reference draws the end cards.
 
 ### Server crashed on startup — `TimerConfigService` was never registered in `GameModule`
 

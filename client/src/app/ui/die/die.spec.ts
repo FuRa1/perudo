@@ -63,6 +63,32 @@ describe('Die', () => {
       expect(dieEl.getAttribute('role')).toBe('img');
       expect(dieEl.getAttribute('aria-label')).toBe('Three');
     });
+
+    // The art PNG is itself a complete die (body, outline, baked shadow). The wrapper used to
+    // paint its own ivory body underneath it regardless, which showed through the art's
+    // transparent margin as a phantom second border with a ring of dead space inside every die.
+    it('marks the wrapper as art-backed so it stops painting its own die body underneath the image', () => {
+      const fixture = TestBed.createComponent(Die);
+      fixture.componentRef.setInput('value', 3);
+      fixture.detectChanges();
+
+      const dieEl = (fixture.nativeElement as HTMLElement).querySelector('.die') as HTMLElement;
+      expect(dieEl.classList).toContain('die--art');
+      expect(dieEl.querySelector('img')?.classList).toContain('die__art');
+    });
+
+    it('keeps the art class off the CSS-pip tier, which does still need the wrapper to draw the body', () => {
+      withoutFaceImages(() => {
+        withoutSprite(() => {
+          const fixture = TestBed.createComponent(Die);
+          fixture.componentRef.setInput('value', 3);
+          fixture.detectChanges();
+
+          const dieEl = (fixture.nativeElement as HTMLElement).querySelector('.die') as HTMLElement;
+          expect(dieEl.classList).not.toContain('die--art');
+        });
+      });
+    });
   });
 
   describe('sprite-sheet fallback (tier 2: no per-face image, dice sprite configured)', () => {

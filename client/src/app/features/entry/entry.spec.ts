@@ -196,16 +196,22 @@ describe('Entry', () => {
       expect((otp() as unknown as { length: number }).length).toBe(5);
     });
 
-    it('exposes an accessible name for the room-code control', () => {
+    // The required length is carried by the control's own accessible name rather than by a
+    // separate paragraph beside it: the visible copy states it once (in the subtitle), and a
+    // screen reader gets it from the field itself instead of from a nearby <p> the input was
+    // never actually associated with.
+    it('exposes an accessible name for the room-code control that states the required length', () => {
       const { fixture, nativeElement, otp } = render();
       goToCodeStep(fixture, nativeElement);
-      expect(otp().getAttribute('aria-label')).toBe('Room code');
+      expect(otp().getAttribute('aria-label')).toBe('Room code, 5 characters');
     });
 
-    it('states the exact required length', () => {
+    it('states the exact required length in the visible copy, exactly once', () => {
       const { fixture, nativeElement } = render();
       goToCodeStep(fixture, nativeElement);
-      expect(nativeElement.textContent ?? '').toContain('Enter the 5-character invitation code.');
+      const text = nativeElement.textContent ?? '';
+      expect(text).toContain('5 characters from whoever opened');
+      expect(text).not.toContain('Enter the 5-character invitation code.');
     });
 
     it('keeps Join table disabled while the code is partial', () => {

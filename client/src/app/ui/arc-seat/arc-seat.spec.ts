@@ -45,6 +45,48 @@ describe('ArcSeat', () => {
     expect(text).toContain('out');
   });
 
+  it('renders one dice dot per remaining die — the only place the mobile board shows an opponent’s dice count', () => {
+    const { nativeElement } = render({ player: player({ diceCount: 3 }) });
+    expect(nativeElement.querySelectorAll('.arc-seat__dot')).toHaveLength(3);
+  });
+
+  it('exposes the dice count as text for assistive tech, since a row of bare dots reads as nothing', () => {
+    const { nativeElement } = render({ player: player({ diceCount: 2 }) });
+    expect(nativeElement.querySelector('.arc-seat__dots')?.getAttribute('aria-label')).toBe(
+      '2 dice remaining',
+    );
+  });
+
+  it('renders no dots at all for an eliminated seat (the dashed tile and struck-through name carry that state)', () => {
+    const { nativeElement } = render({ player: player({ diceCount: 0 }) });
+    expect(nativeElement.querySelector('.arc-seat__dots')).toBeNull();
+  });
+
+  it('shows the "Bid placed" pill for the seat holding the standing wager', () => {
+    const { nativeElement, text } = render({ player: player(), hasStandingBid: true });
+    expect(nativeElement.querySelector('.arc-seat__bid-pill')).not.toBeNull();
+    expect(text).toContain('Bid placed');
+  });
+
+  it('prefers the standing-wager pill over a stale hand-roll status in the same single status slot', () => {
+    const { nativeElement, text } = render({
+      player: player(),
+      hasStandingBid: true,
+      handRollStatus: 'rolled',
+    });
+    expect(nativeElement.querySelectorAll('.arc-seat__bid-pill')).toHaveLength(1);
+    expect(text).not.toContain('rolled');
+  });
+
+  it('never shows the standing-wager pill on an eliminated seat', () => {
+    const { nativeElement, text } = render({
+      player: player({ diceCount: 0 }),
+      hasStandingBid: true,
+    });
+    expect(nativeElement.querySelector('.arc-seat__bid-pill')).toBeNull();
+    expect(text).toContain('out');
+  });
+
   it('shows a compact hand-roll status without a large badge or progress bar', () => {
     const { text, nativeElement } = render({ player: player(), handRollStatus: 'rolled' });
     expect(text).toContain('rolled');

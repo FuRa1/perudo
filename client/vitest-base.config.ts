@@ -8,6 +8,9 @@ import { defineConfig } from 'vitest/config';
 // (transform) the Ionic packages instead of externalizing them routes around it.
 export default defineConfig({
   test: {
+    // Browser-API stubs the unit-test DOM doesn't provide (see the file's own comment) — additive
+    // to whatever the Angular unit-test builder sets up for TestBed/zone itself.
+    setupFiles: ['src/test-setup.ts'],
     server: {
       deps: {
         inline: [/@ionic\//],

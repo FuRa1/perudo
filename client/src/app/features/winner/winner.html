@@ -1,14 +1,26 @@
 <ion-content>
-  <div class="winner-surface flex flex-col items-center justify-center px-2 text-center">
-    <div class="winner-card flex w-full max-w-md flex-col items-center gap-3">
-      @if (badgeImageUrl; as imageUrl) {
-        <img [src]="imageUrl" alt="" aria-hidden="true" class="winner-badge-image" />
-      } @else {
-        <div class="winner-badge" aria-hidden="true"></div>
-      }
-      <p class="winner__kicker text-xs font-semibold" role="status">Match complete</p>
+  <!-- A bottom sheet over the dimmed table, not a centred dialog on a blank page: every design
+       reference draws the end cards this way ("End cards are bottom sheets, not centred dialogs —
+       both actions sit inside thumb reach", perudo-mobile-flow.dc.html). The surface keeps the
+       table's own lamplit wood behind the scrim so the match still reads as the place it ended,
+       rather than dropping the player onto an unrelated light page. -->
+  <div class="winner-surface flex flex-col px-2">
+    <!-- The seal floats on the dimmed table above the sheet, as the reference draws it — not
+         inside the card, where it competed with the heading for the top of the composition. -->
+    @if (badgeImageUrl; as imageUrl) {
+      <img [src]="imageUrl" alt="" aria-hidden="true" class="winner-badge-image" />
+    } @else {
+      <div class="winner-badge" aria-hidden="true"></div>
+    }
+
+    <div class="winner-sheet flex w-full flex-col gap-2">
+      <p class="winner__kicker text-xs font-semibold" role="status">{{ kicker() }}</p>
       <h1 class="winner__title font-heading text-3xl">{{ winnerName() }} wins!</h1>
       <p class="winner__subtitle">{{ subtitle() }}</p>
+
+      <ion-button class="winner__action" expand="block" (click)="leave()">
+        Back to the entry
+      </ion-button>
     </div>
   </div>
 </ion-content>
