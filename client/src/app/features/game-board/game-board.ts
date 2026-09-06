@@ -14,7 +14,7 @@ const DESKTOP_BOARD_QUERY = '(min-width: 768px)';
       <app-mobile-game-board />
     }
   `,
-  // See features/table/table.scss's :host comment — no :host rule defaults a custom element to
+  // See features/board/board-shell/board-shell.scss's :host comment — no :host rule defaults a custom element to
   // `display: inline`.
   styles: ':host { display: block; }',
 })

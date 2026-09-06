@@ -1,0 +1,151 @@
+@use 'theme/mixins' as mixins;
+
+// So `.mobile-hand-zone` composes as a direct child of the dashboard's own flex column (which is
+// itself `display: contents`, composing into `.table-layout__main`) rather than boxed inside two
+// extra inline elements — see board-shell's own note on why this chain matters.
+:host {
+  display: contents;
+}
+
+// Mobile private local zone (Increment 3) — the one place per phase where the local player's own
+// action/status lives; exactly one of the three states inside it is ever visible at once.
+// The local player's zone is bottom-anchored, matching every design reference — mobile-lantern
+// .dc.html puts `margin-top:auto` on exactly this row so the five dice always rest just above the
+// bid tray ("your five dice sit on the table and never move") instead of floating wherever the
+// content above happens to end. Without it, a short table (one or two opponents) left a wide band
+// of empty mat between the dice and the tray.
+.mobile-hand-zone {
+  width: 100%;
+  margin-top: auto;
+  // The reference separates this bottom zone from the mat with a single warm hairline
+  // (mobile-lantern.dc.html / perudo-mobile-board.dc.html both rule off "your cast"/"your hand"
+  // this way). It also gives the zone something to sit against when the arc above is sparse.
+  border-top: 1px solid rgba(var(--color-lantern-glow-rgb), 0.14);
+  padding-top: 0.875rem;
+}
+
+.mobile-hand-zone__label {
+  color: var(--color-cream-muted);
+  letter-spacing: 0.06em;
+}
+
+.mobile-hand-zone__hint {
+  color: var(--color-cream-faint);
+  text-align: center;
+}
+
+// The public opening die (5.2) sits bare on the mat, not inside a cup — 66px per the reference,
+// the largest die on the opening-roll screen.
+// The local player's public opening die. perudo-mobile-board.dc.html's own note for this slot:
+// "dashed while waiting; the die replaces the dash in place, so nothing reflows when results
+// land" — the slot already reserved its footprint, but rendered as invisible empty space before a
+// cast, which read as an unexplained gap between the label and the Cast button rather than as a
+// waiting slot. Same dashed treatment the arc seats' own opening slots use.
+.mobile-opening-die {
+  @include mixins.clamp-square(66px, 66px, 66px);
+  border-radius: var(--radius-die);
+  border: 1.5px dashed var(--color-border-onboard-strong);
+
+  // Once the die lands, the art is the slot — the dash would otherwise show as a second border.
+  &:has(app-die) {
+    border-color: transparent;
+  }
+}
+
+// The two roll buttons are primary actions like any other, and every design reference draws them
+// with the same 56px terracotta pill silhouette as "Place bid" / "Start a table" / "I'm ready".
+// They were the only primary actions in the app that never picked up pill-action-button, so they
+// rendered as plain rectangles — conspicuous next to the pill-shaped bid tray directly below.
+// Neither ever sets [fill='outline'], so that branch of the mixin is inert here; the outline
+// arguments still have to be supplied, and ember matches the one danger pair the app already uses.
+.mobile-primary-btn,
+.mobile-hand-roll-btn {
+  @include mixins.pill-action-button(
+    var(--color-ember),
+    var(--color-ember-soft),
+    rgba(224, 138, 120, 0.16)
+  );
+
+  // Ionic's own height defaults are padding-derived and don't hit an exact pixel target alone.
+  &::part(native) {
+    height: 56px;
+  }
+}
+
+.mobile-primary-btn {
+  width: 100%;
+}
+
+// Hand-roll button (Increment 3) — matches the reserved roll-stage spacer's width below it, so
+// the two read as one deliberate column rather than a button floating independently of the space
+// above it.
+.mobile-hand-roll-btn {
+  width: 236px;
+}
+
+// Reserved breathing room above the "Roll your hand" button (Design QA audit, finding 10) — a
+// dice-cup graphic used to render here, but it read as a second, competing roll affordance ahead
+// of the real button (tapping the cup and tapping the button did the same thing). Removed in
+// favor of plain empty space: `roll()` is unchanged, only triggerable via the button/shake, and
+// the composition keeps the same vertical rhythm the cup used to give it. Same 236px the cup was
+// fixed at everywhere except the narrowest supported width, where it tightens modestly rather than
+// staying a fixed block that eats into the button/hint's own room.
+.mobile-roll-stage {
+  width: 236px;
+  height: 236px;
+
+  // ...but only while it is genuinely the emptiest thing on screen. Once a reveal recap is up,
+  // the round's result is competing for the same viewport, and 236px of deliberate blankness
+  // between the arc and the roll button stops reading as rhythm and starts reading as a hole.
+  // Was `.table-surface:has(.mobile-reveal) &` (a cross-component selector once the reveal panel
+  // moved to its own component) — this component already knows the same thing directly.
+  &--reveal-active {
+    height: 0;
+  }
+
+  @media (max-width: 359px) {
+    height: 180px;
+  }
+}
+
+// designs/perudo-board-buildup.dc.html's one explicit callout: "Hand dice 52px, never below" —
+// it's the local player's own hand, the only thing on the mobile board that's unambiguously
+// theirs and never leaves the screen, so it gets the largest dice floor outside the hand-roll cup
+// itself. The strip's own gap (table.html's `.mobile-hand-strip`) is 8px, matching the reference
+// (mobile-lantern.dc.html) rather than the 6px this used to be tightened to. Still fits at every
+// supported width with no horizontal scroll (checked live down to 320px: 5 × 52px + 4 × 8px gaps
+// = 292px, against 296px of usable width once .table-surface's own p-3 gutters are subtracted —
+// a tight but confirmed 4px to spare).
+.mobile-hand-strip__die {
+  width: 52px;
+  height: 52px;
+}
+
+// Former `.table-surface--bid-sheet-open .mobile-hand-zone` rules (table.scss) — the fixed mobile
+// bid tray is on screen (BIDDING), so this zone tightens to leave it more room. Kept in the same
+// relative order the two original (unconditional) rule blocks appeared in, so the cascade — the
+// second block's padding wins over the first's — resolves identically.
+.mobile-hand-zone--bidding-open {
+  margin-top: 0;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  align-self: end;
+}
+
+.mobile-hand-zone--bidding-open {
+  padding-top: 16px;
+  padding-bottom: 20px;
+}
+
+@media (max-width: 359px) {
+  // Former `.table-surface:has(.mobile-reveal)` narrow-width rule.
+  .mobile-hand-zone--reveal-active {
+    gap: 8px;
+    padding-top: 8px;
+  }
+
+  // Former `.table-surface--bid-sheet-open` narrow-width rule.
+  .mobile-hand-zone--bidding-open {
+    padding-top: 8px;
+  }
+}

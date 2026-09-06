@@ -23,7 +23,7 @@ export interface VisualAssetSlot {
 
 export const VISUAL_ASSETS_CONFIG = {
   /** graphics-spec bg/table-surface-desktop.jpg, at the desktop breakpoint (design-kit board,
-   *  ~1440–2879px). Fallback: `.table-surface` (features/table/table.scss) — the radial +
+   *  ~1440–2879px). Fallback: `.table-surface` (features/board/board-shell/board-shell.scss) — the radial +
    *  plank-stripe gradient. */
   tableSurfaceDesktop: { imageUrl: '/assets/bg/table-desktop-2880x1800.png' },
 

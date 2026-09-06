@@ -1,0 +1,153 @@
+<ion-content>
+  <div
+    class="table-surface flex flex-col gap-3 p-3"
+    [class.table-surface--bid-sheet-open]="store.matchState()?.phase === GamePhase.BIDDING"
+    [style.--bid-sheet-height.px]="bidSheetHeightPx()"
+  >
+    <!-- Mobile-only header: a single 36px chip replaces the raw "Round N — PHASE" heading below
+         768px. The dashboard switcher (Decision 5) lives here too — shell content, one instance,
+         not repeated per dashboard. -->
+    <div class="table-mobile-header flex items-center justify-between gap-2">
+      <div class="table-mobile-header__chip table-mobile-header__chip--phase">
+        {{ gameView.mobilePhaseLabel() }}
+      </div>
+      <div class="flex items-center gap-2">
+        @if (store.turnTimer(); as timer) {
+          <app-turn-timer [timer]="timer" [isMine]="timer.playerId === store.playerId()" />
+        }
+        <!-- Always shows the NEXT layout, never the current one (fixed cycle, no dropdown). -->
+        <button type="button" class="table-layout-switcher" (click)="layoutStore.cycleLayout()">
+          ↻ {{ layoutStore.nextLayoutLabel() }}
+        </button>
+      </div>
+    </div>
+
+    <h2 class="table__heading hidden font-heading text-lg">
+      Round {{ store.matchState()?.round?.roundNumber ?? '-' }} — {{ store.matchState()?.phase }}
+    </h2>
+
+    <!-- Single grid, not two duplicated template branches: below lg it's one column and the rail
+         simply falls after the table in document order (the mobile "stacked action area"); at lg+
+         it becomes a two-column layout with the rail as a stable right-hand column. Exactly one
+         <app-bid-controls> exists either way. -->
+    <div
+      class="table-layout grid grid-cols-1 gap-3"
+      [class.table-layout--reveal-active]="gameView.reveal() !== null"
+    >
+      <div
+        class="table-layout__main flex flex-col gap-3"
+        [class.table-layout__main--no-wager]="!showWagerToken()"
+      >
+        @switch (layoutStore.activeLayout()) {
+          @case ('default') {
+            <app-default-dashboard>
+              @if (showWagerToken() && gameView.latestBidRecord(); as record) {
+                <app-wager-token
+                  wagerSlot
+                  [bid]="record.bid"
+                  [caption]="gameView.wagerCaptionFor(record.playerId)"
+                  [compact]="wagerTokenCompact()"
+                />
+              }
+              @if (gameView.reveal(); as r) {
+                <app-mobile-reveal-panel
+                  revealSlot
+                  [reveal]="r"
+                  [rows]="gameView.revealRows()"
+                  [bidderNickname]="gameView.nicknameFor(r.bidderId)"
+                  [claimedBidText]="gameView.describeBid(r.claimedBid)"
+                  [lossSentence]="gameView.revealLossSentence(r)"
+                  [isSpecialRound]="store.lastRevealWasSpecialRound()"
+                  [nextRoundSummary]="gameView.nextRoundSummary()"
+                />
+              }
+            </app-default-dashboard>
+          }
+          @case ('linear') {
+            <app-linear-dashboard>
+              @if (showWagerToken() && gameView.latestBidRecord(); as record) {
+                <app-wager-token
+                  wagerSlot
+                  [bid]="record.bid"
+                  [caption]="gameView.wagerCaptionFor(record.playerId)"
+                  [compact]="wagerTokenCompact()"
+                />
+              }
+              @if (gameView.reveal(); as r) {
+                <app-mobile-reveal-panel
+                  revealSlot
+                  [reveal]="r"
+                  [rows]="gameView.revealRows()"
+                  [bidderNickname]="gameView.nicknameFor(r.bidderId)"
+                  [claimedBidText]="gameView.describeBid(r.claimedBid)"
+                  [lossSentence]="gameView.revealLossSentence(r)"
+                  [isSpecialRound]="store.lastRevealWasSpecialRound()"
+                  [nextRoundSummary]="gameView.nextRoundSummary()"
+                />
+              }
+            </app-linear-dashboard>
+          }
+          @case ('clockwise') {
+            <app-clockwise-dashboard>
+              @if (showWagerToken() && gameView.latestBidRecord(); as record) {
+                <app-wager-token
+                  wagerSlot
+                  [bid]="record.bid"
+                  [caption]="gameView.wagerCaptionFor(record.playerId)"
+                  [compact]="wagerTokenCompact()"
+                />
+              }
+              @if (gameView.reveal(); as r) {
+                <app-mobile-reveal-panel
+                  revealSlot
+                  [reveal]="r"
+                  [rows]="gameView.revealRows()"
+                  [bidderNickname]="gameView.nicknameFor(r.bidderId)"
+                  [claimedBidText]="gameView.describeBid(r.claimedBid)"
+                  [lossSentence]="gameView.revealLossSentence(r)"
+                  [isSpecialRound]="store.lastRevealWasSpecialRound()"
+                  [nextRoundSummary]="gameView.nextRoundSummary()"
+                />
+              }
+            </app-clockwise-dashboard>
+          }
+        }
+      </div>
+
+      <!-- The bidding rail: on the active turn only, this is where the game actually gets played
+           (bid summary, picker, suggestions, Place bid/Call liar); the compact waiting state
+           lives here too so nothing bidding-related is duplicated between a rail and a
+           below-table area — there is only ever one of each. There is exactly one
+           <app-bid-controls> either way (below): mobile repositions this SAME instance into a
+           fixed bottom sheet via CSS rather than rendering a second copy. -->
+      <div class="table-layout__rail flex flex-col gap-3">
+        @if (store.matchState()?.phase === GamePhase.BIDDING) {
+          <div class="table-rail__summary hidden p-3 text-sm">
+            @if (gameView.latestBidRecord(); as record) {
+              <p>
+                {{ gameView.nicknameFor(record.playerId) }} claimed
+                {{ gameView.describeBid(record.bid) }}. Raise or call.
+              </p>
+            } @else {
+              <p>No bids yet this round — any face, any quantity.</p>
+            }
+          </div>
+
+          <!-- Mobile bid sheet: a fixed-position column holding the picker/actions (or the
+               waiting bar). No claim-summary sentence here on the active turn — the standalone
+               wager token above the dice ("X's bid — your turn") already names the bidder and the
+               bid; repeating it inside the tray too was a duplicate of the same claim. -->
+          <div
+            #bidSheet
+            class="mobile-bid-sheet-wrap flex flex-col"
+            [class.mobile-bid-sheet-wrap--waiting]="!gameView.isMyBiddingTurn()"
+          >
+            <app-bid-controls class="block" />
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <app-round-loss-modal />
+</ion-content>

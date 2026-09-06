@@ -1,6 +1,6 @@
 @use 'theme/mixins' as mixins;
 
-// See features/table/table.scss's :host comment — no :host rule defaults a custom element to
+// See features/board/board-shell/board-shell.scss's :host comment — no :host rule defaults a custom element to
 // `display: inline`.
 :host {
   display: block;

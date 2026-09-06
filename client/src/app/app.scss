@@ -1,4 +1,4 @@
-// See features/table/table.scss's :host comment — a custom element with no :host rule defaults
+// See features/board/board-shell/board-shell.scss's :host comment — a custom element with no :host rule defaults
 // to `display: inline`, which is never what's wanted for a full-screen root component.
 :host {
   display: block;

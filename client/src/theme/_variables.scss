@@ -5,9 +5,10 @@
 // The local player's open cup is sized responsively (DiceCup measures the actual rendered box
 // via ResizeObserver rather than duplicating this formula in TS). Bounded so it's always big
 // enough to lay out five non-overlapping, readable dice, while still able to shrink on a narrow
-// phone screen. Table's own "Roll your hand" button must line up under that same cup, so both
-// ui/dice-cup/dice-cup.scss and features/table/table.scss share this one variable instead of
-// each hard-coding the clamp() independently.
+// phone screen. The default dashboard's own (dead, hidden) "Roll your hand" button must line up
+// under that same cup, so both ui/dice-cup/dice-cup.scss and
+// features/board/dashboards/default-dashboard/default-dashboard.scss share this one variable
+// instead of each hard-coding the clamp() independently.
 $owner-cup-size: clamp(190px, 46vw, 260px);
 
 // DesktopGameBoard's centered phone silhouette (game-board-desktop.scss) — the canonical mobile

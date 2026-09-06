@@ -1,0 +1,46 @@
+@if (me(); as myPlayer) {
+  <div
+    class="mobile-hand-zone flex flex-col items-center gap-3"
+    [class.mobile-hand-zone--reveal-active]="revealActive()"
+    [class.mobile-hand-zone--bidding-open]="biddingOpen()"
+  >
+    @if (isOpeningRollPhase()) {
+      <span class="mobile-hand-zone__label text-xs font-semibold tracking-wide uppercase"
+        >Your cast — public</span
+      >
+      <div class="mobile-opening-die relative">
+        @if (openingRollFor(myPlayer.id)?.value; as v) {
+          <app-die [value]="v" class="block h-full w-full" />
+        }
+      </div>
+      @if (canRollOpeningDie()) {
+        <ion-button expand="block" class="mobile-primary-btn" (click)="roll()">
+          <svg lucideDices slot="start" aria-hidden="true"></svg>
+          {{ openingRollFor(myPlayer.id)?.value !== null ? 'Cast again' : 'Cast' }}
+        </ion-button>
+        <p class="mobile-hand-zone__hint text-xs">Shake the phone or tap the die</p>
+      } @else {
+        <p class="mobile-hand-zone__hint text-xs">Waiting for the rest of the table</p>
+      }
+    } @else if (canRollHand()) {
+      <div
+        class="mobile-roll-stage"
+        [class.mobile-roll-stage--reveal-active]="revealActive()"
+        aria-hidden="true"
+      ></div>
+      <ion-button expand="block" class="mobile-hand-roll-btn" (click)="roll()">
+        <svg lucideDices slot="start" aria-hidden="true"></svg>
+        Roll your hand
+      </ion-button>
+      <p class="mobile-hand-zone__hint text-center text-xs">
+        Shake to roll, or use the button. Five dice, yours alone until reveal.
+      </p>
+    } @else if (myPlayer.dice.length > 0) {
+      <div class="mobile-hand-strip flex gap-2">
+        @for (value of myPlayer.dice; track $index) {
+          <app-die [value]="value" class="mobile-hand-strip__die block" />
+        }
+      </div>
+    }
+  </div>
+}

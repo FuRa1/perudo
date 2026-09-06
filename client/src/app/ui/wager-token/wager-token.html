@@ -1,0 +1,7 @@
+<div
+  class="mobile-wager-token flex flex-col items-center gap-1"
+  [class.mobile-wager-token--compact]="compact()"
+>
+  <app-bid-marker [bid]="bid()" size="prominent" />
+  <span class="mobile-wager-token__caption text-xs">{{ caption() }}</span>
+</div>

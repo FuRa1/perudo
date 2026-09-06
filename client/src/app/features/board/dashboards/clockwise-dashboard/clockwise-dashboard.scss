@@ -1,0 +1,10 @@
+// Same reasoning as DefaultDashboard's own note: children must compose directly into the shell's
+// `.table-layout__main` flex column for the hand zone's bottom-anchoring to work.
+:host {
+  display: contents;
+}
+
+.dashboard-placeholder {
+  color: var(--color-cream-faint);
+  padding: 2rem 0;
+}

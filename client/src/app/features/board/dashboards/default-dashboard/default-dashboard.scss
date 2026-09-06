@@ -1,0 +1,212 @@
+@use 'theme/mixins' as mixins;
+@use 'theme/variables' as vars;
+
+// `.mobile-arc-outer`/`.mobile-hand-zone` etc. must be direct children of the shell's
+// `.table-layout__main` flex column (see that component's own note) — a normal block host here
+// would box everything one level deeper and break the flex `gap-3` rhythm and
+// `.mobile-hand-zone`'s `margin-top: auto`, with no build/lint/type error, purely a visual
+// regression.
+:host {
+  display: contents;
+}
+
+.table__arc {
+  @include mixins.onboard-panel;
+  border-radius: 9999px;
+}
+
+// Mobile mat glow — a soft radial highlight behind the compact arc seats rather than the
+// desktop's solid pill panel (.table__arc above); matches the reference's "lamplit" treatment for
+// the one board region every mobile screen shares.
+// The decorative mat glow lives on this plain (non-scrolling) outer wrapper, not on
+// .mobile-arc-wrap below — it used to be on the scroll container itself, and its own negative
+// inset (bleeding 30px past its right edge for a soft vignette) was real content as far as that
+// element's own `overflow-x: auto` was concerned. Even with a single opponent, whose seats never
+// approach the container's actual width, that bleed alone was enough to make `scrollWidth` exceed
+// `clientWidth` and paint a native horizontal scrollbar across the mat with nothing meaningful to
+// scroll to. A pseudo-element on a plain ancestor can bleed past its own edges freely; only an
+// `overflow: auto`/`scroll` element's own scrollable box cares about content extending past it.
+.mobile-arc-outer {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -20px -30px auto -30px;
+    top: 45%;
+    height: 70%;
+    border-radius: 50%;
+    // Alpha is the reference's own (mobile-lantern.dc.html's mat glow is .20, not the .16 this
+    // previously used) — the lit pool under the seats is the scene's single strongest cue that
+    // the table is lamplit, and at .16 it was reading as an almost-flat surface. The glow's own
+    // rgb is a deeper gold than the lantern-edge hairline below it; both are now named tokens
+    // rather than the raw literals this rule used to carry.
+    background: radial-gradient(
+      70% 60% at 50% 24%,
+      rgba(var(--color-mat-glow-rgb), 0.2),
+      transparent 72%
+    );
+    border-top: 1px solid rgba(var(--color-lantern-glow-rgb), 0.16);
+    pointer-events: none;
+  }
+}
+
+.mobile-arc-wrap {
+  position: relative;
+  // 6-7 opponents can still genuinely exceed the available width before the two-arc stress
+  // layout takes over at 8, real touch/trackpad/keyboard scrolling stays intact, this only hides
+  // the visible scrollbar track, matching the "swipeable arc" feel rather than a literal browser
+  // scroll list (the same treatment bid-controls__suggestions uses).
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.mobile-arc {
+  z-index: 1;
+}
+
+.mobile-arc__caption {
+  color: var(--color-cream-faint);
+}
+
+// The "highest cast opens the round" turn-order callout specifically — designs/mobile-lantern
+// .dc.html renders this exact "opens the round" line in --color-gold-highlight (its documented
+// sole purpose: "the turn-order kicker"), a punchier tone than the neutral cream-faint the tie
+// re-roll notice keeps (the design kit's own "Tie state" note asks for no colour there).
+.mobile-arc__caption--turn-order {
+  color: var(--color-gold-highlight);
+}
+
+.dice-cup-owner-roll-button {
+  width: vars.$owner-cup-size;
+}
+
+.table__reveal {
+  @include mixins.onboard-panel-strong;
+  color: var(--color-cream);
+}
+
+// Seats are contained in grid tracks; the table-light arc stays fixed behind them.
+.mobile-arc-outer::before {
+  top: 104px;
+  height: 260px;
+}
+
+.mobile-seat-grid {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  padding-top: 12px;
+  padding-inline: 10px;
+  --seat-tile-size: 48px;
+  --seat-gap: 4px;
+  --seat-max-width: 100%;
+}
+
+.mobile-seat-grid__row {
+  display: grid;
+  grid-template-columns: repeat(var(--seat-columns), minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: calc(var(--seat-columns) * 104px + (var(--seat-columns) - 1) * 12px);
+  margin-inline: auto;
+  padding-top: 10px;
+  align-items: stretch;
+
+  > app-arc-seat {
+    justify-content: center;
+    min-width: 0;
+  }
+
+  &[data-count='3'] > :nth-child(2),
+  &[data-count='4'] > :nth-child(2),
+  &[data-count='4'] > :nth-child(3) {
+    transform: translateY(calc(-1 * var(--seat-arc-rise, 10px)));
+  }
+}
+
+.mobile-seat-grid[data-rows='2'],
+.mobile-seat-grid[data-rows='3'] {
+  --seat-tile-size: 34px;
+  --seat-gap: 2px;
+  gap: 2px;
+  padding-top: 4px;
+}
+
+.mobile-seat-grid[data-rows='3'] {
+  --seat-tile-size: 28px;
+  --seat-tile-width: 38px;
+  --seat-tile-radius: 8px;
+  --seat-initial-size: 14px;
+  --seat-name-size: 12px;
+  --seat-name-line-height: 14px;
+  --seat-padding: 0;
+  --seat-arc-rise: 6px;
+  gap: 1px;
+
+  .mobile-seat-grid__row {
+    padding-top: 6px;
+  }
+}
+
+.mobile-seat-grid__row--back {
+  max-width: calc(100% - 24px);
+}
+
+// Former `.table-surface--bid-sheet-open` rules (table.scss) — the fixed mobile bid tray is on
+// screen (BIDDING). Translated from a cross-component ancestor selector (`.table-surface` lives
+// on the shell, a different component) to a modifier class this component applies to its own
+// elements directly, in the same relative order as the original two blocks so the cascade
+// resolves identically.
+.mobile-seat-grid--bidding-open[data-rows='3'] {
+  // The standing bid already names its owner below the three depth lines.
+  // Omit that duplicate badge here, retaining roll/elimination status slots.
+  --seat-bid-display: none;
+}
+
+// Keep the original card proportions on either turn. Only the player region
+// scrolls when the fixed wager, hand, and tray leave less room for the roster.
+.mobile-arc-outer--bidding-open {
+  display: flex;
+  min-height: 0;
+}
+
+.mobile-seat-grid--bidding-open {
+  flex: 1;
+  align-content: safe center;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-brass) transparent;
+  overscroll-behavior-y: contain;
+  gap: 28px;
+  padding-block: 16px;
+  --seat-tile-size: 54px;
+  --seat-tile-width: 100%;
+  --seat-tile-radius: var(--radius-board-avatar);
+  --seat-initial-size: 18px;
+  --seat-name-size: 12.5px;
+  --seat-name-line-height: 16px;
+  --seat-gap: 6px;
+  --seat-padding: 4px;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-brass);
+    outline-offset: -2px;
+  }
+}
+
+.mobile-seat-grid--bidding-open[data-rows='3'] {
+  --seat-tile-size: 42px;
+  --seat-tile-width: 100%;
+  --seat-tile-radius: var(--radius-board-avatar);
+  --seat-initial-size: 16px;
+  --seat-gap: 4px;
+  --seat-padding: 4px;
+  gap: 20px;
+}

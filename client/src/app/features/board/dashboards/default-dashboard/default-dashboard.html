@@ -1,0 +1,127 @@
+<!-- One fixed table-light arc; seats occupy independent grid depth lines. -->
+<div
+  class="mobile-arc-outer"
+  [class.mobile-arc-outer--bidding-open]="store.matchState()?.phase === GamePhase.BIDDING"
+>
+  <div
+    class="mobile-seat-grid"
+    [class.mobile-seat-grid--bidding-open]="store.matchState()?.phase === GamePhase.BIDDING"
+    [attr.data-rows]="opponentRows().length"
+    role="region"
+    aria-label="Players at the table"
+    tabindex="0"
+  >
+    @for (row of opponentRows(); track $index; let rowIndex = $index) {
+      <div
+        class="mobile-seat-grid__row"
+        [style.--seat-columns]="row.length"
+        [attr.data-count]="row.length"
+        [class.mobile-seat-grid__row--back]="opponentRows().length > 1 && rowIndex === 0"
+      >
+        @for (opponent of row; track opponent.id) {
+          <app-arc-seat
+            [player]="opponent"
+            [isCurrentBidder]="opponent.id === currentBidderId()"
+            [handRollStatus]="handRollStatusFor(opponent.id)"
+            [openingRoll]="openingRollFor(opponent.id)"
+            [hasStandingBid]="hasStandingBidAt(opponent.id)"
+            [compact]="opponents().length >= 5"
+          />
+        }
+      </div>
+    }
+  </div>
+</div>
+
+@if (isOpeningRollPhase()) {
+  <p
+    class="mobile-arc__caption text-center text-xs"
+    [class.mobile-arc__caption--turn-order]="!openingTieCaption()"
+  >
+    {{ openingTieCaption() ?? 'Highest cast opens the round' }}
+  </p>
+}
+
+<!-- Wager token / reveal panel (shell-owned, decision 2) — projected wherever this dashboard's
+     own composition wants them, since they sit *between* the arc and the hand zone in DOM order. -->
+<ng-content select="[wagerSlot]" />
+
+<!-- Desktop/tablet: unchanged from before Increment 2 (separate opening-roll panel, full
+     SeatCard arc with the shrink-and-scroll size tiers). -->
+<div class="hidden">
+  @if (showOpeningRoll()) {
+    <app-opening-roll-panel
+      [players]="allPlayers()"
+      [startRoll]="store.matchState()?.startRoll ?? null"
+      [completedStartRoll]="store.matchState()?.completedStartRoll ?? null"
+    />
+  }
+
+  <div class="overflow-x-auto overflow-y-hidden" [style.padding-top.px]="arcTopPaddingPx">
+    <div class="table__arc relative h-56 w-full" [style.min-width.px]="arcMinWidthPx()">
+      @for (opponent of opponents(); track opponent.id; let i = $index) {
+        <div
+          class="absolute -translate-x-1/2 -translate-y-1/2"
+          [style.left]="opponentPositions()[i].left"
+          [style.top]="opponentPositions()[i].top"
+        >
+          <app-seat-card
+            [player]="opponent"
+            [isCurrentBidder]="opponent.id === currentBidderId()"
+            [size]="seatSize()"
+            [handRollStatus]="handRollStatusFor(opponent.id)"
+            [currentBid]="currentBidFor(opponent.id)"
+          />
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Desktop/tablet: unchanged local seat card + roll buttons. -->
+<div class="hidden">
+  @if (me(); as myPlayer) {
+    <div class="flex flex-col items-center gap-2">
+      <app-seat-card
+        [player]="myPlayer"
+        [isMe]="true"
+        [isCurrentBidder]="myPlayer.id === currentBidderId()"
+        size="large"
+        [handRollStatus]="handRollStatusFor(myPlayer.id)"
+        [currentBid]="currentBidFor(myPlayer.id)"
+      />
+      @if (canRollHand()) {
+        <div class="dice-cup-owner-roll-button">
+          <ion-button expand="block" (click)="roll()">
+            <svg lucideDices slot="start" aria-hidden="true"></svg>
+            Roll your hand
+          </ion-button>
+        </div>
+      }
+    </div>
+  }
+
+  @if (canRollOpeningDie()) {
+    <ion-button expand="block" (click)="roll()">
+      <svg lucideDices slot="start" aria-hidden="true"></svg>
+      Roll opening die
+    </ion-button>
+  }
+</div>
+
+<app-local-hand-zone />
+
+<!-- Desktop/tablet: unchanged reveal banner. -->
+@if (gameView.reveal(); as r) {
+  <div class="table__reveal hidden p-3">
+    <p>
+      <strong>Reveal:</strong> claimed {{ gameView.describeBid(r.claimedBid) }}, actual
+      {{ r.actualQuantity }}.
+    </p>
+    <p>
+      {{ gameView.revealOutcomeText(r) }}
+    </p>
+  </div>
+}
+
+<ng-content select="[revealSlot]" />

@@ -1,4 +1,4 @@
-// See features/table/table.scss's :host comment — no :host rule defaults a custom element to
+// See features/board/board-shell/board-shell.scss's :host comment — no :host rule defaults a custom element to
 // `display: inline`; <app-die> is used at explicit pixel sizes everywhere (clamp-square etc.)
 // which an inline host can't reliably honor.
 :host {

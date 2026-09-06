@@ -1,0 +1,272 @@
+@use 'theme/mixins' as mixins;
+
+// With no :host rule, a custom element defaults to `display: inline`. Harmless on its own, but
+// worth being explicit about now that MobileGameBoard nests <app-board-shell> one level deeper
+// than it used to sit (a direct child of <app-root>).
+:host {
+  display: block;
+}
+
+// The table screen is the app's one "on-table" (dark cabin) screen — its own ion-content
+// background/text stay dark even though the global default (styles.scss) is the light
+// "off-table" canvas used by entry/lobby/winner. `position: fixed; inset: 0` is already set
+// globally in styles.scss (load-bearing there, see its own comment) — this only overrides color.
+ion-content {
+  --background: var(--color-table-edge);
+  --color: var(--color-cream);
+  // The table is the one screen whose surface is meant to reach the physical edges (every design
+  // reference draws the mat filling the whole phone). styles.scss's global --app-gutter-x applies
+  // a horizontal gutter to every ion-content, which inset .table-surface by ~24px a side and left
+  // two darker vertical bands of bare ion-content background down the screen — made worse by the
+  // bid tray being position:fixed and therefore *not* inset, so the tray visibly overhung the mat.
+  // Zeroed here only; .table-surface's own p-3 still keeps content off the edges.
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+// Table outer surface (design-kit "table" swatch, perudo-desktop-board.dc.html) — the one radial
+// plus a faint plank-stripe overlay; every on-table panel sits on top of this and uses the
+// onboard fill/border tokens below rather than a flat color. Kept as the literal backmost
+// background layer even once a breakpoint below layers a real photo on top of it, so a slow or
+// failed image load (or a UA that doesn't understand the `orientation` media feature) still
+// renders a complete, on-brand surface instead of a blank box — CLAUDE.md's "preserve CSS-only
+// rendering as fallback" applied at the paint-layer level, not just as an either/or swap.
+$table-fallback-layers:
+  repeating-linear-gradient(0deg, rgba(255, 235, 200, 0.03) 0 2px, transparent 2px 7px),
+  radial-gradient(
+    96% 62% at 46% 22%,
+    var(--color-table-center) 0%,
+    var(--color-table-mid) 54%,
+    var(--color-table-edge) 100%
+  );
+
+// A dark tint painted over any photo variant below, tuned to the same cream-on-dark contrast the
+// fallback gradient already gives the on-table UI (ion-content's --color override above) — the
+// "intentional overlay/contrast treatment" the real table photos need that a flat gradient didn't.
+$table-photo-overlay: linear-gradient(
+  180deg,
+  rgba(24, 18, 12, 0.38) 0%,
+  rgba(24, 18, 12, 0.16) 45%,
+  rgba(24, 18, 12, 0.42) 100%
+);
+
+// Layers the overlay tint and a breakpoint's photo above $table-fallback-layers, never in place
+// of it (see the fallback comment above) — a mixin so each @media block below stays one line.
+@mixin table-photo($url) {
+  // Canonical X-07 must paint over the opaque photo to remain visible.
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255, 235, 200, 0.035) 0 2px, transparent 2px 7px),
+    $table-photo-overlay, url($url), $table-fallback-layers;
+}
+
+.table-surface {
+  position: relative;
+  // The mat glow bleeds beyond its wrapper. Clip that decoration at the board
+  // edge so it cannot enlarge ion-content's horizontal scroll area.
+  overflow-x: clip;
+  @include table-photo('/assets/bg/table-mobile-1170x2532.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-overlay);
+}
+
+.table__heading {
+  color: var(--color-cream);
+}
+
+// Mobile board shell — the screen fills the viewport with safe-area-aware padding below 768px;
+// desktop/tablet keep the ion-content default padding untouched.
+@media (min-width: 0) {
+  ion-content {
+    --padding-top: env(safe-area-inset-top);
+    --padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .table-surface {
+    min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+}
+
+// Header chip — 36px tall, plain-language phase context. Desktop keeps the raw
+// "Round N — PHASE" heading (hidden here via the template's `hidden` class) rather than this chip.
+.table-mobile-header__chip {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.table-mobile-header__chip--phase {
+  border: 1px solid var(--color-border-onboard);
+  background: var(--color-fill-onboard);
+  color: var(--color-cream);
+}
+
+// The dashboard switcher pill (dashboard-switching plan, decision 5) — repurposes the spotlight
+// gallery's own "↻ Clockwise" turn-direction label into the layout cycle button. Same chip
+// silhouette as the phase chip beside it, since both are header-level status/controls.
+.table-layout-switcher {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid var(--color-border-onboard);
+  background: var(--color-fill-onboard);
+  color: var(--color-cream);
+  cursor: pointer;
+
+  &:active {
+    background: var(--color-fill-onboard-strong, var(--color-fill-onboard));
+  }
+}
+
+// `margin-top: auto` on a dashboard's own `.mobile-hand-zone` only does anything if there is
+// spare height for it to push against. .table-surface is a min-height:100dvh flex column, but the
+// layout grid inside it was content-sized, so all the slack pooled *below* the grid and the hand
+// zone stayed packed up under the wager token. Growing the grid moves that slack inside it, where
+// the auto margin can use it; the main column then stretches to the grid row by default
+// (align-items: stretch).
+.table-layout {
+  flex: 1;
+  min-height: 0;
+}
+
+.table-layout__main {
+  min-height: 100%;
+}
+
+// The bidding rail (design-kit desktop board, right-hand "wager rail" column) — a quiet hairline
+// separates it from the table only once it's actually a side column (Tailwind's lg: grid switch,
+// same 1024px breakpoint as this media query); below that it's just the next section in a single
+// stacked column, no border needed. Deliberately no fill of its own — it reads as part of the
+// same table surface, subordinate to the arc/mat, not a competing panel.
+.table-layout__rail {
+  @media (min-width: 1024px) {
+    border-left: 1px solid var(--color-border-onboard);
+    padding-left: 1.25rem;
+  }
+}
+
+// Mobile bid sheet — turn-specific bottom sheet, fixed to the viewport rather than sitting in the
+// rail's normal document flow (desktop keeps that flow unchanged; this only applies below 768px).
+// One <app-bid-controls> exists either way — this repositions it, it does not duplicate it. No
+// separate claim-summary line lives in this fixed box (removed — it duplicated the standalone
+// wager token above the dice).
+@media (min-width: 0) {
+  .mobile-bid-sheet-wrap {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    background: var(--color-cabin);
+    border-radius: 28px 28px 0 0;
+    // Warm lantern-glow hairline, matching designs/mobile-lantern.dc.html's bid-tray top edge
+    // (rgba(255,224,176,.18)) — the tray catches the same light the mat glow does, not the neutral
+    // cream --color-border-onboard this previously used.
+    border-top: 1px solid rgba(var(--color-lantern-glow-rgb), 0.18);
+    box-shadow: 0 -16px 34px rgba(0, 0, 0, 0.42);
+    padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
+  }
+
+  // The compact "waiting" bar (bid-controls' own single status line, no picker/suggestions) —
+  // flatter chrome than the full sheet, since it's meant to read as a status bar, not a sheet.
+  .mobile-bid-sheet-wrap--waiting {
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  // The wrap is `position: fixed`, so it reserves no space in .table-surface's own flow — without
+  // a reservation here its taller (full-sheet) state covers the last of the content behind it.
+  // --bid-sheet-height is measured live from the tray itself (BoardShell's ResizeObserver) rather
+  // than hand-tuned: a previous 420px constant had drifted ~85px above the tray's real height, and
+  // that surplus rendered as a conspicuous band of empty mat between the player's own dice and
+  // the tray. The fallback keeps a sane reservation for the first frame, before the first measure.
+  .table-surface--bid-sheet-open {
+    padding-bottom: var(--bid-sheet-height, 340px);
+  }
+}
+
+.table-rail__summary {
+  @include mixins.onboard-panel;
+  color: var(--color-cream-muted);
+}
+
+// Every viewport uses the same mobile board, including the desktop phone frame.
+
+// Fills .table-surface's own available height instead of sizing to intrinsic content only, then
+// pushes .table-layout__main's own content (arc/wager/dice) to the bottom of that space — only
+// while the fixed bid tray (.table-surface--bid-sheet-open, BIDDING only) is actually on screen:
+// that tray is what creates the visual disconnect in the first place (its own `position: fixed`
+// removes it from flow, so on a real device viewport taller than the design reference's fixed
+// 844px mock, the leftover height between the mat content and the tray reads as a dead gap).
+// Opening-roll and hand-rolling have no such tray, so their content stays top-anchored exactly as
+// before — scoping this to the open-tray state only is what keeps that unaffected.
+.table-surface--bid-sheet-open {
+  // A definite height lets the opponent row shrink and scroll independently
+  // when the tray grows, without moving the wager or hand underneath it.
+  height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  min-height: 0;
+
+  .table-mobile-header {
+    flex-shrink: 0;
+  }
+
+  .table-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    grid-template-rows: minmax(auto, 1fr) auto;
+  }
+
+  .table-layout__main {
+    justify-content: flex-end;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto auto;
+    gap: 8px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  // `minmax(0, 1fr) auto` when there's no wager row to reserve a track for (former
+  // `:not(:has(.mobile-wager-token))` CSS check — the wager token now lives in a different
+  // component, so the shell tracks the same condition directly rather than via a cross-component
+  // selector) — `minmax(auto, 1fr)` (not bare `1fr`) keeps this a pure "close the gap when there
+  // IS one" effect: content taller than the available space still gets its full natural height.
+  .table-layout__main--no-wager {
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+}
+
+@media (max-width: 359px) {
+  .table-surface--bid-sheet-open {
+    .table-layout,
+    .table-layout__main {
+      gap: 8px;
+    }
+
+    .mobile-bid-sheet-wrap {
+      padding-top: 8px;
+      padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    }
+  }
+
+  // Former `.table-surface:has(.mobile-reveal)` check — `.mobile-reveal` now lives inside
+  // `MobileRevealPanel`, a different component, so an ordinary `:has()` selector here would be
+  // scoped out by Angular's emulated view encapsulation. The shell already knows whether a
+  // reveal is showing (`GameView.reveal()`), so it applies the equivalent class directly.
+  .table-layout--reveal-active {
+    row-gap: 0;
+  }
+}

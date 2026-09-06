@@ -1,0 +1,120 @@
+// A custom element defaults to `display: inline`, which would break the flex column it's
+// projected into (`.table-layout__main` / a dashboard's own composition) — `contents` makes the
+// host generate no box of its own, so `.mobile-reveal` below is the actual flex item.
+:host {
+  display: contents;
+}
+
+// Mobile reveal panel (Increment 5) — claimed-vs-actual plus every revealed hand, in the same
+// board context as the rest of the mobile table rather than the desktop's plain text banner.
+//
+// Raised to the same light-parchment "verdict surface" language as the winner screen and
+// RoundLossModal (theme/_mixins.scss's outcome-card doc comment: "the one thing on screen that
+// must read as unambiguously important") rather than the dark on-table panel this used to share
+// with every other ambient card. Deliberately NOT routed through outcome-card($variant) itself —
+// that mixin's only two variants are 'win'/'loss' framed around *this viewer's* result, but this
+// panel is seen by every player after every reveal regardless of who lost, so it needs a neutral
+// shell with the same tokens rather than a win/loss-colored one. Verdict-specific color still
+// lives only on .mobile-reveal__verdict below, same split RoundLossModal already uses.
+//
+// Surface + border match the design reference (screens/Screenshot 2026-08-16 002742.png): the
+// parchment→parchment-dark gradient and the 1.5px brass edge are the exact pair
+// theme/_mixins.scss's outcome-card('win') already uses — reproduced here via the same tokens
+// (not the mixin, per the note above) rather than the near-invisible --color-border hairline the
+// panel previously carried, which the reference does not show.
+.mobile-reveal {
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-overlay);
+  border: 1.5px solid var(--color-brass);
+  background: linear-gradient(180deg, var(--color-parchment), var(--color-parchment-dark));
+  padding: 1.25rem;
+  color: var(--color-ink);
+}
+
+.mobile-reveal__title {
+  color: var(--color-ink);
+  font-size: 1.25rem;
+}
+
+.mobile-reveal__summary {
+  color: var(--color-ink-muted);
+}
+
+// The canonical reveal card sets the call itself large in the display face with the reasoning
+// inline beside it, not as a small caps label stacked over a paragraph in a full-radius pill. The
+// "false" verdict there is a warm rust, not an alarm red — losing a die is the game working, not
+// an error — which is why the word uses --color-brass-deep (the reference's own #8c491a).
+.mobile-reveal__verdict {
+  margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-panel);
+}
+
+.mobile-reveal__verdict-word {
+  font-size: 1.375rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.mobile-reveal__verdict-text {
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.mobile-reveal__verdict--true {
+  background: var(--color-sage-soft);
+  color: var(--color-sage-deep);
+}
+
+.mobile-reveal__verdict--false {
+  border: 1px solid var(--color-brass);
+  background: var(--color-sand);
+  color: var(--color-brass-deep);
+}
+
+.mobile-reveal__name {
+  color: var(--color-ink-muted);
+  font-weight: 600;
+}
+
+.mobile-reveal__die {
+  width: 32px;
+  height: 32px;
+}
+
+.mobile-reveal__caption {
+  color: var(--color-meta);
+}
+
+// The hollow ring glyph the design reference (screens/Screenshot 2026-08-16 002742.png) sets
+// beside this caption — a literal echo of the ringed-die treatment above it. Brass edge, matching
+// the dice ring's own 2px brass halo (ui/die/die.scss's .die--ringed).
+.mobile-reveal__caption-ring {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-brass);
+}
+
+.mobile-reveal__outcome {
+  color: var(--color-ink);
+}
+
+.mobile-reveal__next {
+  color: var(--color-ink-muted);
+}
+
+// Narrow-width tightening (former `.table-surface:has(.mobile-reveal)` guard) — redundant now
+// that `.mobile-reveal` only ever exists in the DOM while a reveal is actually showing (it's
+// behind an `@if` in board-shell.html), so the ancestor check added nothing this component's own
+// media query doesn't already imply.
+@media (max-width: 359px) {
+  .mobile-reveal {
+    padding: 12px;
+  }
+
+  .mobile-reveal__verdict {
+    margin-block: 8px;
+    padding: 8px 12px;
+  }
+}
