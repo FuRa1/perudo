@@ -1,7 +1,57 @@
-<p class="dashboard-placeholder text-center text-sm">Clockwise layout — coming soon</p>
+@if (isBiddingPhase()) {
+  <div class="clockwise-ring" role="region" aria-label="Players at the table">
+    @for (opponent of waitingPlayers(); track opponent.id; let i = $index) {
+      <div
+        class="clockwise-ring__seat"
+        [style.left]="ringPosition(i).left"
+        [style.top]="ringPosition(i).top"
+        [style.opacity]="seatOpacity(i, opponent.id)"
+        [style.--seat-tile-size.px]="ringSeatSizePx()"
+      >
+        <app-arc-seat
+          [player]="opponent"
+          [isCurrentBidder]="opponent.id === nextUpPlayerId()"
+          [isLocalPlayer]="opponent.id === store.playerId()"
+          [compact]="true"
+        />
+      </div>
+    }
 
-<ng-content select="[wagerSlot]" />
+    @if (spotlightPlayer(); as p) {
+      <div class="clockwise-hero flex flex-col items-center">
+        <span class="clockwise-hero__badge">Bidding now</span>
+        <div class="flex items-center gap-3">
+          <div
+            class="clockwise-hero__avatar flex items-center justify-center"
+            [style.width.px]="heroAvatarPx()"
+            [style.height.px]="heroAvatarPx()"
+          >
+            <span class="clockwise-hero__initial">{{ initialOf(p.nickname) }}</span>
+          </div>
+          <div class="flex flex-col items-start gap-1">
+            <span class="clockwise-hero__name">{{ gameView.nicknameFor(p.id) }}</span>
+            <span class="clockwise-hero__dice text-xs">
+              {{ p.diceCount }} {{ p.diceCount === 1 ? 'die' : 'dice' }} left
+            </span>
+          </div>
+        </div>
+        @if (gameView.latestBidRecord(); as record) {
+          <app-bid-marker [bid]="record.bid" size="default" />
+        } @else {
+          <span class="clockwise-hero__opens text-xs">Opens the bidding</span>
+        }
+      </div>
+    }
+  </div>
 
-<app-local-hand-zone />
+  <ng-content select="[wagerSlot]" />
 
-<ng-content select="[revealSlot]" />
+  <app-local-hand-zone />
+
+  <ng-content select="[revealSlot]" />
+} @else {
+  <app-default-dashboard>
+    <ng-content select="[wagerSlot]" />
+    <ng-content select="[revealSlot]" />
+  </app-default-dashboard>
+}

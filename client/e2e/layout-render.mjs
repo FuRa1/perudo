@@ -24,7 +24,18 @@ const BASE_FIXTURE = JSON.parse(
 );
 
 const NAMES = [
-  'Anne', 'Mateo', 'Isabel', 'Tobias', 'Gus', 'Hana', 'Ines', 'Jo', 'Kit', 'Lena', 'Omar', 'Priya',
+  'Anne',
+  'Mateo',
+  'Isabel',
+  'Tobias',
+  'Gus',
+  'Hana',
+  'Ines',
+  'Jo',
+  'Kit',
+  'Lena',
+  'Omar',
+  'Priya',
 ];
 
 /** Builds a synthetic BIDDING-phase fixture with exactly `count` players — the local viewer plus
@@ -45,7 +56,9 @@ function fixtureFor(count) {
   const currentTurnIndex = 1 % turnOrder.length;
   return {
     viewerPlayerId: viewerId,
-    events: [{ type: 'BID_PLACED', playerId: bidderId, bid: { kind: 'NORMAL', quantity: 1, face: 2 } }],
+    events: [
+      { type: 'BID_PLACED', playerId: bidderId, bid: { kind: 'NORMAL', quantity: 1, face: 2 } },
+    ],
     snapshot: {
       ...BASE_FIXTURE.snapshot,
       players,
@@ -79,17 +92,16 @@ async function shoot(browser, layout, count, outDir) {
   await page.waitForTimeout(1200);
   const out = path.join(outDir, `${layout}-${count}p.png`);
   await page.screenshot({ path: out });
-  console.log(
-    `wrote ${out}`,
-    errors.length ? `CONSOLE ERRORS: ${errors.join(' | ')}` : '',
-  );
+  console.log(`wrote ${out}`, errors.length ? `CONSOLE ERRORS: ${errors.join(' | ')}` : '');
   await ctx.close();
   return errors;
 }
 
 async function main() {
-  const [layout = 'linear', outDir = path.resolve(import.meta.dirname, '.screenshots/layout-render')] =
-    process.argv.slice(2);
+  const [
+    layout = 'linear',
+    outDir = path.resolve(import.meta.dirname, '.screenshots/layout-render'),
+  ] = process.argv.slice(2);
   fs.mkdirSync(outDir, { recursive: true });
   const browser = await chromium.launch();
   let totalErrors = 0;
