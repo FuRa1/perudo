@@ -4,7 +4,111 @@
   display: contents;
 }
 
-.dashboard-placeholder {
+// The spotlight (designs/perudo-spotlight-gallery.dc.html, Variant A "Below deck") — the same
+// light-parchment "verdict surface" language the reveal panel and winner screen use for "the one
+// thing on screen that must read as unambiguously important" (theme/_mixins.scss's outcome-card
+// doc comment), reused here via the same tokens since the spotlight plays exactly that role for
+// whoever is bidding.
+.linear-spotlight {
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-brass);
+  background: linear-gradient(180deg, var(--color-parchment), var(--color-parchment-dark));
+  box-shadow:
+    var(--shadow-overlay),
+    0 0 32px rgba(var(--color-mat-glow-rgb), 0.25);
+  padding: 20px 18px;
+}
+
+.linear-spotlight__badge {
+  padding: 4px 13px;
+  border-radius: var(--radius-pill);
+  background: var(--color-terracotta);
+  color: var(--color-ivory);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.linear-spotlight__avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--color-identity-start), var(--color-identity-end));
+  border: 3px solid var(--color-brass);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.linear-spotlight__initial {
+  font-family: var(--font-heading);
+  font-size: 30px;
+  color: var(--color-ivory);
+}
+
+.linear-spotlight__name {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  line-height: 1;
+  color: var(--color-ink);
+}
+
+.linear-spotlight__dice {
+  color: var(--color-ink-muted);
+  font-weight: 600;
+}
+
+.linear-spotlight__opens {
+  color: var(--color-ink-muted);
+  text-align: center;
+}
+
+.linear-rail__label {
   color: var(--color-cream-faint);
-  padding: 2rem 0;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+// The rail scales by scrolling, not shrinking (designs/perudo-spotlight-gallery.dc.html's own
+// note for Variant A) — a card stays the same size at 4 or 12 players, the row just runs off the
+// edge. A right-edge fade baits the swipe rather than a visible scrollbar (the same treatment
+// bid-controls__suggestions and the desktop arc's own scroller already use).
+.linear-rail {
+  position: relative;
+  gap: 9px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px 2px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  > app-arc-seat {
+    flex: none;
+    width: 74px;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 48px;
+    background: linear-gradient(90deg, transparent, var(--color-table-edge));
+    pointer-events: none;
+  }
+}
+
+// A simplified stand-in for the gallery's fuller pinned-seat treatment (see linear-dashboard.ts's
+// VISIBLE_RAIL_SEATS doc comment) — a plain trailing count rather than a scroll-aware pin.
+.linear-rail__more {
+  flex: none;
+  width: 62px;
+  border-radius: 14px;
+  border: 1px dashed var(--color-border-onboard-strong);
+  color: var(--color-cream-faint);
+  text-align: center;
 }

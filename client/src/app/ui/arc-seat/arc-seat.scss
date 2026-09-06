@@ -16,11 +16,21 @@
 // on, not reassert its own fixed width regardless of the host.
 .arc-seat {
   width: 100%;
-  max-width: 84px;
+  max-width: var(--seat-max-width, 84px);
   min-width: 0;
+  gap: var(--seat-gap, 6px);
+  height: 100%;
+  padding: var(--seat-padding, 4px);
+  border-radius: var(--radius-board-surface);
 
   &--active {
-    max-width: 104px;
+    max-width: var(--seat-max-width, 104px);
+    // Canonical C-08 lights the whole seat, without shifting neighboring seats.
+    background: rgba(247, 214, 155, 0.13);
+    box-shadow:
+      0 0 0 1px rgba(247, 214, 155, 0.34),
+      0 0 10px rgba(247, 214, 155, 0.18),
+      inset 0 0 18px rgba(247, 214, 155, 0.08);
   }
 
   &--eliminated {
@@ -30,10 +40,10 @@
   // 9-12 player two-arc layout (Increment 5) — a narrower cap for both arcs, so up to six seats
   // per row fit at 390px wide with no horizontal scroll, and shrink further still at 320px.
   &--compact {
-    max-width: 58px;
+    max-width: var(--seat-max-width, 58px);
 
     &.arc-seat--active {
-      max-width: 68px;
+      max-width: var(--seat-max-width, 68px);
     }
   }
 
@@ -50,17 +60,16 @@
   // — same two identity tokens every tile already uses, so no opponent introduces a new hue into
   // the roster; identity itself is always the initial letter + nickname below, never the tile.
   --tile-angle: 160deg;
-  width: 54px;
-  height: 54px;
-  border-radius: 17px;
-  // A second, backmost layer reusing the same faint plank-grain stripe as the table surface
-  // itself (features/table/table.scss's $table-fallback-layers) — ties the tile into the same
-  // "carved wood" material language instead of reading as a flat stamped color block. Behind the
-  // gradient in paint order but ahead of nothing (background layers always paint behind a box's
-  // own child content), so the initial letter stays fully legible over it.
-  background-image:
-    repeating-linear-gradient(96deg, rgba(255, 235, 200, 0.07) 0 2px, transparent 2px 6px),
-    linear-gradient(var(--tile-angle), var(--color-identity-start), var(--color-identity-end));
+  width: var(--seat-tile-width, var(--seat-tile-size, 54px));
+  height: var(--seat-tile-size, 54px);
+  border-radius: var(--seat-tile-radius, var(--radius-board-avatar));
+  // Translucent identity tiles let the table's grain show through. Variants keep
+  // a subtle stable light direction without painting a second wood texture.
+  background: linear-gradient(
+    var(--tile-angle),
+    rgba(242, 231, 211, 0.1),
+    rgba(242, 231, 211, 0.04)
+  );
   border: 1px solid var(--color-border-onboard-strong);
   // The inset highlight is a top-edge light catch (a carved/brass-fitting cue), on top of the
   // existing drop shadow — cosmetic only, doesn't change the tile's footprint or hit area.
@@ -90,12 +99,13 @@
   }
 
   .arc-seat--active & {
-    width: 60px;
-    height: 60px;
+    width: var(--seat-tile-width, var(--seat-tile-size, 60px));
+    height: var(--seat-tile-size, 60px);
     box-shadow:
       inset 0 1px 0 rgba(255, 224, 176, 0.22),
-      0 0 0 3px var(--color-brass),
+      0 0 0 1px rgba(247, 214, 155, 0.34),
       0 4px 9px rgba(0, 0, 0, 0.4);
+    background: rgba(247, 214, 155, 0.13);
   }
 
   .arc-seat--eliminated & {
@@ -107,15 +117,31 @@
   // 42px identity tile for the compact tier (Increment 5) — active still grows, just from a
   // smaller floor.
   .arc-seat--compact & {
-    width: 42px;
-    height: 42px;
-    border-radius: 13px;
+    width: var(--seat-tile-width, var(--seat-tile-size, 42px));
+    height: var(--seat-tile-size, 42px);
+    border-radius: var(--seat-tile-radius, var(--radius-board-avatar));
   }
 
   .arc-seat--compact.arc-seat--active & {
-    width: 48px;
-    height: 48px;
+    width: var(--seat-tile-width, var(--seat-tile-size, 48px));
+    height: var(--seat-tile-size, 48px);
   }
+
+  // Local-player identity fill (Decision 6) — a solid terracotta tile against everyone else's
+  // translucent cream, the same role colour the lobby roster already uses for "this is yours".
+  // A separate override rule (not folded into the base .arc-seat__tile--local rule below) at the
+  // same specificity as the active-state background above and declared after it, so an active
+  // local seat keeps its identity fill rather than being overridden by the turn-halo background —
+  // different channels, both stay visible at once.
+  .arc-seat--active &.arc-seat__tile--local {
+    background: var(--color-terracotta);
+    border-color: var(--color-terracotta);
+  }
+}
+
+.arc-seat__tile--local {
+  background: var(--color-terracotta);
+  border-color: var(--color-terracotta);
 }
 
 .arc-seat__initial {
@@ -125,7 +151,7 @@
   // The player's full nickname (rendered separately, already --font-body) stays the actual
   // readable identity; this is just its quick-glance initial.
   font-family: var(--font-body, inherit);
-  font-size: 18px;
+  font-size: var(--seat-initial-size, 18px);
   font-weight: 700;
   color: var(--color-cream);
 
@@ -135,13 +161,23 @@
 }
 
 .arc-seat__name {
+  width: 100%;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  text-align: center;
+  height: calc(2 * var(--seat-name-line-height, 16px));
+  flex-shrink: 0;
   max-width: 100%;
-  font-size: 12.5px;
+  font-size: var(--seat-name-size, 12.5px);
   font-weight: 600;
   color: var(--color-cream);
+  line-height: var(--seat-name-line-height, 16px);
 
   .arc-seat--active & {
-    font-size: 14px;
+    font-size: var(--seat-name-size, 14px);
     font-weight: 700;
     // --color-ivory (near-white), not --color-cream: mobile-lantern.dc.html renders the active
     // bidder's own name in pure white, distinctly brighter than every other seat's cream — an
@@ -201,20 +237,35 @@
 // terracotta pill). Sits in the same status slot as "rolled"/"waiting"/"out", so it never adds
 // height; only one of the four is ever rendered.
 .arc-seat__bid-pill {
-  padding: 3px 10px;
+  max-width: 100%;
+  padding: 3px 5px;
   border-radius: var(--radius-pill);
   background: var(--color-terracotta);
   color: var(--color-ivory);
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
   text-transform: uppercase;
-  white-space: nowrap;
+  white-space: normal;
+  text-align: center;
 
   .arc-seat--compact & {
     padding: 2px 6px;
     font-size: 9px;
     letter-spacing: 0;
+  }
+}
+
+.arc-seat__status-slot {
+  min-height: 20px;
+  max-width: 100%;
+
+  &:has(.arc-seat__bid-pill) {
+    display: var(--seat-bid-display, flex);
+  }
+
+  &:empty {
+    display: none;
   }
 }
 

@@ -129,6 +129,28 @@ describe('ArcSeat', () => {
     expect(text).not.toContain('waiting');
   });
 
+  describe('local-player identity fill (dashboard-switching plan, Decision 6)', () => {
+    it('applies the local-player tile modifier only when isLocalPlayer is set', () => {
+      const { nativeElement } = render({ player: player() });
+      expect(nativeElement.querySelector('.arc-seat__tile--local')).toBeNull();
+    });
+
+    it('applies the local-player tile modifier when isLocalPlayer is true', () => {
+      const { nativeElement } = render({ player: player(), isLocalPlayer: true });
+      expect(nativeElement.querySelector('.arc-seat__tile--local')).not.toBeNull();
+    });
+
+    it('keeps the local-player tile modifier alongside the active (current-bidder) state', () => {
+      const { nativeElement } = render({
+        player: player(),
+        isLocalPlayer: true,
+        isCurrentBidder: true,
+      });
+      expect(nativeElement.querySelector('.arc-seat--active')).not.toBeNull();
+      expect(nativeElement.querySelector('.arc-seat__tile--local')).not.toBeNull();
+    });
+  });
+
   describe('9-12 player stress case (5.)', () => {
     it('applies the compact class for the two-arc layout', () => {
       const { nativeElement } = render({ player: player(), compact: true });

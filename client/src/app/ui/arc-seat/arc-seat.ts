@@ -62,6 +62,13 @@ export class ArcSeat {
    * front row, same idea as the desktop tiers' size steps but expressed as opacity here since
    * both arcs already share the same (compact) size. */
   readonly subdued = input(false);
+  /** Additive (dashboard-switching plan, Decision 6): the local player gets a seat in the new
+   * Clockwise/Linear layouts, same size as everyone else's, filled terracotta (`--color-terracotta`,
+   * the role colour already used for the lobby roster's local-player avatar) against opponents'
+   * translucent-cream tile. `DefaultDashboard` never passes this input, so Default is untouched.
+   * A different channel from `isCurrentBidder`'s brass halo, so a seat can be yours *and* bidding
+   * with no ambiguity — see the tile's own local-player override for how the two combine. */
+  readonly isLocalPlayer = input(false);
 
   protected readonly isEliminated = computed(() => this.player().diceCount === 0);
 

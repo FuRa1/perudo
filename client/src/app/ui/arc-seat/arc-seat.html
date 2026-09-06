@@ -8,11 +8,12 @@
   <div
     class="arc-seat__tile relative flex items-center justify-center"
     [class]="tileVariantClass()"
+    [class.arc-seat__tile--local]="isLocalPlayer()"
   >
     <span class="arc-seat__initial">{{ initial() }}</span>
   </div>
 
-  <span class="arc-seat__name truncate">{{ player().nickname }}</span>
+  <span class="arc-seat__name" [attr.title]="player().nickname">{{ player().nickname }}</span>
 
   <!-- Remaining-dice dots (designs/mobile-lantern.dc.html) — one per die, directly under the
        name. Decorative-only markup: the count is also exposed to assistive tech as text, since a
@@ -32,7 +33,7 @@
     </div>
   }
 
-  <div class="flex h-5 items-center justify-center">
+  <div class="arc-seat__status-slot flex items-center justify-center">
     @if (openingRoll(); as roll) {
       <div class="arc-seat__die-slot relative" [class.arc-seat__die-slot--winner]="roll.isWinner">
         @if (roll.value; as v) {

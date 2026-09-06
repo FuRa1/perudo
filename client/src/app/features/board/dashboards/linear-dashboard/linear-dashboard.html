@@ -1,7 +1,48 @@
-<p class="dashboard-placeholder text-center text-sm">Linear layout — coming soon</p>
+@if (isBiddingPhase()) {
+  @if (spotlightPlayer(); as p) {
+    <div class="linear-spotlight flex flex-col items-center gap-3">
+      <span class="linear-spotlight__badge">Bidding now</span>
+      <div class="linear-spotlight__avatar flex items-center justify-center">
+        <span class="linear-spotlight__initial">{{ initialOf(p.nickname) }}</span>
+      </div>
+      <div class="linear-spotlight__name">{{ gameView.nicknameFor(p.id) }}</div>
+      <div class="linear-spotlight__dice text-xs">
+        {{ p.diceCount }} {{ p.diceCount === 1 ? 'die' : 'dice' }} left
+      </div>
+      @if (gameView.latestBidRecord(); as record) {
+        <app-bid-marker [bid]="record.bid" size="prominent" />
+      } @else {
+        <span class="linear-spotlight__opens text-xs"
+          >Opens the bidding — any face, any quantity</span
+        >
+      }
+    </div>
+  }
 
-<ng-content select="[wagerSlot]" />
+  <p class="linear-rail__label text-xs">Waiting &middot; in order</p>
+  <div class="linear-rail flex">
+    @for (opponent of visibleWaitingPlayers(); track opponent.id) {
+      <app-arc-seat
+        [player]="opponent"
+        [isCurrentBidder]="opponent.id === nextUpPlayerId()"
+        [isLocalPlayer]="opponent.id === store.playerId()"
+      />
+    }
+    @if (overflowCount() > 0) {
+      <div class="linear-rail__more flex items-center justify-center text-xs">
+        +{{ overflowCount() }} more
+      </div>
+    }
+  </div>
 
-<app-local-hand-zone />
+  <ng-content select="[wagerSlot]" />
 
-<ng-content select="[revealSlot]" />
+  <app-local-hand-zone />
+
+  <ng-content select="[revealSlot]" />
+} @else {
+  <app-default-dashboard>
+    <ng-content select="[wagerSlot]" />
+    <ng-content select="[revealSlot]" />
+  </app-default-dashboard>
+}
