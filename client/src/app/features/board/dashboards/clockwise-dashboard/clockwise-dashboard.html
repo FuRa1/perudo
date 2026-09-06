@@ -7,6 +7,7 @@
         [style.top]="ringPosition(i).top"
         [style.opacity]="seatOpacity(i, opponent.id)"
         [style.--seat-tile-size.px]="ringSeatSizePx()"
+        [style.--seat-stagger-index]="i"
       >
         <app-arc-seat
           [player]="opponent"
@@ -18,7 +19,10 @@
     }
 
     @if (spotlightPlayer(); as p) {
-      <div class="clockwise-hero flex flex-col items-center">
+      <div
+        class="clockwise-hero flex flex-col items-center"
+        [class.clockwise-hero--enter]="heroEntering()"
+      >
         <span class="clockwise-hero__badge">Bidding now</span>
         <div class="flex items-center gap-3">
           <div

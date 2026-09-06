@@ -13,7 +13,8 @@
     "e2e:render": "node e2e/render-states.mjs",
     "e2e:fixtures": "node e2e/capture-fixtures.mjs",
     "design:compare": "node e2e/design-compare.mjs",
-    "e2e:layout-render": "node e2e/layout-render.mjs"
+    "e2e:layout-render": "node e2e/layout-render.mjs",
+    "e2e:reduced-motion": "node e2e/reduced-motion-check.mjs"
   },
   "private": true,
   "packageManager": "npm@11.4.2",

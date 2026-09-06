@@ -1,6 +1,9 @@
 @if (isBiddingPhase()) {
   @if (spotlightPlayer(); as p) {
-    <div class="linear-spotlight flex flex-col items-center gap-3">
+    <div
+      class="linear-spotlight flex flex-col items-center gap-3"
+      [class.linear-spotlight--enter]="heroEntering()"
+    >
       <span class="linear-spotlight__badge">Bidding now</span>
       <div class="linear-spotlight__avatar flex items-center justify-center">
         <span class="linear-spotlight__initial">{{ initialOf(p.nickname) }}</span>
@@ -10,7 +13,7 @@
         {{ p.diceCount }} {{ p.diceCount === 1 ? 'die' : 'dice' }} left
       </div>
       @if (gameView.latestBidRecord(); as record) {
-        <app-bid-marker [bid]="record.bid" size="prominent" />
+        <app-bid-marker [bid]="record.bid" size="default" />
       } @else {
         <span class="linear-spotlight__opens text-xs"
           >Opens the bidding — any face, any quantity</span

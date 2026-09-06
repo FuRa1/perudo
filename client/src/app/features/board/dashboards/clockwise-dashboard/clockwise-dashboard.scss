@@ -16,10 +16,19 @@
   flex: none;
 }
 
+// Motion (Phase 4): "seats move between slots" — when `waitingPlayers()` re-sorts on a turn
+// change, `@for`'s track-by-id keeps a remaining seat's DOM node in place, so a plain CSS
+// transition on its own left/top is enough to carry it to its new slot, no rotation math needed.
+// The stagger (component-bound `--seat-stagger-index`) approximates the gallery's own "every
+// remaining card shifts with a 40ms stagger" beat cheaply, without hand-authored JS choreography.
 .clockwise-ring__seat {
   position: absolute;
   transform: translate(-50%, -50%);
-  transition: opacity 0.2s ease;
+  transition:
+    left 0.38s ease,
+    top 0.38s ease,
+    opacity 0.2s ease;
+  transition-delay: calc(var(--seat-stagger-index, 0) * 40ms);
 }
 
 // The spotlight — same "verdict surface" parchment language as the reveal panel and Linear's own
@@ -41,6 +50,25 @@
   padding: 10px 14px;
   justify-content: center;
   gap: 6px;
+}
+
+// The hero's own entrance (Phase 4) — a scale+fade in place of the reference's literal fly-in
+// from the ring edge (clockwise-dashboard.ts's own note on why: hero and ring are structurally
+// different DOM subtrees here, so there's no single element to animate a path between). Toggled
+// by `heroEntering()` only when the spotlight actually changes hands, not on every re-render.
+.clockwise-hero--enter {
+  animation: clockwise-hero-enter 0.32s ease-out;
+}
+
+@keyframes clockwise-hero-enter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 .clockwise-hero__badge {
@@ -83,4 +111,16 @@
 .clockwise-hero__opens {
   color: var(--color-ink-muted);
   text-align: center;
+}
+
+// Same precedent as ui/loader/loader.scss and ui/turn-timer/turn-timer.scss — the handoff must
+// land instantly with no intermediate animated frame for a reduced-motion viewer.
+@media (prefers-reduced-motion: reduce) {
+  .clockwise-ring__seat {
+    transition: none;
+  }
+
+  .clockwise-hero--enter {
+    animation: none;
+  }
 }

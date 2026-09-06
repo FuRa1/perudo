@@ -143,4 +143,60 @@ describe('ClockwiseDashboard', () => {
       expect(nativeElement.querySelector('.clockwise-ring')).toBeNull();
     });
   });
+
+  describe('hero entrance (Phase 4 motion)', () => {
+    it('plays the enter animation class when the spotlight first appears', () => {
+      const { nativeElement } = render('p1', biddingState());
+      expect(nativeElement.querySelector('.clockwise-hero--enter')).not.toBeNull();
+    });
+
+    it('clears the enter animation class after it finishes, and does not replay on an unrelated re-render', () => {
+      vi.useFakeTimers();
+      try {
+        const { fixture, nativeElement } = render('p1', biddingState());
+        vi.advanceTimersByTime(320);
+        fixture.detectChanges();
+        expect(nativeElement.querySelector('.clockwise-hero--enter')).toBeNull();
+
+        // A dice-count change with the same spotlight must not replay the entrance.
+        const store = TestBed.inject(GameStore);
+        const state = biddingState();
+        store.matchState.set({
+          ...state,
+          players: state.players.map((p) => (p.id === 'p0' ? { ...p, diceCount: 4 } : p)),
+        });
+        fixture.detectChanges();
+        expect(nativeElement.querySelector('.clockwise-hero--enter')).toBeNull();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it('replays the enter animation when the spotlight changes hands', () => {
+      vi.useFakeTimers();
+      try {
+        const { fixture, nativeElement } = render('p1', biddingState());
+        vi.advanceTimersByTime(320);
+        fixture.detectChanges();
+
+        const store = TestBed.inject(GameStore);
+        store.matchState.set(
+          biddingState({
+            round: {
+              roundNumber: 1,
+              turnOrder: ['p0', 'p1', 'p2'],
+              currentTurnIndex: 1,
+              bidHistory: [],
+              isSpecialRoundDeclared: false,
+              pendingRolls: [],
+            },
+          }),
+        );
+        fixture.detectChanges();
+        expect(nativeElement.querySelector('.clockwise-hero--enter')).not.toBeNull();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  });
 });

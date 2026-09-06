@@ -148,4 +148,59 @@ describe('LinearDashboard', () => {
       expect(nativeElement.querySelector('.linear-spotlight')).toBeNull();
     });
   });
+
+  describe('spotlight entrance (Phase 4 motion)', () => {
+    it('plays the enter animation class when the spotlight first appears', () => {
+      const { nativeElement } = render('p2', biddingState());
+      expect(nativeElement.querySelector('.linear-spotlight--enter')).not.toBeNull();
+    });
+
+    it('clears the enter animation class after it finishes, and does not replay on an unrelated re-render', () => {
+      vi.useFakeTimers();
+      try {
+        const { fixture, nativeElement } = render('p2', biddingState());
+        vi.advanceTimersByTime(320);
+        fixture.detectChanges();
+        expect(nativeElement.querySelector('.linear-spotlight--enter')).toBeNull();
+
+        const store = TestBed.inject(GameStore);
+        const state = biddingState();
+        store.matchState.set({
+          ...state,
+          players: state.players.map((p) => (p.id === 'p2' ? { ...p, diceCount: 4 } : p)),
+        });
+        fixture.detectChanges();
+        expect(nativeElement.querySelector('.linear-spotlight--enter')).toBeNull();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it('replays the enter animation when the spotlight changes hands', () => {
+      vi.useFakeTimers();
+      try {
+        const { fixture, nativeElement } = render('p2', biddingState());
+        vi.advanceTimersByTime(320);
+        fixture.detectChanges();
+
+        const store = TestBed.inject(GameStore);
+        store.matchState.set(
+          biddingState({
+            round: {
+              roundNumber: 1,
+              turnOrder: ['p1', 'p2', 'p3'],
+              currentTurnIndex: 1,
+              bidHistory: [],
+              isSpecialRoundDeclared: false,
+              pendingRolls: [],
+            },
+          }),
+        );
+        fixture.detectChanges();
+        expect(nativeElement.querySelector('.linear-spotlight--enter')).not.toBeNull();
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+  });
 });

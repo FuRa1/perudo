@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { GamePhase, type Player } from '@shared';
 import { GameStore } from '../../../../core/game-store';
 import { GameView } from '../../../../core/game-view';
@@ -12,6 +12,10 @@ import { DefaultDashboard } from '../default-dashboard/default-dashboard';
  * roughly this many whole cards in view before its fade/pin treatment takes over; a plain count
  * pill is this phase's simplified stand-in for that fuller scroll-and-pin choreography. */
 const VISIBLE_RAIL_SEATS = 5;
+
+/** Same beat as ClockwiseDashboard's own constant — see its doc comment. Duplicated rather than
+ * shared, per decision 9. */
+const HERO_ENTER_MS = 320;
 
 /**
  * Variant A "Below deck" (designs/perudo-spotlight-gallery.dc.html) — whoever is bidding sits
@@ -30,6 +34,7 @@ const VISIBLE_RAIL_SEATS = 5;
 export class LinearDashboard {
   protected readonly store = inject(GameStore);
   protected readonly gameView = inject(GameView);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly isBiddingPhase = computed(
     () => this.store.matchState()?.phase === GamePhase.BIDDING,
@@ -88,5 +93,25 @@ export class LinearDashboard {
    * internals — 84px tile, no bid breakdown — don't fit a hero card carrying an inline bid). */
   protected initialOf(nickname: string): string {
     return (nickname.trim()[0] ?? '?').toUpperCase();
+  }
+
+  /** Same handoff cue as ClockwiseDashboard's own — a brief scale+fade whenever the spotlight
+   * actually changes hands, not on every render. See that component's doc comment for why this
+   * (rather than a literal fly-in) is what Phase 4 ships here. */
+  protected readonly heroEntering = signal(false);
+  private previousSpotlightId: string | null = null;
+
+  constructor() {
+    effect(() => {
+      const id = this.spotlightPlayer()?.id ?? null;
+      if (id === null || id === this.previousSpotlightId) {
+        this.previousSpotlightId = id;
+        return;
+      }
+      this.previousSpotlightId = id;
+      this.heroEntering.set(true);
+      const timeout = setTimeout(() => this.heroEntering.set(false), HERO_ENTER_MS);
+      this.destroyRef.onDestroy(() => clearTimeout(timeout));
+    });
   }
 }

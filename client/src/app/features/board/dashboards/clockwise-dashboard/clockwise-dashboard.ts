@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { GamePhase, type Player } from '@shared';
 import { GameStore } from '../../../../core/game-store';
 import { GameView } from '../../../../core/game-view';
@@ -27,12 +27,27 @@ function lerp(min: number, max: number, opponentCount: number): number {
   return min + t * (max - min);
 }
 
+/** Roughly the gallery's own "the bid lands, [it] holds for about 300ms" beat (designs/perudo-
+ * spotlight-gallery.dc.html, "The handoff, in four beats") — how long the hero card's enter
+ * animation (scale+fade) plays before settling, so the class binding driving it clears in time
+ * for the next handoff rather than lingering statefully across turns. */
+const HERO_ENTER_MS = 320;
+
 /**
  * Variant B "Round the table" (designs/perudo-spotlight-gallery.dc.html) — the waiting crew ring
- * the spotlight like seats around a barrel, so turn order *is* the circle. Real only during
- * BIDDING (same edge case as Linear): outside it, this falls back to `DefaultDashboard`'s own arc.
- * Static for Phase 3 (dashboard-switching plan) — positions simply recompute on turn change,
- * nothing animates yet (Phase 4).
+ * the spotlight like seats around a barrel, so turn order is the circle itself.
+ * Real only during BIDDING (same edge case as Linear): outside it, this falls back to
+ * `DefaultDashboard`'s own arc.
+ *
+ * Motion (Phase 4 of the dashboard-switching plan): the "seats move between slots" model (the
+ * gallery's own literal drawing, chosen over "the ring rotates" since track-by-id already keeps
+ * a remaining seat's DOM node stable across a re-sort — a plain CSS transition on its position is
+ * enough, no rotation math needed). The hero card gets a scale+fade entrance instead of the
+ * reference's literal fly-in from the ring edge: hero and ring are structurally different DOM
+ * subtrees (a `SpotlightCard` sharing one continuous element with `ArcSeat` across the swap was
+ * judged not worth building for this pass — see the plan's own status report), so there is no
+ * single element to animate a path between. The remaining ring seats sliding to their new slots,
+ * staggered by position, is what actually carries "the queue closes up" cue.
  */
 @Component({
   selector: 'app-clockwise-dashboard',
@@ -44,6 +59,7 @@ function lerp(min: number, max: number, opponentCount: number): number {
 export class ClockwiseDashboard {
   protected readonly store = inject(GameStore);
   protected readonly gameView = inject(GameView);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly isBiddingPhase = computed(
     () => this.store.matchState()?.phase === GamePhase.BIDDING,
@@ -94,6 +110,28 @@ export class ClockwiseDashboard {
 
   protected ringPosition(index: number): ArcPosition {
     return computeRingPosition(index, this.waitingPlayers().length);
+  }
+
+  /** Drives the hero card's brief scale+fade entrance (`.clockwise-hero--enter`) whenever the
+   * spotlight actually changes hands — not on every render, which would replay it on unrelated
+   * state changes (a bid being placed while the same player is still bidding, a dice-count
+   * update). `effect()` here (not a `computed`) because this exists purely to schedule a
+   * self-clearing timeout as a side effect; the class binding itself reads a plain signal. */
+  protected readonly heroEntering = signal(false);
+  private previousSpotlightId: string | null = null;
+
+  constructor() {
+    effect(() => {
+      const id = this.spotlightPlayer()?.id ?? null;
+      if (id === null || id === this.previousSpotlightId) {
+        this.previousSpotlightId = id;
+        return;
+      }
+      this.previousSpotlightId = id;
+      this.heroEntering.set(true);
+      const timeout = setTimeout(() => this.heroEntering.set(false), HERO_ENTER_MS);
+      this.destroyRef.onDestroy(() => clearTimeout(timeout));
+    });
   }
 
   /** Seats dim with distance from the light, but never the local player's own seat — "yours by
