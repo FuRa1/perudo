@@ -43,6 +43,30 @@ Compare against it with `npm run design:compare -w client` (see `client/README.m
 
 ## Open
 
+### Experimental board dashboards not yet reconciled with the canonical design
+
+- **Logged:** 2026-09-06. Full detail: `plans/board-dashboard-switching.md` (the plan) and
+  `plans/board-dashboard-switching-status.md` (phase-by-phase status).
+- `designs/perudo-spotlight-gallery.dc.html` is explicitly labelled "TURN-ORDER GALLERY · CONCEPT"
+  — an experiment, not part of the canonical `perudo-mobile-consolidated.dc.html`. The Clockwise
+  and Linear board dashboards built from it (a `↻` switcher pill cycles Default/Clockwise/Linear)
+  are real, playable, and tested, but they are a **second, unreconciled visual language** living
+  alongside the canonical one — different card shapes, different avatar treatment (teal medallion
+  vs the canonical's wood cup silhouette), no design-parity pass against `00 Tokens` the way the
+  Default board has had. Whether either becomes a real product option, stays a dev/design-review
+  toggle, or gets removed is an open product call, not decided here.
+- **Concrete, not-yet-closed visual bug:** Clockwise's hero card reuses `BidMarker` rather than the
+  reference's bespoke compact "CALLS" row, so it's taller than the reference's 148px figure. At the
+  smallest tables (3 opponents) the two ring seats flanking the reserved bottom gap graze the hero
+  card's rounded corner by a few pixels — see
+  `client/e2e/.screenshots/layout-render/clockwise-4p.png`. The plan's own Phase 0 (a design-parity
+  pass shrinking the hero card) was never run and would likely resolve this the "right" way, rather
+  than the current workaround (a generously-tall 480px ring stage).
+- Motion (Phase 4) covers only the spotlight's own enter animation and the ring seats' position
+  transitions — not the reference's literal card-flies-from-hero-to-queue-edge choreography, which
+  would need a single shared component spanning both roles (a `SpotlightCard`/`ArcSeat` unification)
+  that this pass didn't build.
+
 ### Recompose the mobile reveal, and stop presenting RoundLossModal there
 
 - **Logged:** 2026-09-04. Decided in the canonical file, §3.
