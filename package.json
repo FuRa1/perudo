@@ -18,10 +18,14 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "e2e": "npm run e2e -w client"
+    "e2e": "npm run e2e -w client",
+    "visual:review": "node client/e2e/visual-review.mjs --all-widths",
+    "polish:overnight": "node client/e2e/overnight-polish.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
+    "agent-workflow-kit": "^0.3.0",
+    "agent-workflow-ui-kit": "^1.1.1",
     "angular-eslint": "21.4.0",
     "concurrently": "^10.0.4",
     "eslint": "^10.8.0",
@@ -31,5 +35,6 @@
     "prettier": "^3.9.6",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.66.0"
-  }
+  },
+  "dependencies": {}
 }
