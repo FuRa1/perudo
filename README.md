@@ -138,18 +138,6 @@ param used for ngrok above, the same mechanism a real deploy would use unless th
 server end up served from the same origin). This is a separate question from the ngrok testing
 above, which needs no hosting decision at all and works today.
 
-## Design Polish
+## Development workflows
 
-**Primary focus:** visual parity with the canonical design reference [`designs/perudo-mobile-consolidated.dc.html`](./designs/perudo-mobile-consolidated.dc.html).
-
-Current work: table layout, responsive design at 320/390/768/1440px, token alignment, typography, component visual refinement.
-
-### Review captured states
-
-```
-npm run e2e:fixtures -w client
-```
-
-Loads dev-only fixture states (lobby, bidding, reveal) without needing a full match. Open `http://localhost:4200?fixture=lobby-2p` (or `bidding-mid`, `reveal-true`) to render a specific state for design review.
-
-Design comparison happens by taking live screenshots of these fixtures and comparing against [`designs/perudo-mobile-consolidated.dc.html`](./designs/perudo-mobile-consolidated.dc.html) panels side by side — no special tool needed, just screenshot + crop.
+For detailed workflows (fixture mode for UI review, agent integration, etc.), see [SKILLS.md](./SKILLS.md).
