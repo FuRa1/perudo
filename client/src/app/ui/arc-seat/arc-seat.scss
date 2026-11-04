@@ -302,3 +302,11 @@
       0 5px 11px rgba(0, 0, 0, 0.4);
   }
 }
+
+// Same footprint as the 40px die slot it stands in for, so a seat doesn't shift when its die lands.
+.arc-seat__status--to-cast {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  font-style: italic;
+}

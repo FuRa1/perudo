@@ -45,7 +45,9 @@
   --color-wood: #6b4f31; // mobile-lantern.dc.html opponent seat/cup gradient start, exact
   --color-wood-dark: #33261a; // — gradient end, exact
   --color-identity-start: var(--color-wood); // generic per-player identity tile
-  --color-identity-end: var(--color-wood-dark); // — distinguishes a roster entry without a real avatar
+  --color-identity-end: var(
+    --color-wood-dark
+  ); // — distinguishes a roster entry without a real avatar
 
   // On-table surfaces (dark cabin)
   --color-cabin: #241d16; // dark panel background (rail, dice-kit style boxes)
@@ -53,9 +55,24 @@
   --color-table-mid: #33281c; // table gradient mid-tone (exact)
   --color-table-edge: #1e1811; // table gradient / vignette edge (mobile-lantern.dc.html's own end-stop, #211a13, is a hair lighter — close enough to treat as the same vignette-edge value rather than a third near-duplicate token)
   --color-fill-onboard: rgba(242, 231, 211, 0.06); // quiet panel fill on the table
-  --color-fill-onboard-strong: rgba(242, 231, 211, 0.1); // control fill on the table (exact — mobile-lantern.dc.html's stepper button fill)
-  --color-fill-onboard-hover: rgba(242, 231, 211, 0.2); // hover/active on-table fill (exact — mobile-lantern.dc.html's stepper button border, reused here as the hover fill)
-  --color-border-onboard: rgba(242, 231, 211, 0.16); // quiet border on the table (exact, mobile-lantern.dc.html's header chips)
+  --color-fill-onboard-strong: rgba(
+    242,
+    231,
+    211,
+    0.1
+  ); // control fill on the table (exact — mobile-lantern.dc.html's stepper button fill)
+  --color-fill-onboard-hover: rgba(
+    242,
+    231,
+    211,
+    0.2
+  ); // hover/active on-table fill (exact — mobile-lantern.dc.html's stepper button border, reused here as the hover fill)
+  --color-border-onboard: rgba(
+    242,
+    231,
+    211,
+    0.16
+  ); // quiet border on the table (exact, mobile-lantern.dc.html's header chips)
   --color-border-onboard-strong: rgba(242, 231, 211, 0.28); // control border on the table
   // The warm lantern-glow highlight that washes the table's lit center and edges the bid tray in
   // mobile-lantern.dc.html (radial mat glow, tray border-top) — previously only ever inlined at
@@ -156,6 +173,15 @@
   --radius-panel: 20px;
   --radius-tile: 16px;
   --radius-card: 28px;
+  // Control scale (2026-11-04 playtest feedback: full pills on every action read as dated and
+  // oversized next to square-ish dice): small controls 12px, action buttons 16px, pill only for
+  // chips/tags.
+  --radius-control: 12px;
+  // Seat tiles and seat highlight surfaces were referencing these two names without them ever
+  // being defined, so the invalid var() dropped the radius entirely (square tiles).
+  --radius-board-avatar: var(--radius-control);
+  --radius-board-surface: var(--radius-tile);
+  --radius-button: 16px;
   --radius-pill: 999px; // design-kit "999 button" — every primary/secondary action's silhouette
 
   // Shadows

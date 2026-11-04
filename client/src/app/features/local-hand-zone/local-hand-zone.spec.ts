@@ -128,7 +128,8 @@ describe('LocalHandZone', () => {
       };
       const { nativeElement } = render('p1', state);
       expect(nativeElement.textContent ?? '').toContain('Cast');
-      expect(nativeElement.querySelector('.mobile-opening-die')).not.toBeNull();
+      // No empty placeholder die before casting — the die appears once it exists.
+      expect(nativeElement.querySelector('.mobile-opening-die')).toBeNull();
     });
   });
 });

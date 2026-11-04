@@ -53,3 +53,9 @@ ion-content {
   --background: var(--color-page);
   --color: var(--color-ink);
 }
+
+// Icon + label buttons ("Cast", "Roll your hand", …): Ionic gives a start-slot icon no gap of its
+// own, so the glyph sat flush against the first letter (2026-11-04 playtest).
+ion-button svg[slot='start'] {
+  margin-inline-end: 8px;
+}

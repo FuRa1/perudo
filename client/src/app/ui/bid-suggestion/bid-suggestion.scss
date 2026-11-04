@@ -20,7 +20,9 @@
 
 .bid-suggestion {
   @include mixins.focus-ring;
-  border-radius: var(--radius-tile);
+  border-radius: var(--radius-control);
+  // Breathing room on every side (playtest: label and die sat against the border).
+  padding: 6px 11px;
   border: 1px solid var(--color-border-onboard);
   background: var(--color-fill-onboard);
   color: var(--color-cream);

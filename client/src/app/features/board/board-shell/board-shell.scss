@@ -231,8 +231,13 @@ $table-photo-overlay: linear-gradient(
   }
 
   .table-layout__main {
-    justify-content: flex-end;
+    // Grid, so the bottom-anchoring is `align-content` (block axis). `justify-content: flex-end`
+    // used to sit here: on a grid that aligns *columns* inline, so the single content-sized track
+    // (292px, the hand row's width) was pushed to the right edge — the arc, wager and hand all
+    // rendered off-centre with a dead band on the left. One full-width column instead.
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: end;
     grid-template-rows: minmax(0, 1fr) auto auto;
     gap: 8px;
     flex: 1;
@@ -268,5 +273,54 @@ $table-photo-overlay: linear-gradient(
   // reveal is showing (`GameView.reveal()`), so it applies the equivalent class directly.
   .table-layout--reveal-active {
     row-gap: 0;
+  }
+}
+
+.table-special-round {
+  flex-shrink: 0;
+  align-self: center;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-brass);
+  background: rgba(var(--color-lantern-glow-rgb), 0.12);
+  color: var(--color-gold-highlight);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+// Landscape (tablets on their side, small laptops): the board becomes two columns — the table on
+// the left, the bid tray as a normal right-hand column instead of a fixed bottom sheet, which in a
+// ~530px-tall landscape viewport covered half the screen. Higher specificity than the
+// `.table-surface--bid-sheet-open` block above, so it wins without !important.
+@media (orientation: landscape) and (min-width: 800px) {
+  .table-surface.table-surface--bid-sheet-open {
+    padding-bottom: 12px;
+
+    .table-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .table-layout__rail {
+      border-left: 0;
+      padding-left: 0;
+      justify-content: center;
+    }
+
+    .mobile-bid-sheet-wrap {
+      position: static;
+      border-radius: var(--radius-card);
+      border: 1px solid rgba(var(--color-lantern-glow-rgb), 0.18);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      padding: 16px;
+    }
+
+    .mobile-bid-sheet-wrap--waiting {
+      border-radius: var(--radius-card);
+    }
   }
 }

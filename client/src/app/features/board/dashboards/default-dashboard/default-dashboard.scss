@@ -187,7 +187,7 @@
   gap: 28px;
   padding-block: 16px;
   --seat-tile-size: 54px;
-  --seat-tile-width: 100%;
+  --seat-tile-width: var(--seat-tile-size);
   --seat-tile-radius: var(--radius-board-avatar);
   --seat-initial-size: 18px;
   --seat-name-size: 12.5px;
@@ -203,10 +203,22 @@
 
 .mobile-seat-grid--bidding-open[data-rows='3'] {
   --seat-tile-size: 42px;
-  --seat-tile-width: 100%;
+  --seat-tile-width: var(--seat-tile-size);
   --seat-tile-radius: var(--radius-board-avatar);
   --seat-initial-size: 16px;
   --seat-gap: 4px;
   --seat-padding: 4px;
   gap: 20px;
+}
+
+// Short phones: tighter row rhythm so two or three opponent rows fit without clipping names.
+@media (max-height: 720px) {
+  .mobile-seat-grid--bidding-open {
+    gap: 10px;
+    padding-block: 6px;
+  }
+
+  .mobile-seat-grid--bidding-open[data-rows='3'] {
+    gap: 6px;
+  }
 }

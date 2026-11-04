@@ -35,11 +35,15 @@
 
   <div class="arc-seat__status-slot flex items-center justify-center">
     @if (openingRoll(); as roll) {
-      <div class="arc-seat__die-slot relative" [class.arc-seat__die-slot--winner]="roll.isWinner">
-        @if (roll.value; as v) {
+      @if (roll.value; as v) {
+        <div class="arc-seat__die-slot relative" [class.arc-seat__die-slot--winner]="roll.isWinner">
           <app-die [value]="v" class="block h-full w-full" />
-        }
-      </div>
+        </div>
+      } @else {
+        <!-- Not cast yet: say so in words — an empty dashed box read as broken (2026-11-04
+             playtest). Same 40px slot height, so the seat doesn't jump when the die lands. -->
+        <span class="arc-seat__status arc-seat__status--to-cast">to cast</span>
+      }
     } @else if (isEliminated()) {
       <span class="arc-seat__status arc-seat__status--out">out</span>
     } @else if (hasStandingBid()) {

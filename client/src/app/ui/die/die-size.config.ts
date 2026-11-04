@@ -16,5 +16,5 @@
 export const DIE_SIZE_PX = {
   table: 48,
   picker: 62,
-  suggestion: 32,
+  suggestion: 26,
 } as const;

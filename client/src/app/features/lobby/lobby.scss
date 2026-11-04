@@ -351,3 +351,20 @@ ion-content {
 .lobby__ready-caption {
   color: var(--color-cream-faint);
 }
+
+// Large tables (7-12): a denser roster so most of the crew fits above the sticky Ready button
+// instead of three 64px rows and a long scroll (2026-11-04 playtest, 12 players on a Pixel 2).
+.lobby__roster--dense {
+  gap: 4px;
+
+  .lobby__row,
+  .lobby__seat--open {
+    padding-block: 6px;
+  }
+
+  .lobby__avatar,
+  .lobby__seat--open-avatar {
+    width: 30px;
+    height: 30px;
+  }
+}

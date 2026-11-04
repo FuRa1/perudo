@@ -175,7 +175,7 @@
   font-weight: 700;
   font-size: 1.0625rem;
   text-transform: none;
-  --border-radius: var(--radius-pill);
+  --border-radius: var(--radius-button);
   --box-shadow: 0 3px 0 var(--color-brass-deep), var(--shadow-button);
   transition: transform 0.12s ease;
 
@@ -193,9 +193,7 @@
 
   &:focus-visible {
     --box-shadow:
-      0 0 0 3px var(--color-focus),
-      0 3px 0 var(--color-brass-deep),
-      var(--shadow-button);
+      0 0 0 3px var(--color-focus), 0 3px 0 var(--color-brass-deep), var(--shadow-button);
   }
 
   // Disabled removes the depth/ambient shadow entirely (nothing to "sink" or glow) — Ionic's own

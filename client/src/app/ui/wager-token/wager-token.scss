@@ -41,3 +41,14 @@
 :host-context(.table-surface--bid-sheet-open) .mobile-wager-token--compact {
   transform: none;
 }
+
+// Short phones (Pixel 2-class, ≤720px of CSS height with the tray open): every vertical pixel the
+// token gives back goes to the opponents' arc, which otherwise gets squeezed until seats clip.
+@media (max-height: 720px) {
+  :host-context(.table-surface--bid-sheet-open) .mobile-wager-token {
+    --wager-die-size: 30px;
+    --wager-quantity-size: 24px;
+    --wager-padding: 6px 12px;
+    padding-block: 4px;
+  }
+}

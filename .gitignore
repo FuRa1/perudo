@@ -33,3 +33,4 @@ Thumbs.db
 
 # Dev-only playtest screenshots (local reference for DESIGN_FEEDBACK.md, not shipped)
 /screens/playtest-*/
+/client/e2e/.vr-*

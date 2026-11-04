@@ -8,17 +8,19 @@
       <span class="mobile-hand-zone__label text-xs font-semibold tracking-wide uppercase"
         >Your cast — public</span
       >
-      <div class="mobile-opening-die relative">
-        @if (openingRollFor(myPlayer.id)?.value; as v) {
+      <!-- No empty dashed placeholder before casting (playtest: read as broken) — the die
+           appears once it exists; until then the Cast button is the whole affordance. -->
+      @if (openingRollFor(myPlayer.id)?.value; as v) {
+        <div class="mobile-opening-die relative">
           <app-die [value]="v" class="block h-full w-full" />
-        }
-      </div>
+        </div>
+      }
       @if (canRollOpeningDie()) {
         <ion-button expand="block" class="mobile-primary-btn" (click)="roll()">
           <svg lucideDices slot="start" aria-hidden="true"></svg>
           {{ openingRollFor(myPlayer.id)?.value !== null ? 'Cast again' : 'Cast' }}
         </ion-button>
-        <p class="mobile-hand-zone__hint text-xs">Shake the phone or tap the die</p>
+        <p class="mobile-hand-zone__hint text-xs">Shake the phone or tap Cast</p>
       } @else {
         <p class="mobile-hand-zone__hint text-xs">Waiting for the rest of the table</p>
       }

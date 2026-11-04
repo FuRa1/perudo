@@ -95,16 +95,17 @@ describe('ArcSeat', () => {
     expect(nativeElement.querySelector('progress')).toBeNull();
   });
 
-  it('reserves the opening-roll die slot while waiting (no die rendered yet)', () => {
-    const { nativeElement } = render({
+  it('says "to cast" while waiting, instead of an empty placeholder die', () => {
+    const { nativeElement, text } = render({
       player: player(),
       openingRoll: { value: null, isWinner: false },
     });
-    expect(nativeElement.querySelector('.arc-seat__die-slot')).not.toBeNull();
+    expect(text).toContain('to cast');
+    expect(nativeElement.querySelector('.arc-seat__die-slot')).toBeNull();
     expect(nativeElement.querySelector('app-die')).toBeNull();
   });
 
-  it('replaces the dashed slot with the public die in place once rolled', () => {
+  it('shows the public die once rolled', () => {
     const { nativeElement } = render({
       player: player(),
       openingRoll: { value: 4, isWinner: false },

@@ -28,6 +28,17 @@
   transform: translateZ(0);
   width: min(100%, vars.$phone-frame-width);
   min-height: 100dvh;
+
+  // Adaptive frame (2026-11-04 playtest on real tablets): a fixed 430px column left most of a
+  // tablet as dead black margin, and in landscape squeezed the opponents' arc to ~200px. Portrait
+  // tablets get a wider single column; landscape gets room for the two-column board (board-shell).
+  @media (orientation: portrait) and (min-width: 700px) {
+    width: min(100%, 720px);
+  }
+
+  @media (orientation: landscape) and (min-width: 800px) {
+    width: min(100%, 1100px);
+  }
   overflow: hidden;
   // A quiet hairline edge plus a narrow, soft shadow reads as "a distinct panel" without the
   // previous 48px/52%-opacity glow, which was wide and dark enough against the equally-dark stage

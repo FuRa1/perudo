@@ -14,10 +14,15 @@
   // Intentionally no border/background here.
 }
 
+// 44×44 keeps the WCAG/iOS minimum touch target; the radius follows the shared control scale
+// (--radius-control) rather than the old 16px tile radius, which read as pill-shaped at this size.
 .bid-picker__button {
   @include mixins.onboard-control;
   @include mixins.focus-ring;
+  border-radius: var(--radius-control);
   color: var(--color-cream);
+  font-size: 22px;
+  line-height: 1;
 
   // A solid muted color reads as "disabled but still legible" (design-kit §5 "Disabled" pill,
   // color #7d7466 / var(--color-neutral)) — never an opacity fade, which would just look like a
@@ -42,6 +47,17 @@
   color: var(--color-cream);
   font-family: var(--font-body);
   font-weight: 700;
+}
+
+.bid-picker__value--quantity {
+  min-width: 48px;
+  font-size: 34px;
+}
+
+// Special round (5.5): the face is fixed for the whole round — say so visually, not just by
+// silently ignoring taps on the arrows.
+.bid-picker__group--locked {
+  opacity: 0.55;
 }
 
 .bid-picker__separator {

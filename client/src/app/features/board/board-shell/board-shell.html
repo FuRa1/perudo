@@ -22,6 +22,14 @@
       </div>
     </div>
 
+    <!-- Special round (5.5): the rules change for everyone at the table, so everyone sees it —
+         previously the only signal was a face stepper that silently stopped responding. -->
+    @if (store.matchState()?.round?.isSpecialRoundDeclared) {
+      <div class="table-special-round" role="status">
+        Special round · aces aren't wild · face is locked
+      </div>
+    }
+
     <h2 class="table__heading hidden font-heading text-lg">
       Round {{ store.matchState()?.round?.roundNumber ?? '-' }} — {{ store.matchState()?.phase }}
     </h2>

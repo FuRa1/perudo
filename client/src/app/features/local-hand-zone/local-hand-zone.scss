@@ -149,3 +149,11 @@
     padding-top: 8px;
   }
 }
+
+// Short phones: the hand keeps its 52px dice (the design's hard floor) but loses padding.
+@media (max-height: 720px) {
+  .mobile-hand-zone--bidding-open {
+    padding-top: 8px;
+    padding-bottom: 10px;
+  }
+}

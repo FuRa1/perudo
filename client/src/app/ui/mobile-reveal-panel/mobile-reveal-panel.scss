@@ -118,3 +118,40 @@
     padding: 8px 12px;
   }
 }
+
+// Counted vs not counted (2026-11-04 playtest: the thin brass ring alone was barely visible on
+// parchment). Counted dice stay fully lit with their ring; the rest settle to a faded, slightly
+// desaturated state shortly after the card appears, so the claim's dice "remain" on the table.
+// The stagger (--reveal-delay, per die index) keeps it from reading as a single flash.
+.mobile-reveal__die--muted {
+  animation: reveal-die-fade 420ms ease-out forwards;
+  animation-delay: calc(450ms + var(--reveal-delay, 0ms));
+}
+
+@keyframes reveal-die-fade {
+  to {
+    opacity: 0.32;
+    filter: saturate(0.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-reveal__die--muted {
+    animation: none;
+    opacity: 0.32;
+    filter: saturate(0.4);
+  }
+}
+
+// Vertical rhythm: verdict → dice rows → legend → next-round line read as separate beats.
+.mobile-reveal__rows {
+  margin-top: 4px;
+}
+
+.mobile-reveal__caption {
+  margin-top: 14px;
+}
+
+.mobile-reveal__next {
+  margin-top: 6px;
+}

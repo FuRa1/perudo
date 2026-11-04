@@ -1,18 +1,20 @@
-<div class="bid-picker inline-flex items-stretch gap-4 p-3">
-  <!-- Quantity stepper -->
-  <div class="flex flex-col items-center gap-1.5" role="group" aria-label="Bid quantity">
+<!-- Horizontal steppers ([−] 3 [+]  ×  [‹] die [›]): one row instead of the old stacked
+     ▲/value/▼ columns, which made the bid tray ~200px tall and squeezed the opponents' arc to a
+     sliver on shorter phones (Pixel 2, 2026-11-04 playtest). -->
+<div class="bid-picker flex items-center justify-center gap-3">
+  <div class="bid-picker__group flex items-center gap-1.5" role="group" aria-label="Bid quantity">
     <button
       type="button"
-      class="bid-picker__button flex h-11 w-[58px] items-center justify-center text-base leading-none"
-      [disabled]="disabled()"
-      aria-label="Increase quantity"
-      (click)="incrementQuantity()"
+      class="bid-picker__button flex h-11 w-11 items-center justify-center"
+      [disabled]="!canDecrementQuantity()"
+      aria-label="Decrease quantity"
+      (click)="decrementQuantity()"
     >
-      ▲
+      −
     </button>
 
     <div
-      class="bid-picker__value flex h-[62px] w-[62px] items-center justify-center text-[40px] font-bold tabular-nums select-none"
+      class="bid-picker__value bid-picker__value--quantity flex items-center justify-center tabular-nums select-none"
       role="spinbutton"
       [attr.tabindex]="disabled() ? -1 : 0"
       [attr.aria-valuenow]="quantity()"
@@ -26,27 +28,31 @@
 
     <button
       type="button"
-      class="bid-picker__button flex h-11 w-[58px] items-center justify-center text-base leading-none"
-      [disabled]="!canDecrementQuantity()"
-      aria-label="Decrease quantity"
-      (click)="decrementQuantity()"
+      class="bid-picker__button flex h-11 w-11 items-center justify-center"
+      [disabled]="disabled()"
+      aria-label="Increase quantity"
+      (click)="incrementQuantity()"
     >
-      ▼
+      +
     </button>
   </div>
 
-  <span class="bid-picker__separator self-center text-[22px] font-bold" aria-hidden="true">×</span>
+  <span class="bid-picker__separator text-[20px] font-bold" aria-hidden="true">×</span>
 
-  <!-- Face stepper -->
-  <div class="flex flex-col items-center gap-1.5" role="group" aria-label="Bid face">
+  <div
+    class="bid-picker__group flex items-center gap-1.5"
+    [class.bid-picker__group--locked]="!canChangeFace()"
+    role="group"
+    aria-label="Bid face"
+  >
     <button
       type="button"
-      class="bid-picker__button flex h-11 w-[58px] items-center justify-center text-base leading-none"
+      class="bid-picker__button flex h-11 w-11 items-center justify-center"
       [disabled]="!canChangeFace()"
-      aria-label="Next face"
-      (click)="incrementFace()"
+      aria-label="Previous face"
+      (click)="decrementFace()"
     >
-      ▲
+      ‹
     </button>
 
     <div
@@ -66,12 +72,12 @@
 
     <button
       type="button"
-      class="bid-picker__button flex h-11 w-[58px] items-center justify-center text-base leading-none"
+      class="bid-picker__button flex h-11 w-11 items-center justify-center"
       [disabled]="!canChangeFace()"
-      aria-label="Previous face"
-      (click)="decrementFace()"
+      aria-label="Next face"
+      (click)="incrementFace()"
     >
-      ▼
+      ›
     </button>
   </div>
 </div>

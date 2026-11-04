@@ -14,13 +14,16 @@ function setup(
   fixture.componentRef.setInput('faceDisabled', faceDisabled);
   fixture.detectChanges();
   const nativeElement = fixture.nativeElement as HTMLElement;
-  const buttons = nativeElement.querySelectorAll('button');
+  // By accessible name, not DOM position: the steppers are laid out [−] n [+] × [‹] die [›], so
+  // their order no longer matches up/down/next/previous.
+  const button = (label: string): HTMLButtonElement =>
+    nativeElement.querySelector(`button[aria-label="${label}"]`) as HTMLButtonElement;
   return {
     fixture,
-    quantityUp: buttons[0],
-    quantityDown: buttons[1],
-    faceUp: buttons[2],
-    faceDown: buttons[3],
+    quantityUp: button('Increase quantity'),
+    quantityDown: button('Decrease quantity'),
+    faceUp: button('Next face'),
+    faceDown: button('Previous face'),
   };
 }
 

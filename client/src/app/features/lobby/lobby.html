@@ -54,7 +54,11 @@
           </span>
         </div>
 
-        <ul class="lobby__roster flex flex-col gap-2 pt-3" aria-label="Players in this room">
+        <ul
+          class="lobby__roster flex flex-col gap-2 pt-3"
+          [class.lobby__roster--dense]="players().length > 6"
+          aria-label="Players in this room"
+        >
           @for (player of players(); track player.id) {
             <li
               class="lobby__row flex items-center gap-3 p-3"
@@ -115,7 +119,11 @@
             {{ me()?.isReady ? 'Cancel ready' : "I'm ready" }}
           </ion-button>
           <p class="lobby__ready-caption text-center text-xs">
-            Needs {{ minPlayers }} players · starts when all are ready
+            @if (players().length < minPlayers) {
+              Needs {{ minPlayers }} players · starts when all are ready
+            } @else {
+              Starts when all are ready
+            }
           </p>
         </div>
       </div>
