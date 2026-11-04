@@ -18,9 +18,11 @@
     </strong>
     <span class="mobile-reveal__verdict-text flex-1">
       {{
-        reveal().outcome === 'CALLER_LOSES'
-          ? 'The actual count met the claim — an exact match still counts.'
-          : 'The actual count was below the claim.'
+        reveal().outcome === 'BIDDER_LOSES'
+          ? 'The actual count was below the claim.'
+          : reveal().actualQuantity === reveal().claimedBid.quantity
+            ? 'The actual count met the claim exactly — an exact match still counts.'
+            : 'The actual count beat the claim.'
       }}
       {{ lossSentence() }}
     </span>

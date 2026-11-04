@@ -40,7 +40,10 @@
 
           @if (lostBecauseBidWasTrue()) {
             <p class="round-loss__body text-sm">
-              You called liar, but the bid was true. Exact matches count as true bids.
+              You called liar, but the bid was true.
+              @if (actualQuantity() === claimedBid()?.quantity) {
+                Exact matches count as true bids.
+              }
             </p>
           } @else {
             <p class="round-loss__body text-sm">

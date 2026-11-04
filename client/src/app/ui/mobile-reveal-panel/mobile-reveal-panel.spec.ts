@@ -35,6 +35,29 @@ describe('MobileRevealPanel', () => {
     ).not.toBeNull();
   });
 
+  it('does not claim an exact match when the actual count beat the claim', () => {
+    const fixture = TestBed.createComponent(MobileRevealPanel);
+    fixture.componentRef.setInput('reveal', {
+      type: 'ROUND_REVEALED',
+      dice: {},
+      claimedBid: { kind: 'NORMAL', quantity: 4, face: 6 },
+      bidderId: 'p1',
+      actualQuantity: 7,
+      outcome: 'CALLER_LOSES',
+      loserId: 'p2',
+    });
+    fixture.componentRef.setInput('rows', []);
+    fixture.componentRef.setInput('bidderNickname', 'Alice');
+    fixture.componentRef.setInput('claimedBidText', '4 × sixes');
+    fixture.componentRef.setInput('lossSentence', 'Bob loses a die.');
+    fixture.detectChanges();
+
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).toContain('Bid true');
+    expect(text).toContain('The actual count beat the claim.');
+    expect(text).not.toContain('exact match');
+  });
+
   it('labels a short count as a false bid', () => {
     const fixture = TestBed.createComponent(MobileRevealPanel);
     fixture.componentRef.setInput('reveal', {
