@@ -133,8 +133,28 @@ describe('5.8 hints', () => {
     expect(cheapestLegalBid(contextAfter(normalBid(4, 2)))).toEqual(normalBid(4, 3));
   });
 
-  it('cheapestLegalBid only raises quantity for aces-to-aces (no face to climb)', () => {
-    expect(cheapestLegalBid(contextAfter(aceBid(2)))).toEqual(aceBid(3));
+  describe('cheapestLegalBid after aces — the cheapest way back to a normal face (user-confirmed)', () => {
+    it('3 threes -> 2 aces -> 4 twos (2x2 = 4 beats 3 on any face)', () => {
+      expect(cheapestLegalBid(contextAfter(aceBid(2), normalBid(3, 3)))).toEqual(normalBid(4, 2));
+    });
+
+    it('4 fours -> 2 aces -> 4 fives (4 twos/threes/fours are covered by 4 fours)', () => {
+      expect(cheapestLegalBid(contextAfter(aceBid(2), normalBid(4, 4)))).toEqual(normalBid(4, 5));
+    });
+
+    it('4 fives -> 2 aces -> 4 sixes (worked example 4)', () => {
+      expect(cheapestLegalBid(contextAfter(aceBid(2), normalBid(4, 5)))).toEqual(normalBid(4, 6));
+    });
+
+    it('4 sixes -> 2 aces -> 5 twos (nothing at 4 is left; cheaper than the 6-sixes bump)', () => {
+      const context = contextAfter(aceBid(2), normalBid(4, 6));
+      expect(cheapestLegalBid(context)).toEqual(normalBid(5, 2));
+      expect(isLegalBid(normalBid(5, 2), context)).toBe(true);
+    });
+
+    it('a round opened on aces returns at aces x 2 twos: 2 aces -> 4 twos', () => {
+      expect(cheapestLegalBid(contextAfter(aceBid(2)))).toEqual(normalBid(4, 2));
+    });
   });
 
   it('cheapestLegalBid keeps the face fixed during a special round, raising only quantity', () => {

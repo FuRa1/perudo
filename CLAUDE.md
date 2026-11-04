@@ -204,7 +204,7 @@ Builds; lint and typechecker are clean; the phase's level of tests is green; com
 - Players call bids in turn as "quantity + face"; a bid refers to the **sum of dice of ALL players at the table**.
 - A bid must **monotonically increase** on a single scale (5.4). Going back / repeating is forbidden.
 - Each next player either raises the bid or calls "liar" (не верю).
-- **The first bid of a round** may be any face, including aces, with no restrictions; **minimum — quantity 1** **[DEFAULT — confirm]**.
+- **The first bid of a round** may be any face, including aces, with no restrictions; **minimum — quantity 1** (confirmed by the user: the lowest opening bid is one two, since aces are wild and rank higher).
 - On "liar" — everyone reveals, the actual quantity is counted against the last bid (with wilds, 5.4).
 - If actual **≥** claimed — the caller loses. If **less** — the bidder loses. (Exact match → the caller loses; there is NO special "spot on" bonus.)
 - The loser loses one die. The loser goes first next round; if already eliminated (0 dice) — the next player in order after them goes first.
@@ -254,7 +254,7 @@ The bank is spent only by a present (online) player as a continuation of the tur
 The bid interface helps the player and validates input in two layers.
 
 **Hints (always visible to the player):**
-- **The minimum legal bid** — available in one click.
+- **The minimum legal bid** — available in one click. It is the smallest legal bid on the scale (confirmed by the user): opening → one two; after a normal bid → same quantity, next face up (after sixes → quantity + 1 of twos); after aces → aces × 2 on the lowest face that still beats the normal bid made before the aces (e.g. 3 threes → 2 aces → 4 twos; 4 fours → 2 aces → 4 fives); special round → +1 quantity of the locked face.
 - **Switch to aces** — if the current bid is on a normal face, show the minimum legal aces bid (per conversion 5.4), one click. If the switch is currently impossible — the button is disabled/highlighted as unavailable (the player always sees its state).
 - **Switch from aces to a normal face** — symmetric, if the current bid is on aces (respecting the sixes rule).
 - **Free input** — the player sets quantity + face themselves.
@@ -391,7 +391,6 @@ A single mechanism for both a disconnected player and an online player who "stal
 ## 12. OPEN QUESTIONS (only the user closes these)
 
 - Test hosting provider/method — not chosen yet (a virtual host for testing is planned).
-- Confirm the default **[DEFAULT — confirm]**: minimum first bid = quantity 1.
 
 *(Previously open items are closed: timers 15/25/bank-30 with sound; timeout = lose a die + double-loss protection for a pure stall; voting removed; RNG = crypto; the aces-conversion formula with the conditional sixes rule.)*
 

@@ -83,13 +83,34 @@ export function isLegalBid(candidate: Bid, context: BidScaleContext): boolean {
   return candidate.quantity >= floor && (!lastNormalBid || isNormalRaise(candidate, lastNormalBid));
 }
 
+const NORMAL_FACES: readonly NormalFace[] = [2, 3, 4, 5, 6];
+
+function isCheaperNormal(a: NormalBid, b: NormalBid): boolean {
+  return a.quantity < b.quantity || (a.quantity === b.quantity && a.face < b.face);
+}
+
+/** The lowest normal bid reachable from an aces bid: base aces × 2 on the lowest face that still
+ * beats the normal bid made before the aces (and the sixes rule) — via the same switch rule the
+ * "from aces" hint uses, so the two can never disagree. */
+function cheapestReturnFromAces(context: BidScaleContext): Bid {
+  let best: NormalBid | null = null;
+  for (const face of NORMAL_FACES) {
+    const candidate = minimumNormalSwitchBid(context, face);
+    if (candidate?.kind === 'NORMAL' && (!best || isCheaperNormal(candidate, best))) {
+      best = candidate;
+    }
+  }
+  return best ?? { kind: 'ACE', quantity: (context.lastBid?.quantity ?? 0) + 1 };
+}
+
 /**
  * 5.8 hint: the cheapest possible legal raise given the current bid order. For a normal-vs-normal
  * raise the same quantity at the next-higher face is strictly cheaper than bumping the quantity
  * (5.4/5.8's bid order climbs face-first) — six has no higher face to climb to, so from six the
- * only legal step is quantity+1 back at the lowest face. Aces-to-aces has only quantity to raise.
- * A special round fixes the face for the whole round (5.5), so there the only legal step is ever
- * quantity+1 on the same face/kind, regardless of what the face-first order would otherwise say.
+ * only legal step is quantity+1 back at the lowest face. After aces, the cheapest step is back to
+ * a normal face (see {@link cheapestReturnFromAces}) — confirmed by the user: 3 threes → 2 aces →
+ * 4 twos; 4 fours → 2 aces → 4 fives. A special round fixes the face for the whole round (5.5),
+ * so there the only legal step is ever quantity+1 on the same face/kind.
  */
 export function cheapestLegalBid(context: BidScaleContext): Bid {
   const { lastBid, isSpecialRound } = context;
@@ -102,7 +123,7 @@ export function cheapestLegalBid(context: BidScaleContext): Bid {
       : { kind: 'NORMAL', quantity: lastBid.quantity + 1, face: lastBid.face };
   }
   if (lastBid.kind === 'ACE') {
-    return { kind: 'ACE', quantity: lastBid.quantity + 1 };
+    return cheapestReturnFromAces(context);
   }
   return lastBid.face < 6
     ? { kind: 'NORMAL', quantity: lastBid.quantity, face: (lastBid.face + 1) as NormalFace }
