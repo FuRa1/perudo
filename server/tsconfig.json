@@ -16,7 +16,7 @@
     "baseUrl": "./",
     "paths": {
       "@server/*": ["./src/*"],
-      "@shared": ["../shared/src/index.ts"],
+      "@shared": ["../shared/src/index"],
       "@shared/*": ["../shared/src/*"]
     },
     "incremental": true,
