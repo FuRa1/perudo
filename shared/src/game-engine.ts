@@ -1,14 +1,14 @@
+import { buildBidScaleContext } from '@shared/logic/bid-context';
 import { isLegalBid } from '@shared/logic/bid-scale';
 import { countClaimedFace } from '@shared/logic/dice-count';
 import { isIntentAllowedInPhase } from '@shared/logic/phase-intents';
 import { determineLiarOutcome } from '@shared/logic/round-outcome';
 import { RULES_CONFIG } from './rules.config';
-import type { NormalBid } from '@shared/types/bid.types';
 import type { DiceRoller, DiceValue } from '@shared/types/dice.types';
 import { ErrorCode, gameError, type GameError } from '@shared/types/error.types';
 import type { ServerEvent } from '@shared/types/event.types';
 import type { Intent } from '@shared/types/intent.types';
-import type { BidRecord, MatchState, Player, RoundState } from '@shared/types/state.types';
+import type { MatchState, Player, RoundState } from '@shared/types/state.types';
 import { GamePhase } from '@shared/types/state.types';
 
 export interface EngineDeps {
@@ -230,16 +230,6 @@ function applyRollDice(
 // BIDDING (5.3, 5.4, 5.5)
 // ---------------------------------------------------------------------------
 
-function lastNormalBidOf(bidHistory: readonly BidRecord[]): NormalBid | null {
-  for (let i = bidHistory.length - 1; i >= 0; i -= 1) {
-    const record = bidHistory[i] as BidRecord;
-    if (record.bid.kind === 'NORMAL') {
-      return record.bid;
-    }
-  }
-  return null;
-}
-
 function applyPlaceBid(
   state: MatchState,
   intent: Extract<Intent, { type: 'PLACE_BID' }>,
@@ -250,13 +240,8 @@ function applyPlaceBid(
     return fail(ErrorCode.NOT_YOUR_TURN, `It is not ${intent.playerId}'s turn to bid.`);
   }
 
-  const lastRecord = round.bidHistory[round.bidHistory.length - 1];
-  const legal = isLegalBid(intent.bid, {
-    lastBid: lastRecord?.bid ?? null,
-    lastNormalBid: lastNormalBidOf(round.bidHistory),
-    isSpecialRound: round.isSpecialRoundDeclared,
-  });
-  if (!legal) {
+  const context = buildBidScaleContext(round.bidHistory, round.isSpecialRoundDeclared);
+  if (!isLegalBid(intent.bid, context)) {
     return fail(ErrorCode.ILLEGAL_BID, `${JSON.stringify(intent.bid)} is not a legal raise.`);
   }
 
@@ -482,6 +467,27 @@ export function applyTimeout(state: MatchState, playerId: string): EngineResult 
 }
 
 // ---------------------------------------------------------------------------
+// Lobby departure — server-triggered when a socket drops before the match starts, not a player
+// intent. Without it a refreshed tab would leave a ghost who never presses Ready and blocks
+// the start forever. Once the match has started, players are never removed (CLAUDE.md 7):
+// they stay in their seat and are eliminated naturally.
+// ---------------------------------------------------------------------------
+
+export function removeLobbyPlayer(state: MatchState, playerId: string): EngineResult {
+  if (state.phase !== GamePhase.LOBBY) {
+    return fail(
+      ErrorCode.WRONG_PHASE,
+      `Players can only leave in the lobby, not in ${state.phase}.`,
+    );
+  }
+  if (!findPlayer(state, playerId)) {
+    return fail(ErrorCode.PLAYER_NOT_FOUND, `Player ${playerId} is not in this room.`);
+  }
+  const players = state.players.filter((p) => p.id !== playerId);
+  return ok({ ...state, players }, [{ type: 'PLAYER_LEFT', playerId }]);
+}
+
+// ---------------------------------------------------------------------------
 // Dispatcher
 // ---------------------------------------------------------------------------
 
@@ -511,4 +517,5 @@ export const GameEngine = {
   createInitialMatchState,
   applyIntent,
   applyTimeout,
+  removeLobbyPlayer,
 };

@@ -24,6 +24,13 @@ export const RULES_CONFIG = {
     stillnessThresholdToCommitMs: 500,
   },
   reconnectWaitWindowMs: 60_000,
+  room: {
+    /** Length of the shareable room code. */
+    codeLength: 5,
+    /** Room-code characters — no 0/O/1/I, so a code read aloud or off a phone isn't ambiguous. */
+    codeAlphabet: 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',
+    nicknameMaxLength: 20,
+  },
 } as const;
 
 export type RulesConfig = typeof RULES_CONFIG;

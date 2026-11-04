@@ -6,6 +6,7 @@ import { GamePhase } from '@shared/types/state.types';
 import {
   applyIntent,
   applyTimeout,
+  removeLobbyPlayer,
   createInitialMatchState,
   type EngineDeps,
   type EngineResult,
@@ -418,5 +419,30 @@ describe('match win (5.9)', () => {
     expect(after.phase).toBe(GamePhase.GAME_OVER);
     expect(after.winnerId).toBe('p2');
     expect(after.round).toBeNull();
+  });
+});
+
+describe('removeLobbyPlayer — a socket dropping before the match starts', () => {
+  it('frees the seat in the lobby', () => {
+    const lobby: MatchState = {
+      ...createInitialMatchState('room-1'),
+      players: [makePlayer('p1'), makePlayer('p2')],
+    };
+    const { state: after, events } = expectOk(removeLobbyPlayer(lobby, 'p1'));
+    expect(after.players.map((p) => p.id)).toEqual(['p2']);
+    expect(events).toEqual([{ type: 'PLAYER_LEFT', playerId: 'p1' }]);
+  });
+
+  it('never removes a seated player once the match has started (CLAUDE.md 7)', () => {
+    const state = makeBiddingState([makePlayer('p1'), makePlayer('p2')], {
+      turnOrder: ['p1', 'p2'],
+    });
+    expect(expectError(removeLobbyPlayer(state, 'p1'))).toBe(ErrorCode.WRONG_PHASE);
+  });
+
+  it('reports an unknown player without mutating', () => {
+    expect(expectError(removeLobbyPlayer(createInitialMatchState('room-1'), 'ghost'))).toBe(
+      ErrorCode.PLAYER_NOT_FOUND,
+    );
   });
 });

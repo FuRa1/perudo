@@ -1,0 +1,99 @@
+<div class="mx-auto flex max-w-3xl flex-col gap-4">
+  <!-- Other seats: a scrolling top row, so 8–12 players stay legible (8.3). -->
+  <div class="flex gap-2 overflow-x-auto pb-1">
+    @for (seat of otherSeats(); track seat.id) {
+      <div
+        class="flex min-w-28 flex-1 flex-col items-center gap-1 rounded-xl border-2 bg-black/20 p-2"
+        [class.border-amber-400]="isCurrent(seat.id)"
+        [class.border-transparent]="!isCurrent(seat.id)"
+        [class.opacity-40]="seat.diceCount === 0"
+      >
+        <div class="max-w-full truncate text-sm font-semibold">
+          {{ seat.nickname }}
+          @if (!seat.isConnected) {
+            <span title="Offline">📴</span>
+          }
+        </div>
+        @if (seat.diceCount === 0) {
+          <span class="text-xs">sunk ☠</span>
+        } @else {
+          <div class="flex flex-wrap justify-center gap-0.5">
+            @for (die of hiddenDice(seat.diceCount); track $index) {
+              <app-die [value]="die" size="sm" />
+            }
+          </div>
+          @if (isRolling()) {
+            <span class="text-xs opacity-70">{{
+              isPendingRoll(seat.id) ? 'shaking…' : 'rolled'
+            }}</span>
+          }
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Middle of the table: the round and the bidding. -->
+  <div class="rounded-2xl bg-emerald-950/60 p-4 text-center shadow-inner">
+    <div class="text-sm opacity-70">
+      Round {{ round()?.roundNumber }} · {{ store.totalDice() }} dice on the table
+    </div>
+    @if (round()?.isSpecialRoundDeclared) {
+      <div class="mt-1 font-semibold text-amber-300">
+        ☠ Special round — aces are not wild, the face is locked
+      </div>
+    }
+    @if (startRollWinner(); as winner) {
+      <div class="mt-1 text-sm">{{ winner }} won the starting roll and bids first.</div>
+    }
+
+    @if (store.lastBid(); as last) {
+      <div class="mt-3 text-sm opacity-70">Current bid by {{ store.nickname(last.playerId) }}</div>
+      <div class="text-3xl font-bold">{{ describeBid(last.bid) }}</div>
+    } @else if (!isRolling()) {
+      <div class="mt-3 text-lg">No bids yet — {{ currentPlayerName() }} opens.</div>
+    }
+
+    @if (recentBids().length > 0) {
+      <ol class="mt-2 text-sm opacity-60">
+        @for (record of recentBids(); track $index) {
+          <li>{{ store.nickname(record.playerId) }}: {{ describeBid(record.bid) }}</li>
+        }
+      </ol>
+    }
+
+    @if (!isRolling() && !store.isMyTurn()) {
+      <div class="mt-3 animate-pulse">Waiting for {{ currentPlayerName() }}…</div>
+    }
+  </div>
+
+  @if (isRolling() && store.view()?.lastResult; as result) {
+    <app-round-result [result]="result" />
+  }
+
+  <!-- You: always at the bottom (8.3). -->
+  <div class="flex flex-col items-center gap-3 rounded-2xl bg-black/30 p-4">
+    <div class="font-semibold">{{ store.me()?.nickname }} · {{ store.me()?.diceCount }} dice</div>
+
+    @if (isMePendingRoll()) {
+      <app-shake-cup [isEnabled]="!store.isBusy()" (rolled)="handleRoll()" />
+    } @else if ((store.me()?.diceCount ?? 0) === 0) {
+      <div class="opacity-70">You're out of dice — watch the rest of the battle.</div>
+    } @else {
+      <div class="flex gap-2">
+        @for (die of store.view()?.myDice; track $index) {
+          <app-die [value]="die" size="lg" />
+        }
+      </div>
+    }
+
+    @if (store.canDeclareSpecialRound()) {
+      <ion-button color="warning" [disabled]="store.isBusy()" (click)="handleDeclareSpecialRound()">
+        ☠ Declare special round
+      </ion-button>
+    }
+
+    @if (store.isMyTurn()) {
+      <app-bid-panel class="w-full" />
+    }
+  </div>
+</div>
