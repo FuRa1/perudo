@@ -43,6 +43,28 @@ Compare against it with `npm run design:compare -w client` (see `client/README.m
 
 ## Open
 
+### Found in the 2026-11-04 emulator playtest (3 Genymotion devices)
+
+Design and layout feedback from the same session lives in `DESIGN_FEEDBACK.md`. Bid logic was
+exercised on real devices and behaved correctly throughout: minimum-bid chain, normal → aces
+(ceil), back from aces honouring the pre-aces bid (2 fours → 1 ace → 2 fives), the conditional
+sixes rule (2 sixes → 1 ace → Face 4 sixes, 3 sixes rejected, Min 3 twos), loser-opens-next-round,
+timeout die loss, and the special round (+1 quantity only, face locked, aces not counted at reveal).
+
+- **Server restart leaves clients on a stale match screen.** After the server restarts (in-memory
+  rooms are gone, by design), open clients keep showing the old lobby/table instead of returning
+  to Entry. Any action then fails with `ROOM_NOT_FOUND`. Seen twice. Expected: the
+  reconnect-by-token attempt gets `INVALID_TOKEN` and the client resets to Entry.
+- **Turn-timer countdown differs between devices** for the same turn (the active player saw 27s
+  while another device showed 6s at the same moment). The client likely counts down against its
+  own clock while the server sends epoch timestamps, and emulator/phone clocks drift. The display
+  should be based on a server-relative offset.
+- **A device can lag a phase behind.** Pixel 2 still showed "Roll your hand" while the others
+  were already bidding (seen once, not yet reproduced).
+- **Fixed in this pass:** the reveal copy said "an exact match still counts" even when the actual
+  count beat the claim (7 vs 4). Both the reveal panel and the round-loss modal now mention exact
+  matches only when actual equals claimed.
+
 ### Experimental board dashboards not yet reconciled with the canonical design
 
 - **Logged:** 2026-09-06. Full detail: `plans/board-dashboard-switching.md` (the plan) and
