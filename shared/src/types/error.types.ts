@@ -12,12 +12,6 @@ export enum ErrorCode {
   NOT_ENOUGH_PLAYERS = 'NOT_ENOUGH_PLAYERS',
   PLAYER_ALREADY_JOINED = 'PLAYER_ALREADY_JOINED',
   NO_BID_TO_CHALLENGE = 'NO_BID_TO_CHALLENGE',
-  /** The transport payload failed shape validation — the client is never trusted (4.2). */
-  INVALID_PAYLOAD = 'INVALID_PAYLOAD',
-  /** A game intent arrived on a connection that hasn't joined a room. */
-  NOT_IN_ROOM = 'NOT_IN_ROOM',
-  /** Anything unexpected; the server logs it and the room state is left untouched. */
-  INTERNAL_ERROR = 'INTERNAL_ERROR',
 }
 
 export interface GameError {

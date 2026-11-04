@@ -10,11 +10,6 @@ export interface PlayerJoinedEvent {
   readonly nickname: string;
 }
 
-export interface PlayerLeftEvent {
-  readonly type: 'PLAYER_LEFT';
-  readonly playerId: string;
-}
-
 export interface PlayerReadyChangedEvent {
   readonly type: 'PLAYER_READY_CHANGED';
   readonly playerId: string;
@@ -98,7 +93,6 @@ export interface TurnTimedOutEvent {
 
 export type ServerEvent =
   | PlayerJoinedEvent
-  | PlayerLeftEvent
   | PlayerReadyChangedEvent
   | MatchStartedEvent
   | StartRollRolledEvent

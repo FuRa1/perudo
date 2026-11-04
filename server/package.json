@@ -23,12 +23,9 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
-    "@nestjs/platform-socket.io": "^11.2.8",
-    "@nestjs/websockets": "^11.2.8",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "shared": "*",
-    "socket.io": "^4.8.4"
+    "shared": "*"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
@@ -39,7 +36,6 @@
     "@types/node": "^24.0.0",
     "@types/supertest": "^7.0.0",
     "jest": "^30.0.0",
-    "socket.io-client": "^4.8.4",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
