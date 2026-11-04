@@ -63,3 +63,33 @@ tablets, not tuned for one viewport.
     stop being wild and the face silently locks (the face stepper just stops responding). It needs
     a visible state (chip/banner) for everyone, plus a visibly locked face control
     (`14-special-round-next.png`).
+
+## Status after the 2026-11-04 layout pass
+
+Fixed (commits `fe4617b`, `92ac2a6`), verified in a browser matrix at the playtest devices' CSS
+viewports and on the emulators themselves:
+
+- 1, 2: off-centre dice and arc. Root cause: a grid used `justify-content: flex-end` to
+  bottom-anchor, which on a grid pushes the single column right.
+- 3: Pixel 2 stray lines. The bid picker steppers are horizontal now (tray ~335 → ~210px), with
+  short-viewport rules below 720px of height.
+- 4: adaptive layout. Wider board frame on tablets, a two-column landscape layout with the bid
+  tray as a side column, and opponent rows that adapt to the measured width.
+- 5: the reveal card is no longer the only thing below the fold. The primary Cast / Roll button is
+  sticky, so a full table can never push it off-screen (this stalled a real 12-player match).
+- 7: hint chips padding. 8: seat tiles are square with a radius; their radius tokens were undefined.
+- 9: radius scale (`--radius-control` 12px, `--radius-button` 16px).
+- 10: icon/label gap on buttons. 11: no dashed placeholder dice on the opening roll.
+- 12, 13: non-counted reveal dice fade out (staggered, reduced-motion aware); more vertical
+  rhythm on the reveal card.
+- 15: special-round banner for everyone, plus a visibly locked face stepper.
+
+Still open:
+
+- 6: dead space mid-table on tall phones during the opening roll (the action is deliberately
+  bottom-anchored for thumb reach; consider vertically centring the arc instead).
+- 14: the loss modal still overlaps the reveal card while it fades (`ISSUES.md`: recompose the
+  mobile reveal).
+- Round-loss modal: the "Claimed" bid marker overflows its stat tile on narrow phones.
+- Lobby on short phones: the room-code card is tall, so only ~4 of 12 roster rows are visible
+  above the sticky Ready button.
