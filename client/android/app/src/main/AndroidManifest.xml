@@ -23,6 +23,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Dev tooling: perudo://fixture?src=<url> renders a captured/generated game state
+                 without a server (core/fixture-loader.ts, e2e/device-render.mjs). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="perudo" android:host="fixture" />
+            </intent-filter>
+
         </activity>
 
         <provider

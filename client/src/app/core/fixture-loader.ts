@@ -1,4 +1,6 @@
 import { inject } from '@angular/core';
+import { App } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import type { ServerEvent, StateSnapshot } from '@shared';
 import { GameStore } from './game-store';
 
@@ -38,24 +40,52 @@ function isStateFixture(value: unknown): value is StateFixture {
   );
 }
 
+/**
+ * Where the requested fixture lives, if any:
+ * - `?fixture=<name>` — a bundled fixture, `public/assets/fixtures/<name>.json`;
+ * - `?fixtureSrc=<url>` — any JSON URL (e.g. a state generated on the dev machine);
+ * - native builds have no address bar, so the same two parameters are read from the deep link the
+ *   app was launched with: `perudo://fixture?src=<url>` or `perudo://fixture?name=<name>`
+ *   (used by `client/e2e/device-render.mjs` to render a state on every running emulator).
+ */
+async function requestedFixtureUrl(): Promise<string | null> {
+  const query = new URLSearchParams(window.location.search);
+  const params = Capacitor.isNativePlatform() ? await launchUrlParams() : query;
+  const src = params.get('fixtureSrc') ?? params.get('src');
+  if (src) {
+    return src;
+  }
+  const name = params.get('fixture') ?? params.get('name');
+  return name ? `/assets/fixtures/${encodeURIComponent(name)}.json` : null;
+}
+
+async function launchUrlParams(): Promise<URLSearchParams> {
+  const launch = await App.getLaunchUrl();
+  if (!launch?.url.startsWith('perudo://fixture')) {
+    return new URLSearchParams();
+  }
+  return new URL(launch.url.replace('perudo://', 'https://perudo.invalid/')).searchParams;
+}
+
 /** Registered via `provideAppInitializer` (app.config.ts) so it resolves — populating GameStore,
  * when a fixture is requested — before the app's first render. That ordering is load-bearing: it
  * means Entry never mounts for a fixture load, so SocketService.connect() (called from Entry's
  * constructor) never fires and no real connection is attempted. */
 export async function loadRequestedFixture(): Promise<void> {
-  const name = new URLSearchParams(window.location.search).get('fixture');
-  if (!name) {
+  // inject() only works synchronously inside the initializer — before the first await.
+  const store = inject(GameStore);
+  const fixtureUrl = await requestedFixtureUrl();
+  if (!fixtureUrl) {
     return;
   }
-  const store = inject(GameStore);
-  const res = await fetch(`/assets/fixtures/${encodeURIComponent(name)}.json`);
+  const res = await fetch(fixtureUrl);
   if (!res.ok) {
-    console.error(`[fixture] "${name}" not found (${res.status}) — continuing without one.`);
+    console.error(`[fixture] "${fixtureUrl}" not found (${res.status}) — continuing without one.`);
     return;
   }
   const fixture: unknown = await res.json();
   if (!isStateFixture(fixture)) {
-    console.error(`[fixture] "${name}.json" doesn't match the expected shape — ignoring it.`);
+    console.error(`[fixture] "${fixtureUrl}" doesn't match the expected shape — ignoring it.`);
     return;
   }
   store.setJoined(fixture.viewerPlayerId);

@@ -84,6 +84,18 @@ describe('loadRequestedFixture', () => {
     expect(store.connected()).toBe(true);
   });
 
+  it('loads a fixture from any URL given as ?fixtureSrc= (states generated on the dev machine)', async () => {
+    const fixture = { viewerPlayerId: 'p9', events: [], snapshot: snapshot() };
+    fetchMock.mockResolvedValue(new Response(JSON.stringify(fixture), { status: 200 }));
+
+    await withQuery('?fixtureSrc=http://192.168.57.1:4300/bid.json', async () => {
+      await TestBed.runInInjectionContext(() => loadRequestedFixture());
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith('http://192.168.57.1:4300/bid.json');
+    expect(TestBed.inject(GameStore).playerId()).toBe('p9');
+  });
+
   it('a 404 leaves the store untouched instead of throwing', async () => {
     fetchMock.mockResolvedValue(new Response(null, { status: 404 }));
     await withQuery('?fixture=missing', async () => {

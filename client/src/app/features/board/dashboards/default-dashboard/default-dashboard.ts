@@ -1,4 +1,12 @@
-import { Component, computed, inject } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  afterNextRender,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { IonButton } from '@ionic/angular/standalone';
 import { LucideDices } from '@lucide/angular';
 import { GamePhase, type Bid, type DiceValue, type Player } from '@shared';
@@ -35,6 +43,9 @@ function joinWithAnd(names: readonly string[]): string {
  * rhythm require the arc/wager/hand/reveal to be direct children of `.table-layout__main`, not
  * boxed one level deeper by a normal block host.
  */
+/** Horizontal room one opponent seat needs in a row (seat + gap). */
+const SEAT_SLOT_PX = 80;
+
 @Component({
   selector: 'app-default-dashboard',
   standalone: true,
@@ -46,6 +57,24 @@ export class DefaultDashboard {
   protected readonly store = inject(GameStore);
   private readonly socket = inject(SocketService);
   protected readonly gameView = inject(GameView);
+
+  /** Width the seat rows actually get (landscape gives part of the screen to the bid column). */
+  private readonly hostWidth = signal(0);
+
+  constructor() {
+    const element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+    const destroyRef = inject(DestroyRef);
+    // After the first render, not here: the element isn't attached yet in the constructor. The
+    // host is `display: contents` (no box of its own), so measure the column it renders into.
+    afterNextRender(() => {
+      if (typeof ResizeObserver === 'undefined') return;
+      const observer = new ResizeObserver((entries) => {
+        this.hostWidth.set(entries[0]?.contentRect.width ?? 0);
+      });
+      observer.observe(element.parentElement ?? element);
+      destroyRef.onDestroy(() => observer.disconnect());
+    });
+  }
 
   protected readonly GamePhase = GamePhase;
   protected readonly arcTopPaddingPx = ARC_TOP_PADDING_PX;
@@ -73,7 +102,13 @@ export class DefaultDashboard {
   protected readonly opponentRows = computed<readonly (readonly Player[])[]>(() => {
     const players = this.opponents();
     if (players.length === 0) return [];
-    const rowCount = players.length >= 9 ? 3 : players.length >= 5 ? 2 : 1;
+    const byCount = players.length >= 9 ? 3 : players.length >= 5 ? 2 : 1;
+    // Wide screens (tablets, landscape) fit more seats per row, so they need fewer rows — on a
+    // 530px-tall landscape tablet three rows pushed the Roll button off-screen (2026-11-04).
+    // Only ever fewer rows than the count-based default, never more, so phones are unchanged.
+    const perRow = Math.max(1, Math.floor((this.hostWidth() - 24) / SEAT_SLOT_PX));
+    const rowCount =
+      this.hostWidth() > 0 ? Math.min(byCount, Math.ceil(players.length / perRow)) : byCount;
     const rows: Player[][] = [];
     let offset = 0;
     for (let row = 0; row < rowCount; row += 1) {

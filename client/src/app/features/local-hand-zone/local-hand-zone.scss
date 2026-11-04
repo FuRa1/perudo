@@ -157,3 +157,14 @@
     padding-bottom: 10px;
   }
 }
+
+// The turn's one primary action (Cast / Roll your hand) must never scroll out of reach: with a
+// full 12-seat table on a short phone or a landscape tablet it used to end up below the fold, and
+// the player simply couldn't act (2026-11-04 playtest stalled a match this way). Sticky to the
+// bottom of the scroller, the same treatment the lobby's Ready button already has.
+.mobile-primary-btn,
+.mobile-hand-roll-btn {
+  position: sticky;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 5;
+}
