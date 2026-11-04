@@ -13,6 +13,12 @@ import { GamePhase } from '@shared/types/state.types';
 
 export interface EngineDeps {
   readonly diceRoller: DiceRoller;
+  /**
+   * Optional dev/test override for how many dice a joining player starts with (e.g. a server-side
+   * quick-playtest setup). Injected like the dice roller so the engine stays pure; when absent,
+   * every player starts with RULES_CONFIG.startingDicePerPlayer.
+   */
+  readonly startingDiceFor?: (nickname: string) => number;
 }
 
 export type EngineResult =
@@ -62,6 +68,7 @@ export function createInitialMatchState(roomId: string): MatchState {
 function applyJoinRoom(
   state: MatchState,
   intent: Extract<Intent, { type: 'JOIN_ROOM' }>,
+  deps: EngineDeps,
 ): EngineResult {
   if (findPlayer(state, intent.playerId)) {
     return fail(
@@ -79,7 +86,7 @@ function applyJoinRoom(
     id: intent.playerId,
     nickname: intent.nickname,
     isReady: false,
-    diceCount: RULES_CONFIG.startingDicePerPlayer,
+    diceCount: deps.startingDiceFor?.(intent.nickname) ?? RULES_CONFIG.startingDicePerPlayer,
     dice: [],
     consecutivePureStalls: 0,
     eliminatedInRound: null,
@@ -532,7 +539,7 @@ export function applyIntent(state: MatchState, intent: Intent, deps: EngineDeps)
   }
   switch (intent.type) {
     case 'JOIN_ROOM':
-      return applyJoinRoom(state, intent);
+      return applyJoinRoom(state, intent, deps);
     case 'SET_READY':
       return applySetReady(state, intent);
     case 'ROLL_DICE':

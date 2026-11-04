@@ -84,3 +84,20 @@ To customize default timing:
 ```
 
 All changes will be applied to new rooms. Existing games retain their original timer behavior.
+
+## Dev-only: quick-playtest starting dice
+
+`perudo.config.json` may also carry a `devStartingDice` section, read once at server start by
+`DevSetupService` (`server/src/game/dev-setup.service.ts`). It is a playtest shortcut, not a
+rules change — leave it out for real games.
+
+```json
+{
+  "devStartingDice": { "default": 2, "byNickname": { "NeverLose": 5 } }
+}
+```
+
+Every player who joins starts with `default` dice unless their nickname is listed in
+`byNickname`. Values are clamped to 1–5. When active, the server logs a `DEV SETUP ACTIVE`
+warning at boot. The engine receives it as the optional `startingDiceFor` dependency
+(`EngineDeps`), the same way it receives the dice roller, so game logic stays pure.

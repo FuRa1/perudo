@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, Optional } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -16,10 +16,12 @@ import {
   GamePhase,
   selectPlayerView,
   type Bid,
+  type EngineDeps,
   type EngineResult,
   type ServerEvent,
 } from '@shared';
 import { createReconnectToken, RoomsService, type RoomRuntime } from './rooms.service';
+import { DevSetupService } from './dev-setup.service';
 import { TurnTimerService } from './turn-timer.service';
 
 interface JoinRoomPayload {
@@ -90,6 +92,7 @@ export class GameGateway implements OnGatewayDisconnect {
   constructor(
     private readonly rooms: RoomsService,
     private readonly timers: TurnTimerService,
+    @Optional() private readonly devSetup?: DevSetupService,
   ) {
     this.timers.setTimeoutHandler((room, playerId) => this.handleTurnTimerFired(room, playerId));
   }
@@ -286,8 +289,8 @@ export class GameGateway implements OnGatewayDisconnect {
     );
   }
 
-  private deps(room: RoomRuntime): { diceRoller: RoomRuntime['diceRoller'] } {
-    return { diceRoller: room.diceRoller };
+  private deps(room: RoomRuntime): EngineDeps {
+    return { diceRoller: room.diceRoller, startingDiceFor: this.devSetup?.startingDiceFor };
   }
 
   private async withContext(

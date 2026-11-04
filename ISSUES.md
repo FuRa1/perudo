@@ -59,6 +59,9 @@ timeout die loss, and the special round (+1 quantity only, face locked, aces not
   while another device showed 6s at the same moment). The client likely counts down against its
   own clock while the server sends epoch timestamps, and emulator/phone clocks drift. The display
   should be based on a server-relative offset.
+- **Server tests read the real `server/perudo.config.json`.** `TimerConfigService` loads the file
+  from `process.cwd()` even under Jest, so a local edit (e.g. `"enabled": false` for a playtest)
+  makes the timer suites fail. Tests should construct the service with an explicit config.
 - **A device can lag a phase behind.** Pixel 2 still showed "Roll your hand" while the others
   were already bidding (seen once, not yet reproduced).
 - **Fixed in this pass:** the reveal copy said "an exact match still counts" even when the actual

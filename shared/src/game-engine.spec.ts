@@ -594,3 +594,35 @@ describe('match win (5.9)', () => {
     expect(after.round).toBeNull();
   });
 });
+
+describe('startingDiceFor — injected dev/test starting-dice override', () => {
+  it('starts a joining player with the injected count instead of the rules default', () => {
+    const withOverride: EngineDeps = {
+      diceRoller: new SequenceDiceRoller([1]),
+      startingDiceFor: (nickname) => (nickname === 'NeverLose' ? 5 : 2),
+    };
+    const lobby = createInitialMatchState('room-1');
+    const { state: afterA } = expectOk(
+      applyIntent(lobby, { type: 'JOIN_ROOM', playerId: 'a', nickname: 'Anne' }, withOverride),
+    );
+    const { state: afterB } = expectOk(
+      applyIntent(
+        afterA,
+        { type: 'JOIN_ROOM', playerId: 'b', nickname: 'NeverLose' },
+        withOverride,
+      ),
+    );
+    expect(afterB.players.map((p) => p.diceCount)).toEqual([2, 5]);
+  });
+
+  it('falls back to the rules default when no override is injected', () => {
+    const { state } = expectOk(
+      applyIntent(
+        createInitialMatchState('room-1'),
+        { type: 'JOIN_ROOM', playerId: 'a', nickname: 'Anne' },
+        deps([]),
+      ),
+    );
+    expect(state.players[0]?.diceCount).toBe(5);
+  });
+});
