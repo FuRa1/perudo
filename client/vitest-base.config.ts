@@ -11,6 +11,10 @@ export default defineConfig({
     // Browser-API stubs the unit-test DOM doesn't provide (see the file's own comment) — additive
     // to whatever the Angular unit-test builder sets up for TestBed/zone itself.
     setupFiles: ['src/test-setup.ts'],
+    // Node 25+ ships its own global `localStorage`, which shadows jsdom's and is `undefined` unless
+    // Node is given a backing file — so on newer Node every spec touching localStorage fails.
+    // Turning Node's implementation off restores jsdom's, matching Node 22 behaviour.
+    execArgv: ['--no-experimental-webstorage'],
     server: {
       deps: {
         inline: [/@ionic\//],
