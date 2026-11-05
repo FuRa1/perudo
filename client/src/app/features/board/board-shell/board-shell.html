@@ -127,9 +127,11 @@
            lives here too so nothing bidding-related is duplicated between a rail and a
            below-table area — there is only ever one of each. There is exactly one
            <app-bid-controls> either way (below): mobile repositions this SAME instance into a
-           fixed bottom sheet via CSS rather than rendering a second copy. -->
-      <div class="table-layout__rail flex flex-col gap-3">
-        @if (store.matchState()?.phase === GamePhase.BIDDING) {
+           fixed bottom sheet via CSS rather than rendering a second copy.
+           Rendered only during BIDDING: outside it the rail is empty, and an empty grid row still
+           took a share of the free height, which left dead mat under the Cast / Roll button. -->
+      @if (store.matchState()?.phase === GamePhase.BIDDING) {
+        <div class="table-layout__rail flex flex-col gap-3">
           <div class="table-rail__summary hidden p-3 text-sm">
             @if (gameView.latestBidRecord(); as record) {
               <p>
@@ -152,8 +154,8 @@
           >
             <app-bid-controls class="block" />
           </div>
-        }
-      </div>
+        </div>
+      }
     </div>
   </div>
 

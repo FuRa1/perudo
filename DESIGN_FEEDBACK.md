@@ -84,12 +84,27 @@ viewports and on the emulators themselves:
   rhythm on the reveal card.
 - 15: special-round banner for everyone, plus a visibly locked face stepper.
 
+## Status after the 2026-11-05 pass
+
+Fixed, checked in a browser at 360×780, 411×731, 360×640 and 800×1280 through the fixture loader:
+
+- 6: opening-roll dead space. Two causes. The empty bid rail was still a grid row outside
+  BIDDING and took ~134px of free height under the Cast / Roll button. It now renders only during
+  BIDDING, so the action sits flush at the bottom. The arc also gets its own `margin-top: auto`
+  during the opening roll, so the slack is split and the seats sit centred above the action.
+- 14 and the overflowing "Claimed" bid marker: `RoundLossModal` no longer opens for a lost
+  call-liar challenge. The reveal card is the only loss surface (the decision already logged in
+  `ISSUES.md`), so nothing overlaps it any more. The modal keeps only the "Time ran out" branch
+  (no reveal behind it), and it closes if a reveal arrives while it's open. The stat tiles that
+  overflowed went with the reveal branch.
+- Lobby on short phones: below 720px of height the intro, the code card and the gaps are
+  tighter, and once the table is full the Share invite row goes (no seat left to invite to): the
+  copy button moves beside the code. 12 players at 360×640 now shows ~5.5 rows above Ready, up
+  from ~3.5.
+
 Still open:
 
-- 6: dead space mid-table on tall phones during the opening roll (the action is deliberately
-  bottom-anchored for thumb reach; consider vertically centring the arc instead).
-- 14: the loss modal still overlaps the reveal card while it fades (`ISSUES.md`: recompose the
-  mobile reveal).
-- Round-loss modal: the "Claimed" bid marker overflows its stat tile on narrow phones.
-- Lobby on short phones: the room-code card is tall, so only ~4 of 12 roster rows are visible
-  above the sticky Ready button.
+- The rest of the reveal recomposition in `ISSUES.md` (card at the top over a scrimmed table,
+  `Next round` pinned at the bottom, roll button hidden while the reveal is up).
+- Hand roll (`ROUND_ROLLING`) on tall phones: the intentional roll-stage spacer leaves a large
+  empty band between the seats and "Roll your hand" (most visible with 12 players on Pixel 2).

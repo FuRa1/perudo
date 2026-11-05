@@ -112,6 +112,10 @@ timeout die loss, and the special round (+1 quantity only, face locked, aces not
   button hidden in this state. The roll button no longer doubles as continue.
 - Cheapest partial if the rework has to wait: relabel the roll button to "Next round" while the
   reveal is up. That removes the wrong-label problem, not the composition problem.
+- **Progress (2026-11-05):** the first half is done. `RoundLossModal` no longer opens for a
+  call-liar loss (there is only the one board now, so "desktop" has no separate surface left to
+  keep it for). It keeps the "Time ran out" branch until panel `10` exists. The composition rework
+  is still open.
 
 ### Designed in the canonical file, not yet built
 

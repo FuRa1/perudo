@@ -1,4 +1,5 @@
 import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
 import { LucideCopy, LucideDices, LucideShare2 } from '@lucide/angular';
 import { RULES_CONFIG } from '@shared';
@@ -13,7 +14,7 @@ type ShareStatus = 'idle' | 'success' | 'unavailable' | 'failure';
 @Component({
   selector: 'app-lobby',
   standalone: true,
-  imports: [IonContent, IonButton, LucideCopy, LucideDices, LucideShare2],
+  imports: [NgTemplateOutlet, IonContent, IonButton, LucideCopy, LucideDices, LucideShare2],
   templateUrl: './lobby.html',
   styleUrl: './lobby.scss',
 })

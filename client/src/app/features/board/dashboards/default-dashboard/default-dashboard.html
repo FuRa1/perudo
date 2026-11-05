@@ -2,6 +2,7 @@
 <div
   class="mobile-arc-outer"
   [class.mobile-arc-outer--bidding-open]="store.matchState()?.phase === GamePhase.BIDDING"
+  [class.mobile-arc-outer--opening]="isOpeningRollPhase()"
 >
   <div
     class="mobile-seat-grid"

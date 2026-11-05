@@ -12,26 +12,49 @@
 
         <div class="lobby__intro flex flex-col gap-1 pt-6">
           <h1 class="lobby__title font-heading text-2xl">The crew is gathering</h1>
-          <p class="lobby__hint text-sm">Send this to whoever you want at the table.</p>
+          <p class="lobby__hint text-sm">
+            @if (hasOpenSeat()) {
+              Send this to whoever you want at the table.
+            } @else {
+              Every seat is taken. The table is full.
+            }
+          </p>
         </div>
 
-        <div class="lobby__code-card flex flex-col gap-3 mt-4">
+        <ng-template #copyButton>
+          <button
+            type="button"
+            class="lobby__room-code"
+            [attr.aria-label]="'Copy room code ' + roomId()"
+            (click)="copyRoomCode()"
+          >
+            <svg lucideCopy aria-hidden="true"></svg>
+          </button>
+        </ng-template>
+
+        <!-- A full table has no seat left to invite anyone to, so the Share invite row goes and the
+             copy button moves up beside the code. That gives the card one row less, which is most
+             of the roster room a 12-seat table on a short phone was missing. -->
+        <div
+          class="lobby__code-card flex flex-col gap-3 mt-4"
+          [class.lobby__code-card--full]="!hasOpenSeat()"
+        >
           <span class="lobby__code-label text-xs">Room code</span>
-          <div class="lobby__code-value">{{ roomId() }}</div>
-          <div class="flex items-center gap-2">
-            <ion-button class="lobby__code-share" fill="solid" (click)="shareRoomCode()">
-              <svg lucideShare2 slot="start" aria-hidden="true"></svg>
-              Share invite
-            </ion-button>
-            <button
-              type="button"
-              class="lobby__room-code"
-              [attr.aria-label]="'Copy room code ' + roomId()"
-              (click)="copyRoomCode()"
-            >
-              <svg lucideCopy aria-hidden="true"></svg>
-            </button>
+          <div class="flex items-center justify-between gap-2">
+            <div class="lobby__code-value">{{ roomId() }}</div>
+            @if (!hasOpenSeat()) {
+              <ng-container [ngTemplateOutlet]="copyButton" />
+            }
           </div>
+          @if (hasOpenSeat()) {
+            <div class="flex items-center gap-2">
+              <ion-button class="lobby__code-share" fill="solid" (click)="shareRoomCode()">
+                <svg lucideShare2 slot="start" aria-hidden="true"></svg>
+                Share invite
+              </ion-button>
+              <ng-container [ngTemplateOutlet]="copyButton" />
+            </div>
+          }
           <!-- Copy and share can never report at the same moment (each is its own tap), so one
                shared line carries whichever spoke last. Two permanently-mounted lines used to sit
                here instead, reserving ~56px of empty card even when both were silent — the design

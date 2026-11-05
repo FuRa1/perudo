@@ -368,3 +368,49 @@ ion-content {
     height: 30px;
   }
 }
+
+// Short phones (DESIGN_FEEDBACK.md, "Lobby on short phones"): at ~640px of height the intro and
+// the room-code card took the top half of the screen, leaving ~4 of 12 roster rows above the
+// sticky Ready button. Same composition, tighter rhythm: every saving here is spacing or type
+// size, none of it removes content.
+@media (max-height: 720px) {
+  .lobby-scroll {
+    padding-top: 0.75rem;
+  }
+
+  .lobby__intro {
+    padding-top: 0.75rem;
+  }
+
+  .lobby__title {
+    font-size: 1.375rem;
+    line-height: 1.2;
+  }
+
+  .lobby__code-card {
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.8rem 1rem;
+  }
+
+  .lobby__code-value {
+    font-size: 1.625rem;
+  }
+
+  .lobby__table-meta {
+    padding-top: 1rem;
+  }
+
+  .lobby__roster {
+    padding-top: 0.5rem;
+  }
+
+  .lobby__actions {
+    padding-top: 0.75rem;
+  }
+
+  .lobby__ready-button,
+  .lobby__ready-button::part(native) {
+    min-height: 48px;
+  }
+}

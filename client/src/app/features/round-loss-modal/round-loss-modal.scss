@@ -37,51 +37,15 @@
 }
 
 .round-loss__verdict {
-  border-radius: var(--radius-pill);
-  padding: 0.45rem 0.75rem;
-}
-
-.round-loss__verdict--true {
-  background: var(--color-sage-soft);
-  color: var(--color-sage-deep);
-}
-
-.round-loss__verdict--false {
   border: 1px solid var(--color-ember);
+  border-radius: var(--radius-pill);
   background: var(--color-sand);
+  padding: 0.45rem 0.75rem;
   color: var(--color-danger);
 }
 
 .round-loss__body {
   color: var(--color-ink-muted);
-}
-
-// Claimed / Actual as a pair of equal stat tiles, the way every end card in the references
-// presents the two numbers a round turned on — a translucent ivory panel floating on the card's
-// own parchment.
-.round-loss__stats {
-  margin-top: 0.25rem;
-}
-
-.round-loss__stat {
-  flex: 1;
-  min-width: 0;
-  border-radius: var(--radius-tile);
-  background: rgba(var(--color-ivory-rgb), 0.7);
-  padding: 0.625rem 0.75rem;
-}
-
-.round-loss__stat-label {
-  color: var(--color-meta);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.round-loss__stat-value {
-  color: var(--color-ink);
-  font-size: 1.375rem;
-  line-height: 1.1;
 }
 
 // Same pill silhouette as every other primary action in the app — this button had no class at all

@@ -15,58 +15,16 @@
         } @else {
           <div class="round-loss-badge" aria-hidden="true"></div>
         }
-        @if (isTimeoutLoss()) {
-          <h2 class="round-loss__title font-heading text-lg">Time ran out</h2>
+        <h2 class="round-loss__title font-heading text-lg">Time ran out</h2>
 
-          <span
-            class="round-loss__verdict round-loss__verdict--false text-xs font-semibold uppercase tracking-wide"
-          >
-            Turn timed out
-          </span>
+        <span class="round-loss__verdict text-xs font-semibold uppercase tracking-wide">
+          Turn timed out
+        </span>
 
-          <p class="round-loss__body text-sm">
-            You didn't bid or call liar before your time ran out, so the round ended without you.
-          </p>
-        } @else {
-          <h2 class="round-loss__title font-heading text-lg">You lost this round</h2>
+        <p class="round-loss__body text-sm">
+          You didn't bid or call liar before your time ran out, so the round ended without you.
+        </p>
 
-          <span
-            class="round-loss__verdict text-xs font-semibold uppercase tracking-wide"
-            [class.round-loss__verdict--true]="lostBecauseBidWasTrue()"
-            [class.round-loss__verdict--false]="!lostBecauseBidWasTrue()"
-          >
-            {{ lostBecauseBidWasTrue() ? 'Bid true' : 'Bid false' }}
-          </span>
-
-          @if (lostBecauseBidWasTrue()) {
-            <p class="round-loss__body text-sm">
-              You called liar, but the bid was true.
-              @if (actualQuantity() === claimedBid()?.quantity) {
-                Exact matches count as true bids.
-              }
-            </p>
-          } @else {
-            <p class="round-loss__body text-sm">
-              Your bid was false; the actual count was too low.
-            </p>
-          }
-
-          <!-- Claimed and actual are the two numbers the round turned on, so the reference pairs
-               them as equal stat tiles rather than a label above a marker and a loose sentence
-               somewhere below it. -->
-          @if (claimedBid(); as bid) {
-            <div class="round-loss__stats flex w-full gap-2">
-              <div class="round-loss__stat flex flex-col items-start gap-1">
-                <span class="round-loss__stat-label text-xs">Claimed</span>
-                <app-bid-marker [bid]="bid" />
-              </div>
-              <div class="round-loss__stat flex flex-col items-start gap-1">
-                <span class="round-loss__stat-label text-xs">Actual</span>
-                <span class="round-loss__stat-value font-heading">{{ actualQuantity() }}</span>
-              </div>
-            </div>
-          }
-        }
         <p class="round-loss__final text-sm font-semibold">{{ lossSummary() }}</p>
 
         <ion-button class="round-loss__action" expand="block" (click)="close()">Close</ion-button>

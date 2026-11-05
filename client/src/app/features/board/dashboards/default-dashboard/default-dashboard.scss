@@ -90,6 +90,14 @@
   color: var(--color-cream);
 }
 
+// Opening roll (DESIGN_FEEDBACK.md item 6): the Cast action is bottom-anchored for thumb reach
+// (`.mobile-hand-zone`'s own `margin-top: auto`), which on a tall phone left every spare pixel
+// as one dead band between the seats and the action. A second auto margin here splits that slack
+// in two, so the seats and their caption sit centred in the space above the action instead.
+.mobile-arc-outer--opening {
+  margin-top: auto;
+}
+
 // Seats are contained in grid tracks; the table-light arc stays fixed behind them.
 .mobile-arc-outer::before {
   top: 104px;
