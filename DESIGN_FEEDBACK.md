@@ -66,7 +66,7 @@ tablets, not tuned for one viewport.
 
 ## Status after the 2026-11-04 layout pass
 
-Fixed (commits `fe4617b`, `92ac2a6`), verified in a browser matrix at the playtest devices' CSS
+Fixed (commits `8a29440`, `92ac2a6`), verified in a browser matrix at the playtest devices' CSS
 viewports and on the emulators themselves:
 
 - 1, 2: off-centre dice and arc. Root cause: a grid used `justify-content: flex-end` to
