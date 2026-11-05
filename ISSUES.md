@@ -62,6 +62,12 @@ timeout die loss, and the special round (+1 quantity only, face locked, aces not
 - **Server tests read the real `server/perudo.config.json`.** `TimerConfigService` loads the file
   from `process.cwd()` even under Jest, so a local edit (e.g. `"enabled": false` for a playtest)
   makes the timer suites fail. Tests should construct the service with an explicit config.
+- **Eliminated players are stranded on the last reveal.** The reveal recap clears when the viewer
+  rolls their next hand, which an eliminated player never does, so their screen keeps the stale
+  reveal card for the rest of the match with only "You are out." (seen in a 12-player playtest).
+  Pairs with the existing "Spectator seat for eliminated players" item.
+- **Winner sheet's bottom edge isn't drawn** on tall phones (Pixel 9 / Pixel 2): the card stops
+  short of the bottom with no closing border.
 - **A device can lag a phase behind.** Pixel 2 still showed "Roll your hand" while the others
   were already bidding (seen once, not yet reproduced).
 - **Fixed in this pass:** the reveal copy said "an exact match still counts" even when the actual

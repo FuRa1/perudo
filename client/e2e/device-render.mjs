@@ -10,7 +10,9 @@
 // Output: screenshots in <out>/<device>/<state>.png (default e2e/.screenshots/device-render), and
 // one running text log per device in e2e/.device-log/<device>.log recording the date, the commit
 // the run was made from (and whether the tree was dirty), the APK's build time, and every state's
-// result — so you can see what each emulator last tested, and against which code.
+// result (PASS: state marker seen; WARN: marker unreadable but the screen has content — check the
+// screenshot; FAIL: blank screen or crash) — so you can see what each emulator last tested, and
+// against which code.
 //
 // Needs: adb on PATH (or ANDROID_HOME), the debug APK installed (or pass --install after
 // `npx cap sync android && cd android && gradlew assembleDebug`).
@@ -19,11 +21,12 @@ import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import { promisify } from 'node:util';
-import { STATES } from './fixture-states.mjs';
+import { STATE_MARKERS, STATES } from './fixture-states.mjs';
 
 const run = promisify(execFile);
 const HERE = import.meta.dirname;
 const PORT = 4300;
+const BLANK_SCREENSHOT_BYTES = 150_000;
 const APP_ID = 'com.perudo.app';
 const APK = path.resolve(HERE, '../android/app/build/outputs/apk/debug/app-debug.apk');
 const ADB = process.env.ANDROID_HOME
@@ -92,14 +95,36 @@ async function renderOne(serial, state, file) {
     `'${link}'`,
     APP_ID,
   );
-  await sleep(+arg('wait', 3000));
+  // Wait for the state's own marker text in the accessibility tree — a fixed sleep let blank,
+  // still-booting WebViews pass when nine devices cold-started at once.
+  const marker = STATE_MARKERS[state];
+  const deadline = Date.now() + +arg('timeout', 30000);
+  let found = false;
+  while (!found && Date.now() < deadline) {
+    await sleep(1000);
+    await adb(serial, 'shell', 'uiautomator', 'dump', '/sdcard/perudo-ui.xml').catch(() => null);
+    const { stdout: xml } = await adb(serial, 'shell', 'cat', '/sdcard/perudo-ui.xml').catch(
+      () => ({
+        stdout: '',
+      }),
+    );
+    found = !marker || xml.includes(marker);
+  }
+  await sleep(600); // let entrance animations settle before the screenshot
   const { stdout: pid } = await adb(serial, 'shell', 'pidof', APP_ID).catch(() => ({ stdout: '' }));
   const { stdout: png } = await run(ADB, ['-s', serial, 'exec-out', 'screencap', '-p'], {
     encoding: 'buffer',
     maxBuffer: 1 << 26,
   });
   fs.writeFileSync(file, png);
-  return pid.trim() ? 'ok' : 'CRASHED (app not running after launch)';
+  if (!pid.trim()) return 'CRASHED (app not running after launch)';
+  if (found) return 'ok';
+  // uiautomator occasionally returns an empty tree on emulators even when the screen is fine, so
+  // a missing marker on a screenshot with real content is a WARN (check it by eye), not a FAIL.
+  // A blank, still-booting WebView compresses to a few dozen KB.
+  return png.length > BLANK_SCREENSHOT_BYTES
+    ? `WARN marker "${marker}" not readable — screenshot has content, check it`
+    : `did not render (blank screen, no "${marker}")`;
 }
 
 async function runDevice(serial, states, outDir, commit) {
@@ -115,9 +140,9 @@ async function runDevice(serial, states, outDir, commit) {
     const result = await renderOne(serial, state, path.join(dir, `${state}.png`)).catch(
       (e) => `ERROR ${e.message.split('\n')[0]}`,
     );
-    results.push(
-      `  ${result === 'ok' ? 'PASS' : 'FAIL'}  ${state}${result === 'ok' ? '' : ` — ${result}`}`,
-    );
+    const status = result === 'ok' ? 'PASS' : result.startsWith('WARN') ? 'WARN' : 'FAIL';
+    const detail = result === 'ok' ? '' : ` — ${result.replace(/^WARN /, '')}`;
+    results.push(`  ${status}  ${state}${detail}`);
   }
   await adb(serial, 'shell', 'am', 'force-stop', APP_ID);
   const apkTime = fs.existsSync(APK) ? fs.statSync(APK).mtime.toISOString() : 'unknown';

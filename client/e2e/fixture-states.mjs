@@ -165,3 +165,19 @@ export const STATES = {
   'lobby-6': () => lobby(6),
   'lobby-12': () => lobby(12),
 };
+
+/** Text that only appears once that state has actually rendered — device-render.mjs waits for it
+ * (a blank, still-booting WebView must never count as a pass). */
+export const STATE_MARKERS = {
+  'rolling-12': 'Roll your hand',
+  'bid-mine-3': 'Place bid',
+  'bid-mine-6': 'Place bid',
+  'bid-mine-12': 'Place bid',
+  'bid-wait-6': 'weighs their wager',
+  'bid-special-3': 'Special round',
+  'reveal-6': 'You lost this round',
+  'reveal-other-6': 'Truth revealed',
+  'opening-6': 'Cast',
+  'lobby-6': '6 of 12',
+  'lobby-12': '12 of 12',
+};
