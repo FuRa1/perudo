@@ -3,8 +3,33 @@
     class="mobile-hand-zone flex flex-col items-center gap-3"
     [class.mobile-hand-zone--reveal-active]="revealActive()"
     [class.mobile-hand-zone--bidding-open]="biddingOpen()"
+    [class.mobile-hand-zone--spectator]="isSpectator()"
   >
-    @if (isOpeningRollPhase()) {
+    @if (isSpectator()) {
+      <!-- Eliminated, still seated: the arc draws opponents only, so without this the player
+           vanishes from their own screen once the hand and bid tray go. -->
+      <div class="spectator-seat flex w-full items-center gap-3" role="status">
+        <div
+          class="spectator-seat__avatar flex flex-none items-center justify-center"
+          aria-hidden="true"
+        >
+          {{ myPlayer.nickname.charAt(0).toUpperCase() }}
+        </div>
+        <div class="flex min-w-0 flex-1 flex-col">
+          <span class="spectator-seat__title text-sm font-semibold">
+            You're out{{
+              myPlayer.eliminatedInRound ? ' · round ' + myPlayer.eliminatedInRound : ''
+            }}
+          </span>
+          <span class="spectator-seat__hint text-xs"
+            >Watching the table — every hand shows at the reveal</span
+          >
+        </div>
+        <button type="button" class="spectator-seat__leave flex-none text-xs" (click)="leave()">
+          Leave
+        </button>
+      </div>
+    } @else if (isOpeningRollPhase()) {
       <span class="mobile-hand-zone__label text-xs font-semibold tracking-wide uppercase"
         >Your cast — public</span
       >
@@ -25,11 +50,7 @@
         <p class="mobile-hand-zone__hint text-xs">Waiting for the rest of the table</p>
       }
     } @else if (canRollHand()) {
-      <div
-        class="mobile-roll-stage"
-        [class.mobile-roll-stage--reveal-active]="revealActive()"
-        aria-hidden="true"
-      ></div>
+      <div class="mobile-roll-stage" aria-hidden="true"></div>
       <ion-button expand="block" class="mobile-hand-roll-btn" (click)="roll()">
         <svg lucideDices slot="start" aria-hidden="true"></svg>
         Roll your hand

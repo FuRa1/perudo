@@ -152,6 +152,42 @@ function rolling(n) {
   };
 }
 
+function gameOver(n, { viewerWins }) {
+  const winner = viewerWins ? 'viewer' : `p${n - 1}`;
+  const ps = players(n).map((p, i) => ({
+    ...p,
+    dice: [],
+    diceCount: p.id === winner ? 2 : 0,
+    eliminatedInRound: p.id === winner ? null : i + 2,
+  }));
+  return {
+    viewerPlayerId: 'viewer',
+    events: [{ type: 'MATCH_WON', winnerId: winner }],
+    snapshot: base('GAME_OVER', ps, { winnerId: winner }),
+  };
+}
+
+/** The viewer is out (0 dice, eliminated in round 3) but still seated — not in turn order and
+ * not in pending rolls, exactly as the engine leaves an eliminated player. */
+function spectating(fixture) {
+  const s = fixture.snapshot;
+  s.players = s.players.map((p) =>
+    p.id === 'viewer' ? { ...p, diceCount: 0, dice: [], eliminatedInRound: 3 } : p,
+  );
+  for (const e of fixture.events) {
+    if (e.type === 'ROUND_REVEALED') delete e.dice.viewer;
+  }
+  if (s.round) {
+    s.round.turnOrder = s.round.turnOrder.filter((id) => id !== 'viewer');
+    s.round.pendingRolls = s.round.pendingRolls.filter((id) => id !== 'viewer');
+    s.round.currentTurnIndex = Math.min(s.round.currentTurnIndex, s.round.turnOrder.length - 1);
+    if (s.phase === 'ROUND_ROLLING' && s.round.pendingRolls.length === 0) {
+      s.round.pendingRolls = s.round.turnOrder.slice(1, 3);
+    }
+  }
+  return fixture;
+}
+
 export const STATES = {
   'rolling-12': () => rolling(12),
   'bid-mine-3': () => bidding(3),
@@ -164,6 +200,11 @@ export const STATES = {
   'opening-6': () => opening(6),
   'lobby-6': () => lobby(6),
   'lobby-12': () => lobby(12),
+  'spectate-bid-6': () => spectating(bidding(6, { myTurn: false })),
+  'spectate-rolling-6': () => spectating(rolling(6)),
+  'spectate-reveal-6': () => spectating(reveal(6, { viewerLoses: false })),
+  'won-6': () => gameOver(6, { viewerWins: true }),
+  'lost-6': () => gameOver(6, { viewerWins: false }),
 };
 
 /** Text that only appears once that state has actually rendered — device-render.mjs waits for it
@@ -180,4 +221,9 @@ export const STATE_MARKERS = {
   'opening-6': 'Cast',
   'lobby-6': '6 of 12',
   'lobby-12': '12 of 12',
+  'spectate-bid-6': "You're out",
+  'spectate-rolling-6': "You're out",
+  'spectate-reveal-6': "You're out",
+  'won-6': 'Back to the entry',
+  'lost-6': 'Back to the entry',
 };

@@ -65,18 +65,23 @@ export class LocalHandZone {
     return { value, isWinner: state?.completedStartRoll?.firstPlayerId === playerId };
   }
 
-  /** A reveal recap competing for the same screen shrinks the reserved roll-stage spacer to
-   * nothing, and (at the narrowest supported width) tightens this zone's own spacing — same
-   * `.table-surface:has(.mobile-reveal)` condition table.scss used to express as a cross-element
-   * CSS selector, now a plain input-free local computed since this component injects GameStore
-   * directly. */
+  /** A reveal recap is competing for the same screen, so (at the narrowest supported width) this
+   * zone tightens its own spacing. */
   protected readonly revealActive = computed(() => this.store.lastReveal() !== null);
 
   /** The fixed mobile bid tray is on screen — tightens this zone's own spacing so the tray has
    * more room (former `.table-surface--bid-sheet-open .mobile-hand-zone` rules). */
   protected readonly biddingOpen = computed(
-    () => this.store.matchState()?.phase === GamePhase.BIDDING,
+    () => this.store.matchState()?.phase === GamePhase.BIDDING && !this.store.isSpectator(),
   );
+
+  protected readonly isSpectator = this.store.isSpectator;
+
+  /** Same exit as the winner screen: there is no server "leave" intent (6.2), the slot is simply
+   * abandoned — harmless for an eliminated player, who holds no turn and no timer. */
+  protected leave(): void {
+    this.socket.leaveMatch();
+  }
 
   protected roll(): void {
     this.socket.rollDice();

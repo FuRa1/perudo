@@ -76,36 +76,20 @@
   width: 100%;
 }
 
-// Hand-roll button (Increment 3) — matches the reserved roll-stage spacer's width below it, so
-// the two read as one deliberate column rather than a button floating independently of the space
-// above it.
+// Hand-roll button (Increment 3): a fixed width rather than full-bleed, so it reads as the one
+// deliberate action under the table.
 .mobile-hand-roll-btn {
   width: 236px;
 }
 
-// Reserved breathing room above the "Roll your hand" button (Design QA audit, finding 10) — a
-// dice-cup graphic used to render here, but it read as a second, competing roll affordance ahead
-// of the real button (tapping the cup and tapping the button did the same thing). Removed in
-// favor of plain empty space: `roll()` is unchanged, only triggerable via the button/shake, and
-// the composition keeps the same vertical rhythm the cup used to give it. Same 236px the cup was
-// fixed at everywhere except the narrowest supported width, where it tightens modestly rather than
-// staying a fixed block that eats into the button/hint's own room.
+// Roll-stage marker. It used to reserve 236px above the "Roll your hand" button (where a dice-cup
+// graphic once sat), but with the zone bottom-anchored and the arc centred during the hand roll
+// that block was the single largest empty band on tall phones (playtest: 12 players on Pixel 2 /
+// S23). It now takes no height; the element stays because the e2e scripts use it as the "this
+// player can roll" marker.
 .mobile-roll-stage {
   width: 236px;
-  height: 236px;
-
-  // ...but only while it is genuinely the emptiest thing on screen. Once a reveal recap is up,
-  // the round's result is competing for the same viewport, and 236px of deliberate blankness
-  // between the arc and the roll button stops reading as rhythm and starts reading as a hole.
-  // Was `.table-surface:has(.mobile-reveal) &` (a cross-component selector once the reveal panel
-  // moved to its own component) — this component already knows the same thing directly.
-  &--reveal-active {
-    height: 0;
-  }
-
-  @media (max-width: 359px) {
-    height: 180px;
-  }
+  height: 0;
 }
 
 // designs/perudo-board-buildup.dc.html's one explicit callout: "Hand dice 52px, never below" —
@@ -167,4 +151,48 @@
   position: sticky;
   bottom: calc(12px + env(safe-area-inset-bottom));
   z-index: 5;
+}
+
+// Spectator seat (eliminated, still at the table). Quiet on purpose: it states "you're out" once,
+// legibly, without reading as a banner — same muted cream the arc uses for an "out" seat.
+.spectator-seat {
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius-control);
+  background: rgba(var(--color-cream-rgb), 0.06);
+  border: 1px solid rgba(var(--color-cream-rgb), 0.12);
+}
+
+.spectator-seat__avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(var(--color-cream-rgb), 0.4);
+  color: var(--color-cream-muted);
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+.spectator-seat__title {
+  color: var(--color-cream);
+}
+
+.spectator-seat__hint {
+  color: var(--color-cream-faint);
+}
+
+// Reachable, not prominent: a text-weight control that still meets the 44px touch target.
+.spectator-seat__leave {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 0.75rem;
+  border-radius: var(--radius-control);
+  color: var(--color-cream-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+// The plinth carries its own edge, so the zone's hairline above it would be a second one.
+.mobile-hand-zone--spectator {
+  border-top: none;
+  padding-top: 0;
 }

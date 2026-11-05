@@ -53,6 +53,14 @@ export class GameStore {
     return state.round.turnOrder[state.round.currentTurnIndex] === id;
   });
 
+  /** Eliminated but still seated (ISSUES.md, "Spectator seat for eliminated players"): the match
+   * goes on without me, so the table drops my hand and bid tray and shows me as a watcher. */
+  readonly isSpectator = computed(() => {
+    const phase = this.matchState()?.phase;
+    const me = this.me();
+    return !!me && me.diceCount === 0 && phase !== GamePhase.LOBBY && phase !== GamePhase.GAME_OVER;
+  });
+
   readonly isLobby = computed(() => this.matchState()?.phase === GamePhase.LOBBY);
   readonly isGameOver = computed(() => this.matchState()?.phase === GamePhase.GAME_OVER);
   /** Server-authoritative turn-timer metadata (5.6/5.7/6.5) — presentation only; the client never
@@ -78,6 +86,12 @@ export class GameStore {
 
   setState(state: StateSnapshot): void {
     this.matchState.set(state);
+    // A spectator never rolls a hand, so the clear-on-my-roll in applyEvents never fires for them
+    // and the last reveal stayed up for the rest of the match. Their recap lasts while the others
+    // roll (the same window everyone else sees it in) and goes once the next bidding opens.
+    if (this.isSpectator() && state.phase === GamePhase.BIDDING) {
+      this.lastReveal.set(null);
+    }
   }
 
   applyEvents(events: readonly ServerEvent[]): void {

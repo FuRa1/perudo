@@ -1,7 +1,7 @@
 <ion-content>
   <div
     class="table-surface flex flex-col gap-3 p-3"
-    [class.table-surface--bid-sheet-open]="store.matchState()?.phase === GamePhase.BIDDING"
+    [class.table-surface--bid-sheet-open]="showBidRail()"
     [style.--bid-sheet-height.px]="bidSheetHeightPx()"
   >
     <!-- Mobile-only header: a single 36px chip replaces the raw "Round N — PHASE" heading below
@@ -130,7 +130,7 @@
            fixed bottom sheet via CSS rather than rendering a second copy.
            Rendered only during BIDDING: outside it the rail is empty, and an empty grid row still
            took a share of the free height, which left dead mat under the Cast / Roll button. -->
-      @if (store.matchState()?.phase === GamePhase.BIDDING) {
+      @if (showBidRail()) {
         <div class="table-layout__rail flex flex-col gap-3">
           <div class="table-rail__summary hidden p-3 text-sm">
             @if (gameView.latestBidRecord(); as record) {

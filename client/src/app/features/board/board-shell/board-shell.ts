@@ -90,6 +90,13 @@ export class BoardShell {
    * Computed once here (rather than each dashboard re-deriving it) since it also drives
    * `.table-layout__main`'s own grid-row formula (former `:has(.mobile-wager-token)` CSS check,
    * now a plain class binding since the token moved into its own component). */
+  /** The bid tray (picker on my turn, waiting bar otherwise). A spectator gets neither: the
+   * waiting bar talks about a turn order they are no longer in, and the wager token plus the
+   * highlighted seat already say who is up. */
+  protected readonly showBidRail = computed(
+    () => this.store.matchState()?.phase === GamePhase.BIDDING && !this.store.isSpectator(),
+  );
+
   protected readonly showWagerToken = computed(
     () =>
       this.store.matchState()?.phase === GamePhase.BIDDING &&

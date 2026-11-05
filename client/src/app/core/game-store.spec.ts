@@ -110,4 +110,46 @@ describe('GameStore', () => {
     store.setJoined('p1');
     expect(store.sessionRestoreFailed()).toBe(false);
   });
+
+  describe('spectator (eliminated, still seated)', () => {
+    const seat = (id: string, diceCount: number) => ({
+      id,
+      nickname: id,
+      isReady: true,
+      diceCount,
+      dice: [],
+      consecutivePureStalls: 0,
+      eliminatedInRound: diceCount === 0 ? 2 : null,
+    });
+
+    it('is a spectator only with no dice left, while the match is still running', () => {
+      const store = TestBed.inject(GameStore);
+      store.playerId.set('p3');
+      store.matchState.set(biddingState({ players: [seat('p1', 3), seat('p3', 0)] }));
+      expect(store.isSpectator()).toBe(true);
+
+      store.matchState.set(
+        biddingState({ phase: GamePhase.GAME_OVER, players: [seat('p1', 3), seat('p3', 0)] }),
+      );
+      expect(store.isSpectator()).toBe(false);
+
+      store.matchState.set(biddingState({ players: [seat('p1', 3), seat('p3', 1)] }));
+      expect(store.isSpectator()).toBe(false);
+    });
+
+    it('keeps the reveal while the others roll, then clears it once bidding opens', () => {
+      const store = TestBed.inject(GameStore);
+      store.playerId.set('p3');
+      const players = [seat('p1', 3), seat('p2', 2), seat('p3', 0)];
+      store.setState(biddingState({ players, phase: GamePhase.ROUND_ROLLING }));
+      store.applyEvents([reveal({ loserId: 'p3' })]);
+
+      store.setState(biddingState({ players, phase: GamePhase.ROUND_ROLLING }));
+      expect(store.lastReveal()).not.toBeNull();
+
+      // A spectator never rolls, so without this the recap stayed up for the rest of the match.
+      store.setState(biddingState({ players }));
+      expect(store.lastReveal()).toBeNull();
+    });
+  });
 });

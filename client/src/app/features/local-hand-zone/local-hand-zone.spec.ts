@@ -132,4 +132,45 @@ describe('LocalHandZone', () => {
       expect(nativeElement.querySelector('.mobile-opening-die')).toBeNull();
     });
   });
+
+  describe('spectator seat (eliminated, still at the table)', () => {
+    function spectating(): StateSnapshot {
+      return biddingState({
+        players: [
+          player('p1', 'Alice', { diceCount: 0, dice: [], eliminatedInRound: 4 }),
+          player('p2', 'Bob'),
+          player('p3', 'Cleo'),
+        ],
+        round: {
+          roundNumber: 6,
+          turnOrder: ['p2', 'p3'],
+          currentTurnIndex: 0,
+          bidHistory: [],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+    }
+
+    it('shows the player as out, with the round, instead of a hand', () => {
+      const { nativeElement } = render('p1', spectating());
+      const seat = nativeElement.querySelector('.spectator-seat');
+      expect(seat?.textContent ?? '').toContain("You're out · round 4");
+      expect(nativeElement.querySelector('.mobile-hand-strip')).toBeNull();
+      expect(nativeElement.querySelector('.mobile-hand-roll-btn')).toBeNull();
+    });
+
+    it('leaves the match from the seat', () => {
+      const leaveMatch = vi.fn();
+      TestBed.overrideProvider(SocketService, { useValue: { leaveMatch } });
+      const { nativeElement } = render('p1', spectating());
+      (nativeElement.querySelector('.spectator-seat__leave') as HTMLButtonElement).click();
+      expect(leaveMatch).toHaveBeenCalled();
+    });
+
+    it('never shows for a player who still has dice', () => {
+      const { nativeElement } = render('p2', spectating());
+      expect(nativeElement.querySelector('.spectator-seat')).toBeNull();
+    });
+  });
 });

@@ -62,12 +62,13 @@ timeout die loss, and the special round (+1 quantity only, face locked, aces not
 - **Server tests read the real `server/perudo.config.json`.** `TimerConfigService` loads the file
   from `process.cwd()` even under Jest, so a local edit (e.g. `"enabled": false` for a playtest)
   makes the timer suites fail. Tests should construct the service with an explicit config.
-- **Eliminated players are stranded on the last reveal.** The reveal recap clears when the viewer
-  rolls their next hand, which an eliminated player never does, so their screen keeps the stale
-  reveal card for the rest of the match with only "You are out." (seen in a 12-player playtest).
-  Pairs with the existing "Spectator seat for eliminated players" item.
-- **Winner sheet's bottom edge isn't drawn** on tall phones (Pixel 9 / Pixel 2): the card stops
-  short of the bottom with no closing border.
+- **Fixed 2026-11-05: eliminated players were stranded on the last reveal.** The recap cleared only
+  when the viewer rolled their next hand, which an eliminated player never does. A spectator now
+  keeps the recap while the others roll, and it clears once the next bidding opens
+  (`GameStore.setState`). See "Spectator seat for eliminated players" below for the rest.
+- **Fixed 2026-11-05: the winner sheet's bottom edge wasn't drawn.** The sheet is open-bottomed
+  (no border there) but stopped short of the screen edge because of the global page gutter and its
+  own container padding. It now sits flush, with the safe-area inset inside the sheet.
 - **A device can lag a phase behind.** Pixel 2 still showed "Roll your hand" while the others
   were already bidding (seen once, not yet reproduced).
 - **Fixed in this pass:** the reveal copy said "an exact match still counts" even when the actual
@@ -186,10 +187,20 @@ timeout die loss, and the special round (+1 quantity only, face locked, aces not
 - Known copy to revisit when this is built: `RoundLossModal.lossSummary` already says "You lost your
   last die — you're out.", but the canonical decision removes that modal from mobile, so panel `13`
   has to carry the line instead.
-- Not yet built: the panel rework itself (`13` reworked, the spectator board states, the plinth,
-  leave affordance) — Claude Design's answers are recorded above and in
-  `designs/perudo-spectator-claude-prompt.md`, but the `.dc.html` file has not been updated with
-  them yet.
+- **First version built 2026-11-05 (client only, provisional until the design file covers it).**
+  The owner asked for a simple start: take away what's needed to play and keep the rest of the
+  table. `GameStore.isSpectator` (no dice, match still running) drives it:
+  - The vacated bottom zone becomes the player's own seat (`LocalHandZone`, `.spectator-seat`):
+    a dashed avatar, "You're out · round N", a one-line hint, and a quiet "Leave" (the same exit
+    as the winner screen; no server intent needed). This answers questions 1-3 of the brief.
+  - No bid tray at all (`BoardShell.showBidRail`): the waiting bar talked about a turn order the
+    spectator is no longer in. The wager token and the highlighted seat still say who is up.
+  - The arc is centred in the free height instead of pinned to the top.
+  - Unchanged for now: the round chip (question 4), the public turn timer (5; its beep is already
+    owner-only) and the reveal recap (6), which a spectator sees while the others roll.
+  - Fixture states `spectate-bid-6`, `spectate-rolling-6`, `spectate-reveal-6`
+    (`client/e2e/fixture-states.mjs`).
+  - Still open: panel `13` (the moment of elimination as its own card) and the `.dc.html` update.
 
 ### Not yet aligned to the canonical file
 

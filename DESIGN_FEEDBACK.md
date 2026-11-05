@@ -106,5 +106,11 @@ Still open:
 
 - The rest of the reveal recomposition in `ISSUES.md` (card at the top over a scrimmed table,
   `Next round` pinned at the bottom, roll button hidden while the reveal is up).
-- Hand roll (`ROUND_ROLLING`) on tall phones: the intentional roll-stage spacer leaves a large
-  empty band between the seats and "Roll your hand" (most visible with 12 players on Pixel 2).
+
+## Status after the 2026-11-05 spectator pass
+
+- Hand roll on tall phones: the 236px roll-stage spacer is gone (the element stays as an e2e
+  marker), and the arc is centred in the free height during the hand roll, so the leftover space
+  splits above and below the seats instead of forming one band.
+- The winner sheet now meets the bottom edge of the screen.
+- New spectator seat for eliminated players (see `ISSUES.md`).

@@ -98,10 +98,13 @@ async function renderOne(serial, state, file) {
   // Wait for the state's own marker text in the accessibility tree — a fixed sleep let blank,
   // still-booting WebViews pass when nine devices cold-started at once.
   const marker = STATE_MARKERS[state];
-  const deadline = Date.now() + +arg('timeout', 30000);
+  const deadline = Date.now() + +arg('timeout', 60000);
   let found = false;
   while (!found && Date.now() < deadline) {
     await sleep(1000);
+    // Delete first: a failed dump otherwise leaves the previous state's tree on disk, and states
+    // that share a marker (the spectate-* trio) then "pass" on a blank screen.
+    await adb(serial, 'shell', 'rm', '-f', '/sdcard/perudo-ui.xml').catch(() => null);
     await adb(serial, 'shell', 'uiautomator', 'dump', '/sdcard/perudo-ui.xml').catch(() => null);
     const { stdout: xml } = await adb(serial, 'shell', 'cat', '/sdcard/perudo-ui.xml').catch(
       () => ({

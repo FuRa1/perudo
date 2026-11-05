@@ -15,6 +15,9 @@ ion-content {
   --color: var(--color-cream);
   --padding-start: 0;
   --padding-end: 0;
+  // The global page gutter (styles.scss) left a 24px dark band under the open-bottomed sheet.
+  --padding-top: 0;
+  --padding-bottom: 0;
 }
 
 .winner-surface {
@@ -32,7 +35,9 @@ ion-content {
     );
   background-repeat: no-repeat;
   background-size: cover;
-  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  // No bottom padding: the sheet is open at the bottom (no border there), so any gap below it
+  // read as a card whose bottom edge was never drawn (playtest, Pixel 2 / tall phones).
+  padding-bottom: 0;
 }
 
 // The sheet keeps outcome-card('win')'s own parchment/brass treatment — only its geometry changes:
@@ -45,7 +50,7 @@ ion-content {
   border-radius: var(--radius-card) var(--radius-card) 0 0;
   border-bottom: none;
   box-shadow: 0 -14px 44px rgba(0, 0, 0, 0.5);
-  padding: 1.5rem 1.375rem;
+  padding: 1.5rem 1.375rem max(1.5rem, calc(env(safe-area-inset-bottom) + 0.75rem));
   text-align: left;
 }
 

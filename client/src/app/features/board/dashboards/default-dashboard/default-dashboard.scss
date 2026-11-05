@@ -94,7 +94,9 @@
 // (`.mobile-hand-zone`'s own `margin-top: auto`), which on a tall phone left every spare pixel
 // as one dead band between the seats and the action. A second auto margin here splits that slack
 // in two, so the seats and their caption sit centred in the space above the action instead.
-.mobile-arc-outer--opening {
+// Opening roll, hand roll and spectating leave free height with no hand strip to anchor to; splitting
+// it above and below centres the table instead of leaving one empty band under the seats.
+.mobile-arc-outer--centred {
   margin-top: auto;
 }
 

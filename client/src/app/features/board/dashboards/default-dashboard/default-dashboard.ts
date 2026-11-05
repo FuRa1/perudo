@@ -166,6 +166,15 @@ export class DefaultDashboard {
     return { value, isWinner: state?.completedStartRoll?.firstPlayerId === playerId };
   }
 
+  /** Phases with no hand strip under the seats: the arc takes half the free height above it rather
+   * than leaving it all as one empty band (playtest: 12 players on a tall phone during the hand
+   * roll). Not while a reveal is up — then the recap below needs that room. */
+  protected readonly isCentred = computed(() => {
+    const phase = this.store.matchState()?.phase;
+    if (phase === GamePhase.START_ROLL || this.store.isSpectator()) return true;
+    return phase === GamePhase.ROUND_ROLLING && this.store.lastReveal() === null;
+  });
+
   /** Per-player "rolled their hand / still waiting" status, only meaningful during ROUND_ROLLING. */
   protected readonly handRollStatusByPlayerId = computed<Readonly<
     Record<string, HandRollStatus>

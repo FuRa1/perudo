@@ -237,4 +237,29 @@ describe('BoardShell', () => {
       expect(nativeElement.querySelectorAll('app-bid-controls')).toHaveLength(0);
     });
   });
+
+  describe('spectator (eliminated player)', () => {
+    it('drops the bid tray but keeps the standing wager and the table', () => {
+      const state = biddingState({
+        players: [
+          player('p1', 'Alice', { diceCount: 0, dice: [], eliminatedInRound: 2 }),
+          player('p2', 'Bob'),
+          player('p3', 'Cleo'),
+        ],
+        round: {
+          roundNumber: 4,
+          turnOrder: ['p2', 'p3'],
+          currentTurnIndex: 1,
+          bidHistory: [{ playerId: 'p2', bid: { kind: 'NORMAL', quantity: 3, face: 4 } }],
+          isSpecialRoundDeclared: false,
+          pendingRolls: [],
+        },
+      });
+      const { nativeElement } = render('p1', state);
+      expect(nativeElement.querySelector('.mobile-bid-sheet-wrap')).toBeNull();
+      expect(nativeElement.querySelector('.table-surface--bid-sheet-open')).toBeNull();
+      expect(nativeElement.querySelector('app-wager-token')).not.toBeNull();
+      expect(nativeElement.querySelector('.spectator-seat')).not.toBeNull();
+    });
+  });
 });
